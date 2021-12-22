@@ -1,4 +1,4 @@
-namespace LCHFramework.Utils
+namespace LCHFramework
 {
     public static class Color
     {

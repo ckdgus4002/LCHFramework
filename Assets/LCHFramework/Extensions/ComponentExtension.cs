@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace LCHFramework
+namespace LCHFramework.Extensions
 {
     public static class ComponentExtension
     {

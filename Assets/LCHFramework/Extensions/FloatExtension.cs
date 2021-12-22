@@ -1,4 +1,4 @@
-namespace LCHFramework
+namespace LCHFramework.Extensions
 {
     public static class FloatExtension
     {

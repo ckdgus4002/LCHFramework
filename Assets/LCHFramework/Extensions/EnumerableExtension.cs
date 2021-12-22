@@ -6,7 +6,7 @@ using Random = System.Random;
 
 namespace LCHFramework.Extensions
 {
-    public static class IEnumerableExtension
+    public static class EnumerableExtension
     {
         public static bool IsEmpty<T>(this IEnumerable<T> enumerable) => enumerable == null || enumerable.Count() < 1 || enumerable.All(a => a == null);
         
