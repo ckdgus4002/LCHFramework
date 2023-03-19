@@ -1,10 +1,11 @@
 using LCHFramework.Modules;
 using UnityEngine;
+using MonoBehaviour = LCHFramework.Modules.MonoBehaviour;
 
 namespace LCHFramework.Components
 {
     [ExecuteAlways]
-    public class ScaleFollower : LCHMonoBehaviour
+    public class ScaleFollower : MonoBehaviour
     {
         [SerializeField] private Transform target;
         [SerializeField] private Vector3 offset;

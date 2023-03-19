@@ -2,10 +2,11 @@ using System.Collections.Generic;
 using LCHFramework.Modules;
 using UnityEngine;
 using UnityEngine.Events;
+using MonoBehaviour = LCHFramework.Modules.MonoBehaviour;
 
 namespace LCHFramework.Components
 {
-    public abstract class RenderTextureGenerator : LCHMonoBehaviour
+    public abstract class RenderTextureGenerator : MonoBehaviour
     {
         [SerializeField] private bool generateOnAwake = true;
         [SerializeField] private bool generateOnEnable = false;

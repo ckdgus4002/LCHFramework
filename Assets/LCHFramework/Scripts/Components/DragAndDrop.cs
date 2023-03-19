@@ -4,6 +4,7 @@ using LCHFramework.Extensions;
 using LCHFramework.Modules;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using MonoBehaviour = LCHFramework.Modules.MonoBehaviour;
 
 namespace LCHFramework.Components
 {
@@ -16,7 +17,7 @@ namespace LCHFramework.Components
         public Vector3 Center => areas.Aggregate(Vector3.zero, (aggregate, area) => aggregate + area.position) / areas.Length;
     }
     
-    public class LCHDragAndDrop : LCHMonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+    public class DragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         [Header("DragAndDrop")]
         public InteractionAreas[] interactionAreas = Array.Empty<InteractionAreas>();

@@ -1,9 +1,10 @@
 using LCHFramework.Modules;
 using UnityEngine;
+using MonoBehaviour = LCHFramework.Modules.MonoBehaviour;
 
 namespace LCHFramework.Components
 {
-    public class ColliderSizeController : LCHMonoBehaviour
+    public class ColliderSizeController : MonoBehaviour
     {
         protected Vector2 CanvasSize => new Vector2(CanvasWidth, CanvasHeight);
         

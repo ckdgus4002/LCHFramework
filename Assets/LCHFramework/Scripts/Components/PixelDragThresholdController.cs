@@ -1,11 +1,12 @@
 using LCHFramework.Modules;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using MonoBehaviour = LCHFramework.Modules.MonoBehaviour;
 
 namespace LCHFramework.Components
 {
     [RequireComponent(typeof(EventSystem))]
-    public class PixelDragThresholdController : LCHMonoBehaviour
+    public class PixelDragThresholdController : MonoBehaviour
     {
         [SerializeField] private float pixelDragThresholdInch = 0.2f;
         

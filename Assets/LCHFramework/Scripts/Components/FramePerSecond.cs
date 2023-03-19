@@ -3,10 +3,11 @@ using LCHFramework.Modules;
 using LCHFramework.Utils;
 using UnityEngine;
 using UnityEngine.Profiling;
+using MonoBehaviour = LCHFramework.Modules.MonoBehaviour;
 
 namespace LCHFramework.Components
 {
-    public class FramePerSecond : LCHMonoBehaviour
+    public class FramePerSecond : MonoBehaviour
     {
 	    [SerializeField] private Color textColor;
 	    

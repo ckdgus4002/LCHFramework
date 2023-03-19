@@ -7,7 +7,7 @@ using Object = UnityEngine.Object;
 
 namespace LCHFramework.Modules
 {
-    public class LCHMonoBehaviour : MonoBehaviour
+    public class MonoBehaviour : UnityEngine.MonoBehaviour
     {
         [NonSerialized] public Matrix4x4 defaultTRS;
         [NonSerialized] public Matrix4x4 defaultLocalTRS;

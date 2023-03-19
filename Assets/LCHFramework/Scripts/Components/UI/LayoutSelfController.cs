@@ -1,12 +1,13 @@
 using LCHFramework.Modules;
 using UnityEngine;
 using UnityEngine.UI;
+using MonoBehaviour = LCHFramework.Modules.MonoBehaviour;
 
 namespace LCHFramework.Components.UI
 {
     [ExecuteAlways]
     [RequireComponent(typeof(RectTransform))]
-    public abstract class LayoutSelfController : LCHMonoBehaviour, ILayoutSelfController
+    public abstract class LayoutSelfController : MonoBehaviour, ILayoutSelfController
     {
         // field is never assigned warning
         #pragma warning disable 649
