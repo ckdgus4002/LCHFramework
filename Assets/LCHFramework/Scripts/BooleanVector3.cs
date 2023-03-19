@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace JSchool.Modules.Common.LCH
+namespace LCHFramework
 {
     [Serializable]
     public struct BooleanVector3

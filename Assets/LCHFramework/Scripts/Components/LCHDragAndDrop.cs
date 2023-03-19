@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using LCHFramework.Extensions;
 using LCHFramework.Modules;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -109,7 +110,7 @@ namespace LCHFramework.Components
             foreach (var interactionArea in interactionAreas.OrderByDescending(item => item.overlapsPriority))
                 if (interactionArea.areas.Any(interactionAreaArea => interactionAreaArea.gameObject.activeSelf
                                                                      && OverlapsAtWorld(corner, GetCornerAtWorld(interactionAreaArea))))
-                    return interactionAreas.ExIndexOf(interactionArea);
+                    return interactionAreas.IndexOf(interactionArea);
 
             return -1;
         }

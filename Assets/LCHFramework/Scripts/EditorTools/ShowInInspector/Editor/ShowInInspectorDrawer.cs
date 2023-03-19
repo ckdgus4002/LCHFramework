@@ -1,4 +1,4 @@
-using JSchool.Modules.Common.LCH.Attributes;
+using LCHFramework.EditorTools.ShowInInspector;
 using UnityEditor;
 using UnityEngine;
 

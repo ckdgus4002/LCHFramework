@@ -1,9 +1,9 @@
 using System.Reflection;
-using JSchool.Modules.Common.LCH.Attributes;
+using LCHFramework.EditorTools.ShowInInspector;
 using UnityEditor;
 using UnityEngine;
 
-namespace EditorTool.ShowInInspector
+namespace LCHFramework.EditorTool.ShowInInspector
 {
     [CanEditMultipleObjects, CustomEditor(typeof(MonoBehaviour), true)]
     public class ShowInInspectorEditor : Editor

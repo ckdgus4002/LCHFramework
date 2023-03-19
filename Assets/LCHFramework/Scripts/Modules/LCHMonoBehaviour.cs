@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using JSchool.Modules.Common.LCH.Utils;
+using LCHFramework.Utils;
 using UnityEngine;
 using Object = UnityEngine.Object;
 

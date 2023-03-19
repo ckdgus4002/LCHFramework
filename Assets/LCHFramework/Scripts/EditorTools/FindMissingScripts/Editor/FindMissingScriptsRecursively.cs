@@ -1,4 +1,4 @@
-﻿using JSchool.Common.Extensions;
+﻿using LCHFramework.Extensions;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,7 +12,7 @@ namespace LCHFramework.EditorTool.FindMissingScriptsRecursively
 
         
         
-        [MenuItem("DevTool/ContentsTool/FindMissingScriptsRecursively")]
+        [MenuItem("DevTool/LCHFramework/FindMissingScriptsRecursively")]
         public static void ShowWindow() => GetWindow(typeof(FindMissingScriptsRecursively));
         
         private static void FindInSelectedGameObjects()
@@ -51,7 +51,7 @@ namespace LCHFramework.EditorTool.FindMissingScriptsRecursively
                 if (components[i] == null)
                 {
                     _missingScriptNumber++;
-                    Debug.Log($"{gameObject.transform.ExPath()} has an empty script attached in position: {i}", gameObject);
+                    Debug.Log($"{gameObject.transform.Path()} has an empty script attached in position: {i}", gameObject);
                 }
             }
 

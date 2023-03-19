@@ -6,7 +6,7 @@ namespace LCHFramework.EditorTool.CaptureScreenshot
 {
     public static class CaptureScreenshot
     {
-        [MenuItem("DevTool/Capture Screenshot")]
+        [MenuItem("DevTool/LCHFramework/Capture Screenshot")]
         private static void Capture() => ScreenCapture.CaptureScreenshot($"{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.png");
     }
 }

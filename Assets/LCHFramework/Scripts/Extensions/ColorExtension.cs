@@ -4,10 +4,10 @@ namespace LCHFramework.Extensions
 {
     public static class ColorExtension
     {
-        public static Color ExNewAlpha(this Color color, float a) 
+        public static Color NewAlpha(this Color color, float a) 
             => new(color.r, color.g, color.b, a);
         
-        public static void ExSetAlpha(this ref Color color, float a)
+        public static void SetAlpha(this ref Color color, float a)
             => color.a = a;
 
         /// <param name="color"></param>
@@ -21,7 +21,7 @@ namespace LCHFramework.Extensions
         /// 6 => YGrayScale 
         /// </param>
         /// <note> https://hwanggoon.tistory.com/168 </note>
-        public static Color ExToGrayScale(this Color color, int grayScaleFormula = 0)
+        public static Color GetGrayScale(this Color color, int grayScaleFormula = 0)
         {
             var grayScale = grayScaleFormula switch
             {

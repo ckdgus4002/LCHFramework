@@ -56,7 +56,7 @@ namespace LCHFramework.Extensions
         }
 
         public static Transform GetRandomChild(this Transform transform)
-            => transform.GetChildren().ExPick();
+            => transform.GetChildren().Pick();
 
         public static string Path(this Transform transform)
         {

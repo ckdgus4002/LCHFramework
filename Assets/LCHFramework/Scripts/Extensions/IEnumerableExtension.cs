@@ -9,11 +9,11 @@ namespace LCHFramework.Extensions
     public static class IEnumerableExtension
     {
         private static readonly Random Random = new();
-        public static T[] Shuffle<T>(this IEnumerable<T> enumerable)
-            => enumerable.OrderBy(x => Random.Next()).ToArray();
+        public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> enumerable)
+            => enumerable.OrderBy(x => Random.Next());
 
-        public static T Pick<T>(this IEnumerable<T> list)
-            => list.ElementAt(Random.Next(list.Count()));
+        public static T Pick<T>(this IEnumerable<T> enumerable)
+            => enumerable.ElementAt(Random.Next(enumerable.Count()));
 
         public static T[] Copy<T>(this T[] array, int length) => Copy(array, 0, length);
         

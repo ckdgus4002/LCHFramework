@@ -1,8 +1,8 @@
 using UnityEngine.Events;
 
-namespace JSchool.Modules.Common.LCH.Utils
+namespace LCHFramework.Utils
 {
-    public class UnityEventTools
+    public class UnityEventUtil
     {
         public static void AddPersistentListener(UnityEvent unityEvent, UnityAction call)
         {

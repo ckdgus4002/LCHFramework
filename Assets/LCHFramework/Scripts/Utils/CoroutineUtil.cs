@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace JSchool.Modules.Common.LCH.Utils
+namespace LCHFramework.Utils
 {
     public static class CoroutineUtil
     {

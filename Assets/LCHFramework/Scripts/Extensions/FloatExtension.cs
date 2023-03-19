@@ -13,24 +13,24 @@ namespace LCHFramework.Extensions
         /// <summary>
         /// 가장 가까운 범위값을 반환합니다. 중간이면 올림합니다.
         /// </summary>
-        public static float ExRound(this float f, float dist)
+        public static float Round(this float f, float dist)
         {
             if (f < 0)
             {
                 var isRound = Mathf.Abs(f) % dist <= dist * 0.5f;
-                return isRound ? f.ExCeiling(dist) : f.ExTruncate(dist);
+                return isRound ? f.Ceiling(dist) : f.Truncate(dist);
             }
             else
             {
                 var isRound = dist * 0.5f <= f % dist;
-                return isRound ? f.ExCeiling(dist) : f.ExTruncate(dist);
+                return isRound ? f.Ceiling(dist) : f.Truncate(dist);
             }
         }
         
         /// <summary>
         /// 이 숫자보다 큰 다음 범위값을 반환합니다.
         /// </summary>
-        public static float ExCeiling(this float f, float dist)
+        public static float Ceiling(this float f, float dist)
             => f < 0 ? _ExTruncate(f, dist) : _ExCeiling(f, dist);
         
         private static float _ExCeiling(float f, float dist)
@@ -39,7 +39,7 @@ namespace LCHFramework.Extensions
         /// <summary>
         /// 이 숫자보다 작은 범위값을 반환합니다.
         /// </summary>
-        public static float ExTruncate(this float f, float dist)
+        public static float Truncate(this float f, float dist)
             => f < 0 ? _ExTruncate(f - dist, dist) : _ExTruncate(f, dist);
 
         private static float _ExTruncate(float f, float dist)

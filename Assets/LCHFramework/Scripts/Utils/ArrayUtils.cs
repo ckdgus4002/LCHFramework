@@ -1,6 +1,6 @@
 namespace LCHFramework.Utils
 {
-    public static class Array
+    public static class ArrayUtils
     {
         public static int[] NewSequential(int startInclusive, int spacing, int length)
         {

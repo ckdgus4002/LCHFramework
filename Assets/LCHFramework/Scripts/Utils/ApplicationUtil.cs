@@ -1,6 +1,6 @@
 namespace JSchool.Modules.Common.LCH
 {
-    public static class ApplicationUtils
+    public static class ApplicationUtil
     {
         public static bool IsEditor
         {

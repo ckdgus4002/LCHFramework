@@ -2,10 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using JSchool.Common.Extensions;
+using LCHFramework.Extensions;
 using UnityEngine;
 
-namespace JSchool.Modules.Common.LCH
+namespace LCHFramework
 {
     public static class Animatior
     {
@@ -18,11 +18,11 @@ namespace JSchool.Modules.Common.LCH
             {
                 var copiedAnimations = animations.ToList();
                 var elapsed = 0f;
-                while (!copiedAnimations.ExIsEmpty())
+                while (!copiedAnimations.IsEmpty())
                 {
                     foreach (var elapsedAnimation in copiedAnimations.Where(item => item.Item1 <= elapsed).ToList())
                     {
-                        action?.Invoke(animations.ExIndexOf(elapsedAnimation), elapsedAnimation.Item2);
+                        action?.Invoke(animations.IndexOf(elapsedAnimation), elapsedAnimation.Item2);
                         copiedAnimations.Remove(elapsedAnimation);
                     }
                 
