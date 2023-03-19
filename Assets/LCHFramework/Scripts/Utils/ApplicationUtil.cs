@@ -1,4 +1,4 @@
-namespace JSchool.Modules.Common.LCH
+namespace LCHFramework.Utils
 {
     public static class ApplicationUtil
     {

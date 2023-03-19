@@ -2,7 +2,7 @@
 using Spine.Unity;
 #endif
 
-namespace JSchool.Modules.Common.LCH.Utils
+namespace LCHFramework.Utils
 {
     public static class SkeletonGraphicUtil
     {

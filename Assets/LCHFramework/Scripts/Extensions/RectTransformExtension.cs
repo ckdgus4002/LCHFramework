@@ -6,8 +6,8 @@ namespace LCHFramework.Extensions
     {
         public static bool OverlapsAtWorld(this RectTransform rectTransform, RectTransform other)
         {
-            var corner1 = new UnityEngine.Vector3[4];
-            var corner2 = new UnityEngine.Vector3[4];
+            var corner1 = new Vector3[4];
+            var corner2 = new Vector3[4];
             rectTransform.GetWorldCorners(corner1);
             other.GetWorldCorners(corner2);
 

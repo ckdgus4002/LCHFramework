@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,7 +7,7 @@ namespace LCHFramework.Components.UI
     [RequireComponent(typeof(CanvasRenderer))]
     public class RectDummy : Graphic, ICanvasRaycastFilter
     {
-        public bool IsRaycastLocationValid(UnityEngine.Vector2 sp, Camera eventCamera)
+        public bool IsRaycastLocationValid(Vector2 sp, Camera eventCamera)
         {
             if (!isActiveAndEnabled)
                 return true;
@@ -21,16 +22,16 @@ namespace LCHFramework.Components.UI
     }
     
 #if UNITY_EDITOR
-    [UnityEditor.CustomEditor(typeof(RectDummy))]
-    [UnityEditor.CanEditMultipleObjects]
-    public class RectDummyInspector : UnityEditor.Editor
+    [CustomEditor(typeof(RectDummy))]
+    [CanEditMultipleObjects]
+    public class RectDummyInspector : Editor
     {
         public override void OnInspectorGUI()
         {
             var raycast = serializedObject.FindProperty("m_RaycastTarget");
 
             GUILayout.Space(5);
-            UnityEditor.EditorGUILayout.PropertyField(raycast);
+            EditorGUILayout.PropertyField(raycast);
 
             serializedObject.ApplyModifiedProperties();
         }
