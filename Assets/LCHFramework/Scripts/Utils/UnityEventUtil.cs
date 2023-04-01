@@ -1,3 +1,4 @@
+using UnityEditor.Events;
 using UnityEngine.Events;
 
 namespace LCHFramework.Utils
@@ -7,7 +8,7 @@ namespace LCHFramework.Utils
         public static void AddPersistentListener(UnityEvent unityEvent, UnityAction call)
         {
 #if UNITY_EDITOR
-            UnityEditor.Events.UnityEventTools.AddPersistentListener(unityEvent, call);
+            UnityEventTools.AddPersistentListener(unityEvent, call);
 #else
             unityEvent.AddListener(call);
 #endif    
@@ -16,7 +17,7 @@ namespace LCHFramework.Utils
         public static void AddPersistentListener<T>(UnityEvent<T> unityEvent, UnityAction<T> call)
         {
 #if UNITY_EDITOR
-            UnityEditor.Events.UnityEventTools.AddPersistentListener(unityEvent, call);
+            UnityEventTools.AddPersistentListener(unityEvent, call);
 #else
             unityEvent.AddListener(call);
 #endif    
@@ -25,7 +26,7 @@ namespace LCHFramework.Utils
         public static void RemovePersistentListener(UnityEvent unityEvent, UnityAction call)
         {
 #if UNITY_EDITOR
-            UnityEditor.Events.UnityEventTools.RemovePersistentListener(unityEvent, call);
+            UnityEventTools.RemovePersistentListener(unityEvent, call);
 #else
             unityEvent.RemoveListener(call);
 #endif
@@ -34,7 +35,7 @@ namespace LCHFramework.Utils
         public static void RemovePersistentListener<T>(UnityEvent<T> unityEvent, UnityAction<T> call)
         {
 #if UNITY_EDITOR
-            UnityEditor.Events.UnityEventTools.RemovePersistentListener(unityEvent, call);
+            UnityEventTools.RemovePersistentListener(unityEvent, call);
 #else
             unityEvent.RemoveListener(call);
 #endif

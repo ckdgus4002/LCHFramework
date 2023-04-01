@@ -1,4 +1,3 @@
-using LCHFramework.Modules;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using MonoBehaviour = LCHFramework.Modules.MonoBehaviour;

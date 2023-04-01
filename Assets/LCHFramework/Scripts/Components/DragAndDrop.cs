@@ -19,6 +19,37 @@ namespace LCHFramework.Components
     
     public class DragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
+        public static Vector3[] GetCornerAtWorld(Transform target)
+        {
+            var result = new Vector3[4];
+            if (target is RectTransform targetRectTransform)
+            {
+                targetRectTransform.GetWorldCorners(result);
+            }
+            else
+            {
+                var bounds = target.TryGetComponent<Collider2D>(out var result0) ? result0.bounds
+                        : target.TryGetComponent<Renderer>(out var result1) ? result1.bounds
+                        : throw new OutOfRangeException("bounds")
+                    ;
+                var targetPosition = target.position;
+                result[0] = targetPosition + bounds.min;
+                result[1] = targetPosition + new Vector3(bounds.min.x, bounds.max.y, 0);
+                result[2] = targetPosition + bounds.max;
+                result[3] = targetPosition + new Vector3(bounds.max.x, bounds.min.y, 0);
+            }
+            return result;
+        }
+
+        public static bool OverlapsAtWorld(Vector3[] corner, Vector3[] other) => OverlapsAtWorld(
+            new Rect(corner[0].x, corner[0].y, corner[2].x - corner[0].x, corner[2].y - corner[0].y)
+            , new Rect(other[0].x, other[0].y, other[2].x - other[0].x, other[2].y - other[0].y)
+        );
+
+        public static bool OverlapsAtWorld(Rect rect, Rect other) => rect.Overlaps(other);
+        
+        
+        
         [Header("DragAndDrop")]
         public InteractionAreas[] interactionAreas = Array.Empty<InteractionAreas>();
         
@@ -56,7 +87,7 @@ namespace LCHFramework.Components
         private Canvas RootCanvasOrNull => _rootCanvas == null ? _rootCanvas = GetComponentsInParent<Canvas>().Last() : _rootCanvas;
         private Canvas _rootCanvas;
 
-        protected virtual Canvas CanvasOrNull => GetComponent<Canvas>();
+        public virtual Canvas CanvasOrNull => GetComponent<Canvas>();
 
         public virtual Renderer RendererOrNull => GetComponent<Renderer>();
         
@@ -90,7 +121,7 @@ namespace LCHFramework.Components
             onDrag?.Invoke();
         }
 
-        protected virtual Vector3 GetDragPosition(PointerEventData eventData) => GetMousePosition(eventData) + (BeginPosition - BeginMousePosition);
+        public virtual Vector3 GetDragPosition(PointerEventData eventData) => GetMousePosition(eventData) + (BeginPosition - BeginMousePosition);
 
         public void OnEndDrag(PointerEventData eventData)
         {
@@ -100,7 +131,7 @@ namespace LCHFramework.Components
             onEndDrag?.Invoke(eventData, GetOverlapsInteractionAreaIndex());
         }
         
-        protected Vector3 GetMousePosition(PointerEventData eventData)
+        public virtual Vector3 GetMousePosition(PointerEventData eventData)
             => RootCanvasOrNull == null || RootCanvasOrNull.renderMode == RenderMode.ScreenSpaceOverlay ? Input.mousePosition
             : RootCanvasOrNull.worldCamera.ScreenToWorldPoint(eventData.position)
             ;
@@ -115,35 +146,6 @@ namespace LCHFramework.Components
 
             return -1;
         }
-        
-        private Vector3[] GetCornerAtWorld(Transform target)
-        {
-            var result = new Vector3[4];
-            if (target is RectTransform targetRectTransform)
-            {
-                targetRectTransform.GetWorldCorners(result);
-            }
-            else
-            {
-                var bounds = target.TryGetComponent<Collider2D>(out var result0) ? result0.bounds
-                    : target.TryGetComponent<Renderer>(out var result1) ? result1.bounds
-                    : throw new OutOfRangeException("bounds")
-                    ;
-                var targetPosition = target.position;
-                result[0] = targetPosition + bounds.min;
-                result[1] = targetPosition + new Vector3(bounds.min.x, bounds.max.y, 0);
-                result[2] = targetPosition + bounds.max;
-                result[3] = targetPosition + new Vector3(bounds.max.x, bounds.min.y, 0);
-            }
-            return result;
-        }
-
-        private bool OverlapsAtWorld(Vector3[] corner, Vector3[] other) => OverlapsAtWorld(
-            new Rect(corner[0].x, corner[0].y, corner[2].x - corner[0].x, corner[2].y - corner[0].y)
-            , new Rect(other[0].x, other[0].y, other[2].x - other[0].x, other[2].y - other[0].y)
-            );
-
-        private bool OverlapsAtWorld(Rect rect, Rect other) => rect.Overlaps(other);
 
         protected virtual Transform GetOverlapsTarget() => transform;
     }

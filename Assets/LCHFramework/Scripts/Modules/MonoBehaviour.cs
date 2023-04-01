@@ -61,26 +61,6 @@ namespace LCHFramework.Modules
         
         protected bool TryFindObjectOfType<T>(out T result) where T : Object => (result = FindObjectOfType<T>()) != null;
         
-        protected T GetComponentInParent<T>(bool includeInactive)
-        {
-            T result;
-            if (!includeInactive)
-            {
-                result = GetComponentInParent<T>();
-            }
-            else
-            {
-                var parent = transform;
-                while (!parent.TryGetComponent(out result))
-                {
-                    parent = parent.parent;
-                    if (parent == null) break;
-                }
-            }
-        
-            return result;
-        }
-
         public T GetComponentInSibling<T>(bool includeMe = false)
         {
             T result = default;

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using LCHFramework.Modules;
 using UnityEngine;
 using UnityEngine.Events;
 using MonoBehaviour = LCHFramework.Modules.MonoBehaviour;
