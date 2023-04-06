@@ -1,9 +1,10 @@
+#if UNITY_EDITOR
 using System.Reflection;
 using LCHFramework.EditorTools.ShowInInspector;
 using UnityEditor;
 using UnityEngine;
 
-namespace LCHFramework.EditorTool.ShowInInspector
+namespace LCHFramework.ShowInInspector
 {
     [CanEditMultipleObjects, CustomEditor(typeof(MonoBehaviour), true)]
     public class ShowInInspectorEditor : Editor
@@ -41,3 +42,4 @@ namespace LCHFramework.EditorTool.ShowInInspector
         }
     }
 }
+#endif

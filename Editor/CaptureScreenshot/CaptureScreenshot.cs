@@ -2,7 +2,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace LCHFramework.EditorTool.CaptureScreenshot
+namespace LCHFramework.Editor.CaptureScreenshot
 {
     public static class CaptureScreenshot
     {

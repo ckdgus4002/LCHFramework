@@ -1,8 +1,9 @@
+#if UNITY_EDITOR
 using LCHFramework.EditorTools.ShowInInspector;
 using UnityEditor;
 using UnityEngine;
 
-namespace LCHFramework.EditorTool.ShowInInspector
+namespace LCHFramework.ShowInInspector
 {
     [CustomPropertyDrawer(typeof(ShowInInspectorAttribute))]
     public class ShowInInspectorDrawer : PropertyDrawer
@@ -23,3 +24,4 @@ namespace LCHFramework.EditorTool.ShowInInspector
                 ;
     }
 }
+#endif

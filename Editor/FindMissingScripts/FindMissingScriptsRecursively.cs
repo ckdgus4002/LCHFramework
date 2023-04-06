@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace LCHFramework.EditorTool.FindMissingScriptsRecursively
+namespace LCHFramework.Editor.FindMissingScriptsRecursively
 {
     public class FindMissingScriptsRecursively : EditorWindow
     {
