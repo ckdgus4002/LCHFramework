@@ -1,0 +1,16 @@
+{
+    "name": "LCHFrameworkEditor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:8aee048f7526243c68de39ada20cd16d"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
