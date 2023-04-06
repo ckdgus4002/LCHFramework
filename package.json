@@ -1,0 +1,15 @@
+{
+  "name": "kr.lch.LCHFramework",
+  "displayName": "LCHFramework",
+  "description": "LCHFramework",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ckdgus4002/LCHFramework.git"
+  },
+  "author": {
+    "name": "LCH",
+    "email": "lch@lch.kr",
+    "url": "https://github.com/ckdgus4002/LCHFramework"
+  },
+}
