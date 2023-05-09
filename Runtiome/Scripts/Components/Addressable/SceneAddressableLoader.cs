@@ -1,6 +1,9 @@
 #if Addressable
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.Callbacks;
+#endif
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
