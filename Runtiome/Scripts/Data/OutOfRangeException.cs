@@ -1,6 +1,6 @@
 using System;
 
-namespace LCHFramework.Modules
+namespace LCHFramework.Data
 {
     public class OutOfRangeException : Exception
     {

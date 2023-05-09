@@ -1,3 +1,4 @@
+using LCHFramework.Data;
 using UnityEngine;
 
 namespace LCHFramework.Components
@@ -6,7 +7,7 @@ namespace LCHFramework.Components
     [RequireComponent(typeof(BoxCollider))]
     public class BoxColliderSizeController : ColliderSizeController
     {
-        [SerializeField] private BooleanVector3 only = new BooleanVector3(true);
+        [SerializeField] private BooleanVector3 only = new(true);
         [SerializeField] private Vector3 offset;
 
 

@@ -16,9 +16,12 @@ namespace LCHFramework.Components.UI
 
         private float _prevWidth = float.MinValue;
         private float _prevHeight = float.MinValue;
-
-
-
+        
+        
+        private LCHMonoBehaviour LCHMonoBehaviour => LCHMonoBehaviour.GetOrAddComponent(gameObject);
+        
+        
+        
         protected override bool HorizontalIsChanged()
         {
             if (widthTarget == null) return false;
@@ -44,15 +47,15 @@ namespace LCHFramework.Components.UI
         private void SetLayout()
         {
             tracker.Clear();
-            tracker.Add(this, RectTransform, widthTarget != null && heightTarget != null ? DrivenTransformProperties.SizeDelta
+            tracker.Add(this, LCHMonoBehaviour.RectTransformOrNull, widthTarget != null && heightTarget != null ? DrivenTransformProperties.SizeDelta
                 : widthTarget != null ? DrivenTransformProperties.SizeDeltaX
                 : heightTarget != null ? DrivenTransformProperties.SizeDeltaY
                 : DrivenTransformProperties.None
             );
             
-            if (widthTarget != null) RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, leftPadding + widthTarget.rect.size.x + rightPadding);
-            if (heightTarget != null) RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, topPadding + heightTarget.rect.size.y + bottomPadding);
-            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
+            if (widthTarget != null) LCHMonoBehaviour.RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, leftPadding + widthTarget.rect.size.x + rightPadding);
+            if (heightTarget != null) LCHMonoBehaviour.RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, topPadding + heightTarget.rect.size.y + bottomPadding);
+            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(LCHMonoBehaviour.RectTransformOrNull);
         }
     }
 }

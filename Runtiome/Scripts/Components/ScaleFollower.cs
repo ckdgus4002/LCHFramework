@@ -1,5 +1,4 @@
 using UnityEngine;
-using MonoBehaviour = LCHFramework.Modules.MonoBehaviour;
 
 namespace LCHFramework.Components
 {

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
+using LCHFramework.Data;
 using LCHFramework.Extensions;
-using LCHFramework.Modules;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using MonoBehaviour = LCHFramework.Modules.MonoBehaviour;
 
 namespace LCHFramework.Components
 {
@@ -93,10 +92,8 @@ namespace LCHFramework.Components
         
         
         
-        protected override void Start()
+        private void Start()
         {
-            base.Start();
-            
             DefaultSortingOrder = SortingOrder;
         }
         

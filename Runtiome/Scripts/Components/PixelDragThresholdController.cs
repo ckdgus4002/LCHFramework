@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using MonoBehaviour = LCHFramework.Modules.MonoBehaviour;
 
 namespace LCHFramework.Components
 {
@@ -10,22 +9,20 @@ namespace LCHFramework.Components
         [SerializeField] private float pixelDragThresholdInch = 0.2f;
         
         
+        
         private void SetPixelDragThresholdInch(float value)
         {
             EventSystem.pixelDragThreshold = Mathf.RoundToInt(Screen.dpi * value);
             pixelDragThresholdInch = value;
         }
-        
-        
+
         private EventSystem EventSystem => _eventSystem == null ? _eventSystem = GetComponent<EventSystem>() : _eventSystem;
         private EventSystem _eventSystem;
         
         
         
-        protected override void Start()
+        private void Start()
         {
-            base.Start();
-
             SetPixelDragThresholdInch(pixelDragThresholdInch);
         }
     }

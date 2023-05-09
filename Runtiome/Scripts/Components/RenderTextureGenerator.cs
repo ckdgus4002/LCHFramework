@@ -1,32 +1,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using MonoBehaviour = LCHFramework.Modules.MonoBehaviour;
 
 namespace LCHFramework.Components
 {
     public abstract class RenderTextureGenerator : MonoBehaviour
     {
         [SerializeField] private bool generateOnAwake = true;
-        [SerializeField] private bool generateOnEnable = false;
+        [SerializeField] private bool generateOnEnable;
         [SerializeField] private UnityEvent<RenderTexture> onGenerate;
         
         
-        private readonly Dictionary<Vector2, RenderTexture> _recentRenderTextures = new Dictionary<Vector2, RenderTexture>();
-
-
-        public bool IsGenerated => 0 < _recentRenderTextures.Count;
+        public Dictionary<string, RenderTexture> RenderTextures { get; }= new();
+        
+        
+        public bool IsGenerated => 0 < RenderTextures.Count;
         
         protected abstract int GetRenderTextureWidth();
         
         protected abstract int GetRenderTextureHeight();
 
-
+        protected virtual int GetRenderTextureDepth() => 0;
         
-        protected override void Awake()
+        
+        
+        private void Awake()
         {
-            base.Awake();
-
             if (generateOnAwake) Generate();
         }
         
@@ -37,13 +36,12 @@ namespace LCHFramework.Components
 
 
 
-        protected void Generate()
+        protected void Generate() => Generate($"{GetRenderTextureWidth()};{GetRenderTextureHeight()};{GetRenderTextureDepth()}");
+        
+        protected void Generate(string key)
         {
-            var key = new Vector2(GetRenderTextureWidth(), GetRenderTextureHeight());
-            if (!_recentRenderTextures.ContainsKey(key))
-                _recentRenderTextures.Add(key, new RenderTexture(GetRenderTextureWidth(), GetRenderTextureHeight(), 0));
-            
-            onGenerate?.Invoke(_recentRenderTextures[key]);
+            if (!RenderTextures.ContainsKey(key)) RenderTextures.Add(key, new RenderTexture(GetRenderTextureWidth(), GetRenderTextureHeight(), GetRenderTextureDepth()));
+            onGenerate?.Invoke(RenderTextures[key]);
         }
     }
 }

@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using MonoBehaviour = LCHFramework.Modules.MonoBehaviour;
 
 namespace LCHFramework.Components.UI
 {
@@ -8,13 +7,13 @@ namespace LCHFramework.Components.UI
     [RequireComponent(typeof(RectTransform))]
     public abstract class LayoutSelfController : MonoBehaviour, ILayoutSelfController
     {
-        // field is never assigned warning
-        #pragma warning disable 649
         protected DrivenRectTransformTracker tracker;
-        #pragma warning restore 649
-
-
-
+        
+        
+        private LCHMonoBehaviour LCHMonoBehaviour => LCHMonoBehaviour.GetOrAddComponent(gameObject);
+        
+        
+        
         private void Update()
         {
             if (PositionXIsChanged()) SetPositionX();
@@ -23,12 +22,10 @@ namespace LCHFramework.Components.UI
             if (VerticalIsChanged()) SetLayoutVertical();
         }
 
-        protected override void OnDisable()
+        private void OnDisable()
         {
-            base.OnDisable();
-            
             tracker.Clear();
-            LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
+            LayoutRebuilder.MarkLayoutForRebuild(LCHMonoBehaviour.RectTransformOrNull);
         }
 
 

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace LCHFramework.Modules
+namespace LCHFramework.Data
 {
     public interface IFromInstantiate
     {

@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using UnityEngine;
 
-namespace LCHFramework.EditorTools.ShowInInspector
+namespace LCHFramework.Attributes.ShowInInspector
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class ShowInInspectorAttribute : PropertyAttribute

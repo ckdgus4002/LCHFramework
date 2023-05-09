@@ -22,9 +22,13 @@ namespace LCHFramework.Components.UI
 
 
         private bool IsInitialized => _defaultPositionX != null && _defaultPositionY != null;
+        
         private float TargetPositionX => xTarget.position.x;
+        
         private float TargetPositionY => yTarget.position.y;
-
+        
+        private LCHMonoBehaviour LCHMonoBehaviour => LCHMonoBehaviour.GetOrAddComponent(gameObject);
+        
         
         
         private readonly Coroutine[] _onEnable = new Coroutine[2];
@@ -32,8 +36,8 @@ namespace LCHFramework.Components.UI
         {
             if (!IsInitialized)
             {
-                if (_defaultPositionX == null) _onEnable[0] = RestartCoroutine(_onEnable[0], Coroutine(0));
-                if (_defaultPositionY == null) _onEnable[1] = RestartCoroutine(_onEnable[1], Coroutine(1));
+                if (_defaultPositionX == null) _onEnable[0] = LCHMonoBehaviour.RestartCoroutine(_onEnable[0], Coroutine(0));
+                if (_defaultPositionY == null) _onEnable[1] = LCHMonoBehaviour.RestartCoroutine(_onEnable[1], Coroutine(1));
                 IEnumerator Coroutine(int index)
                 {
                     switch (index)
@@ -78,7 +82,7 @@ namespace LCHFramework.Components.UI
         private void SetPosition()
         {
             tracker.Clear();
-            tracker.Add(this, RectTransform, xTarget != null && yTarget != null ? DrivenTransformProperties.AnchoredPosition 
+            tracker.Add(this, LCHMonoBehaviour.RectTransformOrNull, xTarget != null && yTarget != null ? DrivenTransformProperties.AnchoredPosition 
                 : xTarget != null ? DrivenTransformProperties.AnchoredPositionX
                 : yTarget != null ? DrivenTransformProperties.AnchoredPositionY
                 : DrivenTransformProperties.None
@@ -86,7 +90,7 @@ namespace LCHFramework.Components.UI
             
             if (xTarget != null) onSetPositionX?.Invoke(TargetPositionX, _defaultPositionX == null ? 0 : TargetPositionX - (float)_defaultPositionX);
             if (yTarget != null) onSetPositionY?.Invoke(TargetPositionY, _defaultPositionY == null ? 0 : TargetPositionY - (float)_defaultPositionY);
-            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
+            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(LCHMonoBehaviour.RectTransformOrNull);
         }
     }
 }

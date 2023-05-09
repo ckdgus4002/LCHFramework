@@ -2,7 +2,6 @@ using LCHFramework.Extensions;
 using LCHFramework.Utils;
 using UnityEngine;
 using UnityEngine.Profiling;
-using MonoBehaviour = LCHFramework.Modules.MonoBehaviour;
 
 namespace LCHFramework.Components
 {

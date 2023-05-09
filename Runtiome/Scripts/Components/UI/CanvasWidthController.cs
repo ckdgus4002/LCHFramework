@@ -10,6 +10,9 @@ namespace LCHFramework.Components.UI
         private float _prevAspect = -1;
         
         
+        private LCHMonoBehaviour LCHMonoBehaviour => LCHMonoBehaviour.GetOrAddComponent(gameObject);
+        
+        
         
         protected override bool HorizontalIsChanged()
         {
@@ -23,11 +26,11 @@ namespace LCHFramework.Components.UI
         public override void SetLayoutHorizontal()
         {
             tracker.Clear();
-            tracker.Add(this, RectTransform, DrivenTransformProperties.SizeDeltaX);
+            tracker.Add(this, LCHMonoBehaviour.RectTransformOrNull, DrivenTransformProperties.SizeDeltaX);
             
             if (Camera.main == null) return;
-            RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Camera.main.aspect * 1080);
-            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
+            LCHMonoBehaviour.RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Camera.main.aspect * LCHFrameworkSettings.Instance.canvasSize.y);
+            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(LCHMonoBehaviour.RectTransformOrNull);
         }
     }
 }
