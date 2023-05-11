@@ -1,6 +1,6 @@
 {
     "name": "LCHFramework",
-    "rootNamespace": "",
+    "rootNamespace": "LCHFramework",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

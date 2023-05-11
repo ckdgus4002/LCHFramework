@@ -1,8 +1,8 @@
 {
     "name": "LCHFrameworkEditor",
-    "rootNamespace": "",
+    "rootNamespace": "LCHFramework.Editor",
     "references": [
-        "GUID:8aee048f7526243c68de39ada20cd16d"
+        "LCHFramework"
     ],
     "includePlatforms": [
         "Editor"
