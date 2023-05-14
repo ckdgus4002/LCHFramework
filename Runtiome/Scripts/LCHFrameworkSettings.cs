@@ -20,7 +20,9 @@ namespace LCHFramework
             {
                 if (_instance == null)
                 {
+#if UNITY_EDITOR
                     CreateAssetIfEmpty();
+#endif
                     _instance = Resources.Load<LCHFrameworkSettings>(FileName);
                 }
                 
@@ -53,4 +55,3 @@ namespace LCHFramework
         public Vector2 canvasSize = new Vector2(1920, 1080);
     }
 }
-
