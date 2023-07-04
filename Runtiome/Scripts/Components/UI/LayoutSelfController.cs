@@ -25,7 +25,7 @@ namespace LCHFramework.Components.UI
         private void OnDisable()
         {
             tracker.Clear();
-            LayoutRebuilder.MarkLayoutForRebuild(LCHMonoBehaviour.RectTransformOrNull);
+            LayoutRebuilder.MarkLayoutForRebuild(LCHMonoBehaviour.RectTransform);
         }
 
 

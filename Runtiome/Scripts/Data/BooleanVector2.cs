@@ -11,6 +11,12 @@ namespace LCHFramework.Data
             x = y = value;   
         }
         
+        public BooleanVector2(bool x, bool y)
+        {
+            this.x = x;
+            this.y = y;
+        }
+        
         
         
         public bool x;

@@ -27,7 +27,7 @@ namespace LCHFramework.Extensions
 
         public static List<T> FindObjectsOfName<T>(this Transform transform, string name, Func<string, string, bool> namePredicate) where T : Component
         {
-            var foundChildren = new List<T>();
+            var foundChildren = new List<T>(16);
             foreach (Transform child in transform) foundChildren.AddRange(child._FindObjectsOfName<T>(name, namePredicate));
 
             return foundChildren;
@@ -35,7 +35,7 @@ namespace LCHFramework.Extensions
         
         private static List<T> _FindObjectsOfName<T>(this Transform transform, string name, Func<string, string, bool> namePredicate) where T : Component
         {
-            var foundChildren = new List<T>();
+            var foundChildren = new List<T>(16);
             if (namePredicate(transform.name, name)) foundChildren.Add(transform.GetComponent<T>());
             
             foreach (Transform child in transform) foundChildren.AddRange(child._FindObjectsOfName<T>(name, namePredicate));

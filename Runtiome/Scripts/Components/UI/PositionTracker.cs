@@ -10,22 +10,18 @@ namespace LCHFramework.Components.UI
     public class PositionTracker : LayoutSelfController
     {
         public RectTransform xTarget;
-        [SerializeField] private UnityEvent<float, float> onSetPositionX;
+        [SerializeField] private UnityEvent<float, float> onSetPositionX; 
         public RectTransform yTarget;
         [SerializeField] private UnityEvent<float, float> onSetPositionY;
 
 
-        private float? _defaultPositionX;
-        private float? _defaultPositionY;
-        private float _prevPositionX;
-        private float _prevPositionY;
+        private float _prevTargetPositionX;
+        private float _prevTargetPositionY;
 
 
-        private bool IsInitialized => _defaultPositionX != null && _defaultPositionY != null;
+        public float? DefaultTargetPositionX { get; private set; }
+        public float? DefaultTargetPositionY { get; private set; }
         
-        private float TargetPositionX => xTarget.position.x;
-        
-        private float TargetPositionY => yTarget.position.y;
         
         private LCHMonoBehaviour LCHMonoBehaviour => LCHMonoBehaviour.GetOrAddComponent(gameObject);
         
@@ -34,35 +30,32 @@ namespace LCHFramework.Components.UI
         private readonly Coroutine[] _onEnable = new Coroutine[2];
         private void OnEnable()
         {
-            if (!IsInitialized)
+            if (DefaultTargetPositionX == null) _onEnable[0] = LCHMonoBehaviour.RestartCoroutine(_onEnable[0], Coroutine(0));
+            if (DefaultTargetPositionY == null) _onEnable[1] = LCHMonoBehaviour.RestartCoroutine(_onEnable[1], Coroutine(1));
+            IEnumerator Coroutine(int index)
             {
-                if (_defaultPositionX == null) _onEnable[0] = LCHMonoBehaviour.RestartCoroutine(_onEnable[0], Coroutine(0));
-                if (_defaultPositionY == null) _onEnable[1] = LCHMonoBehaviour.RestartCoroutine(_onEnable[1], Coroutine(1));
-                IEnumerator Coroutine(int index)
+                switch (index)
                 {
-                    switch (index)
-                    {
-                        case 0:
-                            yield return new WaitWhile(() => xTarget == null);
-                            _defaultPositionX = xTarget.position.x;
-                            break;
-                        case 1:
-                            yield return new WaitWhile(() => yTarget == null);
-                            _defaultPositionY = yTarget.position.y;
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(index), index, null);
-                    }
+                    case 0:
+                        yield return new WaitWhile(() => xTarget == null);
+                        DefaultTargetPositionX = xTarget.position.x;
+                        break;
+                    case 1:
+                        yield return new WaitWhile(() => yTarget == null);
+                        DefaultTargetPositionY = yTarget.position.y;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(index), index, null);
                 }
             }
-            
         }
+        
         protected override bool PositionXIsChanged()
         {
             if (xTarget == null) return false;
             
-            var result = !Mathf.Approximately(_prevPositionX, xTarget.position.x);
-            _prevPositionX = xTarget.position.x;
+            var result = !Mathf.Approximately(_prevTargetPositionX, xTarget.position.x);
+            _prevTargetPositionX = xTarget.position.x;
             return result;
         }
 
@@ -72,8 +65,8 @@ namespace LCHFramework.Components.UI
         {
             if (yTarget == null) return false;
 
-            var result = !Mathf.Approximately(_prevPositionY, yTarget.position.y);
-            _prevPositionY = yTarget.position.y;
+            var result = !Mathf.Approximately(_prevTargetPositionY, yTarget.position.y);
+            _prevTargetPositionY = yTarget.position.y;
             return result;
         }
 
@@ -82,15 +75,15 @@ namespace LCHFramework.Components.UI
         private void SetPosition()
         {
             tracker.Clear();
-            tracker.Add(this, LCHMonoBehaviour.RectTransformOrNull, xTarget != null && yTarget != null ? DrivenTransformProperties.AnchoredPosition 
+            tracker.Add(this, LCHMonoBehaviour.RectTransform, xTarget != null && yTarget != null ? DrivenTransformProperties.AnchoredPosition 
                 : xTarget != null ? DrivenTransformProperties.AnchoredPositionX
                 : yTarget != null ? DrivenTransformProperties.AnchoredPositionY
                 : DrivenTransformProperties.None
                 );
             
-            if (xTarget != null) onSetPositionX?.Invoke(TargetPositionX, _defaultPositionX == null ? 0 : TargetPositionX - (float)_defaultPositionX);
-            if (yTarget != null) onSetPositionY?.Invoke(TargetPositionY, _defaultPositionY == null ? 0 : TargetPositionY - (float)_defaultPositionY);
-            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(LCHMonoBehaviour.RectTransformOrNull);
+            if (xTarget != null) onSetPositionX?.Invoke(xTarget.position.x, DefaultTargetPositionX == null ? 0 : xTarget.position.x - (float)DefaultTargetPositionX);
+            if (yTarget != null) onSetPositionY?.Invoke(yTarget.position.y, DefaultTargetPositionY == null ? 0 : yTarget.position.y - (float)DefaultTargetPositionY);
+            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(LCHMonoBehaviour.RectTransform);
         }
     }
 }

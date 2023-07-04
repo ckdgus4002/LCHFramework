@@ -26,11 +26,11 @@ namespace LCHFramework.Components.UI
         public override void SetLayoutHorizontal()
         {
             tracker.Clear();
-            tracker.Add(this, LCHMonoBehaviour.RectTransformOrNull, DrivenTransformProperties.SizeDeltaX);
+            tracker.Add(this, LCHMonoBehaviour.RectTransform, DrivenTransformProperties.SizeDeltaX);
             
             if (Camera.main == null) return;
-            LCHMonoBehaviour.RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Camera.main.aspect * LCHFrameworkSettings.Instance.canvasSize.y);
-            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(LCHMonoBehaviour.RectTransformOrNull);
+            LCHMonoBehaviour.RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Camera.main.aspect * LCHFrameworkSettings.Instance.canvasSize.y);
+            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(LCHMonoBehaviour.RectTransform);
         }
     }
 }

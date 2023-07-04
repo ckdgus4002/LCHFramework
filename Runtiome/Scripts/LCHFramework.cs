@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using LCHFramework.Data;
 using LCHFramework.Extensions;
 using LCHFramework.Managers;
 using UnityEngine;
@@ -102,8 +103,8 @@ namespace LCHFramework
                )
             {
                 foreach (var rootGameObject in SceneManager.GetActiveScene().GetRootGameObjects())
-                    foreach (var component in rootGameObject.GetComponentsInChildren<Component>())
-                        component.SendMessage("OnScreenSizeChanged");
+                    foreach (var item in rootGameObject.GetComponentsInChildren<IScreenSizeChangeHandler>())
+                        item.OnScreenSizeChanged();
             }
                 
             _prevScreenSize = screenSize;

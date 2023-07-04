@@ -40,22 +40,24 @@ namespace LCHFramework.Components
         
         [NonSerialized] public Matrix4x4 defaultTRS;
         [NonSerialized] public Matrix4x4 defaultLocalTRS;
+        [NonSerialized] public string defaultName;
         
         
-        public bool InitializedTRS { get; private set; }
+        public bool TRSIsInitialized { get; private set; }
+        public bool NameIsInitialized { get; private set; }
         
         
         public float HalfWidth => Width * .5f;
         
         public float HalfHeight => Height * .5f;
         
-        public virtual float Width => RectTransformOrNull != null ? RectTransformOrNull.rect.size.x
+        public virtual float Width => transform is RectTransform ? RectTransform.rect.size.x
                         : TryGetComponent<Renderer>(out var renderer) ? renderer.bounds.size.x
                         : TryGetComponent<Collider>(out var colliderComponent) ? colliderComponent.bounds.size.x
                         : throw new ArgumentOutOfRangeException(null, "Width", null)
                         ;
         
-        public virtual float Height => RectTransformOrNull != null ? RectTransformOrNull.rect.size.y
+        public virtual float Height => transform is RectTransform ? RectTransform.rect.size.y
             : TryGetComponent<Renderer>(out var renderer) ? renderer.bounds.size.y
             : TryGetComponent<Collider>(out var collider) ? collider.bounds.size.y
             : throw new ArgumentOutOfRangeException(null, "Height", null)
@@ -63,19 +65,20 @@ namespace LCHFramework.Components
 
         public Canvas RootCanvas => GetComponentInParent<Canvas>().rootCanvas;
         
-        public RectTransform RectTransformOrNull => _rectTransform == null ? _rectTransform = transform as RectTransform : _rectTransform;
+        public RectTransform RectTransform => _rectTransform == null ? _rectTransform = (RectTransform)transform : _rectTransform;
         private RectTransform _rectTransform;
         
         
         
         protected virtual void Awake()
         {
-            if (RectTransformOrNull == null) InitializeTRS();
+            if (transform is not UnityEngine.RectTransform) InitializeTRS();
+            InitializeName();
         }
 
         protected virtual void Start()
         {
-            if (RectTransformOrNull != null) InitializeTRS();
+            if (transform is RectTransform) InitializeTRS();
         }
 
         protected virtual void OnDisable()
@@ -89,7 +92,13 @@ namespace LCHFramework.Components
         {
             defaultTRS = Matrix4x4.TRS(transform.position, transform.rotation, transform.lossyScale);
             defaultLocalTRS = Matrix4x4.TRS(transform.localPosition, transform.localRotation, transform.localScale);
-            InitializedTRS = true;
+            TRSIsInitialized = true;
+        }
+
+        private void InitializeName()
+        {
+            defaultName = name;
+            NameIsInitialized = true;
         }
         
         public bool TryFindObjectOfType<T>(bool includeInactive, out T result) where T : Object => (result = FindObjectOfType<T>(includeInactive)) != null;
@@ -111,7 +120,7 @@ namespace LCHFramework.Components
  
         public List<T> GetComponentsInSibling<T>(bool includeMe = true)
         {
-            var result = new List<T>();
+            var result = new List<T>(16);
             var parent = transform.parent;
             for (var i = 0; i < parent.childCount; i++)
             {
