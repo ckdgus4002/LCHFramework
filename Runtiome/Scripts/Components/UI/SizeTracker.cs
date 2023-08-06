@@ -18,7 +18,7 @@ namespace LCHFramework.Components.UI
         private float _prevHeight = float.MinValue;
         
         
-        private LCHMonoBehaviour LCHMonoBehaviour => LCHMonoBehaviour.GetOrAddComponent(gameObject);
+        private LCHMonoBehaviour LCHMonoBehaviour => LCHMonoBehaviour.GetOrAddMonoBehaviour(gameObject);
         
         
         

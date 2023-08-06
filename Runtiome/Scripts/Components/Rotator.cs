@@ -221,7 +221,6 @@ namespace LCHFramework.Components
                     var currPosition = transform.InverseTransformPoint(Camera.ScreenToWorldPoint(positions[i]));
                     var prevRotation = Quaternion.LookRotation(new Vector3(prevPosition.x, 0, prevPosition.y));
                     var currRotation = Quaternion.LookRotation(new Vector3(currPosition.x, 0, currPosition.y));
-                    // result += (Quaternion.Inverse(Quaternion.LookRotation(new Vector3(prevPosition.x, 0, prevPosition.y))) * Quaternion.LookRotation(new Vector3(currPosition.x, 0, currPosition.y))).eulerAngles;
                     result += currRotation.eulerAngles - prevRotation.eulerAngles;
                 }
             }
@@ -292,18 +291,15 @@ namespace LCHFramework.Components
                 }
                 else
                 {
-                    // var snappedEulerAnglesDelta = GestureType switch
-                    // {
-                    //     Gesture.Type.UpToDownSwipe => CeilingIfNonZero(TotalVelocity, snap),
-                    //     Gesture.Type.DownToUpSwipe => TruncateIfNonZero(TotalVelocity, snap),
-                    //     Gesture.Type.LeftToRightSwipe => TruncateIfNonZero(TotalVelocity, snap),
-                    //     Gesture.Type.RightToLeftSwipe => CeilingIfNonZero(TotalVelocity, snap),
-                    //     Gesture.Type.ClockwiseRotate => CeilingIfNonZero(TotalVelocity, snap),
-                    //     _ => TruncateIfNonZero(TotalVelocity, snap),
-                    // } - TotalVelocity;
                     var snappedEulerAnglesDelta = RoundIfNonZero(TotalVelocity, snap) - TotalVelocity;
-                    throw new NotImplementedException(/*target.DORotate(snappedEulerAnglesDelta, snapDuration, RotateMode.WorldAxisAdd)*/);
+#if DOTween
+                    target.DORotate(snappedEulerAnglesDelta, snapDuration, RotateMode.WorldAxisAdd);
                     yield return new WaitForSeconds(snapDuration);
+#else
+                    Debug.LogError("NotImplementedException");
+                    yield return new WaitForSeconds(snapDuration);
+                    target.Rotate(snappedEulerAnglesDelta, Space.World);
+#endif
                 }
 
                 onEndDragComplete?.Invoke();

@@ -10,7 +10,7 @@ namespace LCHFramework.Components.UI
         protected DrivenRectTransformTracker tracker;
         
         
-        private LCHMonoBehaviour LCHMonoBehaviour => LCHMonoBehaviour.GetOrAddComponent(gameObject);
+        private LCHMonoBehaviour LCHMonoBehaviour => LCHMonoBehaviour.GetOrAddMonoBehaviour(gameObject);
         
         
         

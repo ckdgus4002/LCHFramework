@@ -1,60 +1,45 @@
-using System;
-using System.Linq;
+using System.Collections.Generic;
 using LCHFramework.Extensions;
-using LCHFramework.Utils;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace LCHFramework.Managers
 {
     public class SequenceManager : MonoBehaviour
     {
-        [SerializeField] private bool playOnEnable = true;
+        [SerializeField] private bool playOnAwake;
+        [SerializeField] private bool playOnEnable;
         [SerializeField] private Sequence firstSequence;
         
         
-        public event Action<Sequence, Sequence> OnCurrentSequenceChanged; // prev, current.
-        
-        
-        
-        public Sequence PreviousSequenceOrNull { get; private set; }
-        public Sequence RightSequenceOrNull { get; private set; }
-         
-         
-        public Sequence CurrentSequence
-        {
-            get => _currentSequence == null ? CurrentSequence = Sequences[0] : _currentSequence;
-            set
-            {
-                if (_currentSequence != value)
-                {
-                    PreviousSequenceOrNull = _currentSequence;
-                    _currentSequence = value;
-                    var _currentSequenceIndex = Sequences.IndexOf(value);
-                    RightSequenceOrNull = 0 <= _currentSequenceIndex && _currentSequenceIndex < Sequences.Length - 1 ? Sequences[_currentSequenceIndex + 1] : null;
-                    _currentSequence.RadioActiveInSiblings(true);
-                    OnCurrentSequenceChanged?.Invoke(PreviousSequenceOrNull, _currentSequence);
-                }
-                
-            }
-        }
-        private Sequence _currentSequence;
-         
-        public Sequence LastSequence => _lastSequence == null ? _lastSequence = Sequences.Last() : _lastSequence;
-        private Sequence _lastSequence;
+        public UnityEvent<Sequence, Sequence> onCurrentSequenceChanged; // prev, current.
 
-        public Sequence[] Sequences => ApplicationUtil.IsEditor || _sequences.IsEmpty() ? _sequences = GetComponentsInChildren<Sequence>(true) : _sequences;
-        private Sequence[] _sequences;
-        
-        
-        
-        private void OnEnable()
+
+        public ReactiveProperties<Sequence> Sequence => _sequence ??= new ReactiveProperties<Sequence>(null, Sequences, (prevSequenceOrNull, currentSequence) =>
         {
-            if (playOnEnable && CurrentSequence != firstSequence) CurrentSequence = firstSequence;
+            currentSequence.RadioActiveInSiblings(true);
+            onCurrentSequenceChanged?.Invoke(prevSequenceOrNull, currentSequence);
+        });
+        private ReactiveProperties<Sequence> _sequence;
+        
+        public IEnumerable<Sequence> Sequences => _sequences.IsEmpty() ? _sequences = GetComponentsInChildren<Sequence>(true) : _sequences;
+        private IEnumerable<Sequence> _sequences;
+        
+        
+        
+        protected virtual void Awake()
+        {
+            if (playOnAwake) Sequence.CurrentValue = firstSequence;
+        }
+        
+        protected virtual void OnEnable()
+        {
+            if (playOnEnable) Sequence.CurrentValue = firstSequence;
         }
 
-        private void Update()
+        protected virtual void Update()
         {
-            if (!CurrentSequence.gameObject.activeInHierarchy && RightSequenceOrNull != null) CurrentSequence = RightSequenceOrNull;
+            if (!Sequence.CurrentValue.gameObject.activeInHierarchy && Sequence.RightValueOrNull != null) Sequence.CurrentValue = Sequence.RightValueOrNull;
         }
     }   
 }

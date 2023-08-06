@@ -9,21 +9,20 @@ namespace LCHFramework.Components
         [SerializeField] private float pixelDragThresholdInch = 0.2f;
         
         
-        
-        private void SetPixelDragThresholdInch(float value)
-        {
-            EventSystem.pixelDragThreshold = Mathf.RoundToInt(Screen.dpi * value);
-            pixelDragThresholdInch = value;
-        }
-
         private EventSystem EventSystem => _eventSystem == null ? _eventSystem = GetComponent<EventSystem>() : _eventSystem;
         private EventSystem _eventSystem;
         
         
         
-        private void Start()
+        protected virtual void Start()
         {
             SetPixelDragThresholdInch(pixelDragThresholdInch);
+        }
+        
+        protected virtual void SetPixelDragThresholdInch(float value)
+        {
+            EventSystem.pixelDragThreshold = Mathf.RoundToInt(Screen.dpi * value);
+            pixelDragThresholdInch = value;
         }
     }
 }

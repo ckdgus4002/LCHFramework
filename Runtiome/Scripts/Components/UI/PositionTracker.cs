@@ -23,7 +23,7 @@ namespace LCHFramework.Components.UI
         public float? DefaultTargetPositionY { get; private set; }
         
         
-        private LCHMonoBehaviour LCHMonoBehaviour => LCHMonoBehaviour.GetOrAddComponent(gameObject);
+        private LCHMonoBehaviour LCHMonoBehaviour => LCHMonoBehaviour.GetOrAddMonoBehaviour(gameObject);
         
         
         

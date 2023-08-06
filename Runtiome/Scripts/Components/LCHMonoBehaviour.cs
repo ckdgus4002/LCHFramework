@@ -24,7 +24,7 @@ namespace LCHFramework.Components
                     _getOrAddComponent.Remove(item.Key);
         }
         
-        public static LCHMonoBehaviour GetOrAddComponent(GameObject gameObject)
+        public static LCHMonoBehaviour GetOrAddMonoBehaviour(GameObject gameObject)
         {
             if (_getOrAddComponent == null)
             {
@@ -45,6 +45,7 @@ namespace LCHFramework.Components
         
         public bool TRSIsInitialized { get; private set; }
         public bool NameIsInitialized { get; private set; }
+        public bool IsDestroyed { get; private set; }
         
         
         public float HalfWidth => Width * .5f;
@@ -86,6 +87,10 @@ namespace LCHFramework.Components
             StopAllCoroutines();   
         }
 
+        protected virtual void OnDestroy()
+        {
+            IsDestroyed = true;
+        }
 
 
         public virtual void InitializeTRS()

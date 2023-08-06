@@ -1,6 +1,6 @@
 namespace LCHFramework.Data
 {
-    public interface IScreenSizeChangeHandler
+    public interface IScreenSizeChanged
     {
         public void OnScreenSizeChanged();
     }

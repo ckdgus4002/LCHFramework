@@ -92,9 +92,6 @@ namespace LCHFramework
         
         
         private Vector2 _prevScreenSize;
-        
-        
-        
         private void Update()
         {
             var screenSize = new Vector2(Screen.width, Screen.height);
@@ -103,7 +100,7 @@ namespace LCHFramework
                )
             {
                 foreach (var rootGameObject in SceneManager.GetActiveScene().GetRootGameObjects())
-                    foreach (var item in rootGameObject.GetComponentsInChildren<IScreenSizeChangeHandler>())
+                    foreach (var item in rootGameObject.GetComponentsInChildren<IScreenSizeChanged>())
                         item.OnScreenSizeChanged();
             }
                 

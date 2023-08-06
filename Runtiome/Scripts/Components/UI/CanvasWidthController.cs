@@ -10,7 +10,7 @@ namespace LCHFramework.Components.UI
         private float _prevAspect = -1;
         
         
-        private LCHMonoBehaviour LCHMonoBehaviour => LCHMonoBehaviour.GetOrAddComponent(gameObject);
+        private LCHMonoBehaviour LCHMonoBehaviour => LCHMonoBehaviour.GetOrAddMonoBehaviour(gameObject);
         
         
         
