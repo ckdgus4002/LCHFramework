@@ -3,10 +3,15 @@ using UnityEngine.EventSystems;
 
 namespace LCHFramework.Components
 {
+    [DisallowMultipleComponent]
     [RequireComponent(typeof(EventSystem))]
     public class PixelDragThresholdController : MonoBehaviour
     {
-        [SerializeField] private float pixelDragThresholdInch = 0.2f;
+        // https://developer.android.com/training/multiscreen/screendensities?hl=ko#TaskUseDP
+        [SerializeField] private int mediumDensityScreenDpi = 160;
+        
+        
+        private int _defaultPixelDragThreshold;
         
         
         private EventSystem EventSystem => _eventSystem == null ? _eventSystem = GetComponent<EventSystem>() : _eventSystem;
@@ -14,15 +19,14 @@ namespace LCHFramework.Components
         
         
         
-        protected virtual void Start()
+        private void Start()
         {
-            SetPixelDragThresholdInch(pixelDragThresholdInch);
+            _defaultPixelDragThreshold = EventSystem.pixelDragThreshold;
+            
+            SetPixelDragThresholdInch(_defaultPixelDragThreshold);
         }
         
-        protected virtual void SetPixelDragThresholdInch(float value)
-        {
-            EventSystem.pixelDragThreshold = Mathf.RoundToInt(Screen.dpi * value);
-            pixelDragThresholdInch = value;
-        }
+        protected virtual void SetPixelDragThresholdInch(int defaultPixelDragThreshold)
+            => EventSystem.pixelDragThreshold = Mathf.Max(defaultPixelDragThreshold,Mathf.RoundToInt(defaultPixelDragThreshold * Screen.dpi / mediumDensityScreenDpi));
     }
 }
