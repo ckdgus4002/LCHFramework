@@ -8,7 +8,7 @@ namespace LCHFramework.Editor.LocalIdentifierFinder
 {
     public class LocalIdentifierFinder : EditorWindow
     {
-        [MenuItem("DevTool/LCHFramework/FindIdentifier")]
+        [MenuItem("Developer Tool/LCHFramework/Find Local Identifier")]
         private static void CreateWindow() => GetWindowWithRect(typeof(LocalIdentifierFinder), new Rect(0, 0, 800, 120));
         
         private static string GetAssetPath(string guid)

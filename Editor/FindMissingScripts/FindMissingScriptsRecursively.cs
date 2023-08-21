@@ -12,7 +12,7 @@ namespace LCHFramework.Editor.FindMissingScriptsRecursively
 
         
         
-        [MenuItem("DevTool/LCHFramework/FindMissingScriptsRecursively")]
+        [MenuItem("Developer Tool/LCHFramework/Find Missing Scripts Recursively")]
         public static void ShowWindow() => GetWindow(typeof(FindMissingScriptsRecursively));
         
         private static void FindInSelectedGameObjects()
