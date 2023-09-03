@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using LCHFramework.Extensions;
 using LCHFramework.Utils;
 using UnityEngine;
@@ -109,6 +110,36 @@ namespace LCHFramework.Components
         public bool TryFindObjectOfType<T>(bool includeInactive, out T result) where T : Object => (result = FindObjectOfType<T>(includeInactive)) != null;
         
         public bool TryFindObjectOfType<T>(out T result) where T : Object => (result = FindObjectOfType<T>()) != null;
+
+        public T GetComponentInParents<T>(bool includeInactive)
+        {
+            T result = default;
+            var parent = transform.parent;
+            while (true)
+            {
+                if ((includeInactive || parent.gameObject.activeSelf) && parent.TryGetComponent(out result)) break;
+
+                if (parent.parent != null) parent = parent.parent;
+                else break;
+            }
+
+            return result;
+        }
+        
+        public T[] GetComponentsInParents<T>(bool includeInactive) where T : class
+        {
+            LinkedList<T> results = new();
+            var parent = transform.parent;
+            while (true)
+            {
+                if ((includeInactive || parent.gameObject.activeSelf) && parent.TryGetComponent<T>(out var result)) results.AddLast(result);
+
+                if (parent.parent != null) parent = parent.parent;
+                else break;
+            }
+
+            return results.ToArray();
+        }
         
         public T GetComponentInSibling<T>(bool includeMe = false)
         {
