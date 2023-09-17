@@ -21,9 +21,9 @@ namespace LCHFramework.Components
         
         [Header("Values")]
         [SerializeField] private Vector3 speed = new Vector3(-200f, -200f, 1);
-        [SerializeField] private BooleanVector3 horizontalSwipeAxis = BooleanVector3.OnlyY;
-        [SerializeField] private BooleanVector3 verticalSwipeAxis = BooleanVector3.OnlyZ;
-        [SerializeField] private BooleanVector3 rotateAxis = BooleanVector3.OnlyZ;
+        [SerializeField] private Vector3Bool horizontalSwipeAxis = Vector3Bool.OnlyY;
+        [SerializeField] private Vector3Bool verticalSwipeAxis = Vector3Bool.OnlyZ;
+        [SerializeField] private Vector3Bool rotateAxis = Vector3Bool.OnlyZ;
         public UnityEvent onBeginDrag;
         public UnityEvent onDrag;
         public UnityEvent onEndDragStart;
@@ -59,7 +59,7 @@ namespace LCHFramework.Components
             get => _gesture.value;
             set
             {
-                rotateButton.SetActive(rotateAxis != BooleanVector3.False && !GestureTypeUtils.IsRotate(value));
+                rotateButton.SetActive(rotateAxis != Vector3Bool.False && !GestureTypeUtils.IsRotate(value));
                 _gesture.value = value;
             }
         }
@@ -118,7 +118,7 @@ namespace LCHFramework.Components
             
             if (Canvas.worldCamera == null) Canvas.worldCamera = Camera.main;
             
-            rotateButton.SetActive(rotateAxis != BooleanVector3.False);
+            rotateButton.SetActive(rotateAxis != Vector3Bool.False);
         }
         
         private void OnEnable() => Initialize();
