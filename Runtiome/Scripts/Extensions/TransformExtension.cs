@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -7,63 +6,42 @@ namespace LCHFramework.Extensions
 {
     public static class TransformExtension
     {
-        public static Transform FindInChildren(this Transform transform, string name)
+        public static List<Transform> GetChildren(this Transform transform)
         {
-            var foundChild = transform.Find(name);
-            if (foundChild == null)
+            var result = new List<Transform>();
+            foreach (Transform child in transform)
             {
-                foreach (Transform child in transform)
-                {
-                    foundChild = child.FindInChildren(name);
-                    if (foundChild != null) break;
-                }
+                result.Add(child);
+                result.AddRange(GetChildren(child));
             }
             
-            return foundChild;
+            return result;
         }
         
-        public static List<T> FindObjectsOfName<T>(this Transform transform, string name) where T : Component
-            => transform.FindObjectsOfName<T>(name, string.Equals);
-
-        public static List<T> FindObjectsOfName<T>(this Transform transform, string name, Func<string, string, bool> namePredicate) where T : Component
-        {
-            var foundChildren = new List<T>(16);
-            foreach (Transform child in transform) foundChildren.AddRange(child._FindObjectsOfName<T>(name, namePredicate));
-
-            return foundChildren;
-        }
-        
-        private static List<T> _FindObjectsOfName<T>(this Transform transform, string name, Func<string, string, bool> namePredicate) where T : Component
-        {
-            var foundChildren = new List<T>(16);
-            if (namePredicate(transform.name, name)) foundChildren.Add(transform.GetComponent<T>());
-            
-            foreach (Transform child in transform) foundChildren.AddRange(child._FindObjectsOfName<T>(name, namePredicate));
-
-            return foundChildren;
-        }
-
-        public static bool ContainsWord(string name, string word)
-            => name.Contains(word);
-
-        public static Transform[] GetChildren(this Transform transform)
-        {
-            var children = new Transform[transform.childCount];
-
-            for (var i = 0; i < transform.childCount; i++) children[i] = transform.GetChild(i);
-
-            return children;
-        }
-
-        public static Transform GetRandomChild(this Transform transform)
-            => transform.GetChildren().Pick();
-
         public static string Path(this Transform transform)
         {
             var path = new StringBuilder(transform.name);
             while ((transform = transform.parent) != null) path = path.Insert(0, $"{transform.name}/");
 
             return path.ToString();
+        }
+        
+        public static int Depth(this Transform transform, Transform parent = null)
+        {
+            var result = 1;
+            do
+            {
+                if (transform.parent != null && transform.parent != parent)
+                {
+                    result++;
+                    transform = transform.parent;
+                }
+                else if (transform.parent == parent)
+                    return result;
+                else
+                    return -1;
+                
+            } while (true);
         }
     }
 }

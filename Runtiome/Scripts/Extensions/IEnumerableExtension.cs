@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 using UnityEngine;
 using Random = System.Random;
 
@@ -9,9 +10,6 @@ namespace LCHFramework.Extensions
     public static class IEnumerableExtension
     {
         private static readonly Random Random = new();
-        public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> enumerable)
-            => enumerable.OrderBy(x => Random.Next());
-
         public static T Pick<T>(this IEnumerable<T> enumerable)
             => enumerable.ElementAt(Random.Next(enumerable.Count()));
 
@@ -58,25 +56,26 @@ namespace LCHFramework.Extensions
 
         public static T ClampedElementAt<T>(this IEnumerable<T> enumerable, int index) 
             => enumerable.ElementAt(Mathf.Clamp(index, 0, enumerable.Count() - 1));
+
+        public static void RadioActive<T>(this IEnumerable<T> components, int index, bool value) where T : Component
+            => components.Select(t => t.gameObject).RadioActive(index, value);
         
-        public static void RadioActive<T>(this IEnumerable<T> enumerable, int index, bool value) where T : Component
+        public static void RadioActive(this IEnumerable<GameObject> gameObjects, int index, bool value) 
         {
             var i = 0;
-            foreach (var item in enumerable)
+            foreach (var item in gameObjects)
             {
                 item.SetActive(i == index ? value : !value);
                 ++i;
             }
         }
+
+        public static void RadioActive<T>(this IEnumerable<T> components, T item, bool value) where T : Component
+            => components.Select(t => t.gameObject).RadioActive(item.gameObject, value);
         
-        public static void RadioActive(this IEnumerable<GameObject> enumerable, int index, bool value) 
+        public static void RadioActive(this IEnumerable<GameObject> gameObjects, GameObject item, bool value) 
         {
-            var i = 0;
-            foreach (var item in enumerable)
-            {
-                item.SetActive(i == index ? value : !value);
-                ++i;
-            }
+            foreach (var t in gameObjects) t.SetActive(t == item ? value : !value);
         }
         
         public static void SetActive<T>(this IEnumerable<T> components, bool value) where T : Component
@@ -87,6 +86,16 @@ namespace LCHFramework.Extensions
         public static void SetActive(this IEnumerable<GameObject> gameObjects, bool value)
         {
             foreach (var gameObject in gameObjects) gameObject.SetActive(value);
+        }
+        
+        public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T, int> action)
+        {
+            var i = 0;
+            foreach (var t in enumerable)
+            {
+                action?.Invoke(t, i);
+                i++;
+            }
         }
     }
 }

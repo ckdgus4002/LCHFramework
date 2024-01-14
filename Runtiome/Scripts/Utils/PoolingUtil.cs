@@ -6,23 +6,22 @@ namespace LCHFramework.Utils
 {
     public static class PoolingUtil
     {
-        public static void Pooling<T>(int itemCount, ref List<T> list, Action actionOnStart, Func<T> createFunc, Action<int, T> actionOnAdd, Action<T> actionOnRemove)
+        public static void Pooling<T>(int itemCount, ref List<T> list, Func<T> createFunc, Action<int, T> actionOnAddOrNull = null, Action<T> actionOnRemoveOrNull = null)
         {
-            actionOnStart?.Invoke();
             for (var i = 0; i < Mathf.Max(itemCount, list.Count);)
             {
                 if (i < itemCount)
                 {
                     var item = list.Count <= i ? createFunc.Invoke() : list[i];
                     if (!list.Contains(item)) list.Add(item);
-                    actionOnAdd?.Invoke(i, item);
+                    actionOnAddOrNull?.Invoke(i, item);
                     ++i;
                 }
                 else
                 {
                     var item = list[i];
-                    list.RemoveAt(i);
-                    actionOnRemove?.Invoke(item);
+                    list.Remove(item);
+                    actionOnRemoveOrNull?.Invoke(item);
                 }
             }
         }

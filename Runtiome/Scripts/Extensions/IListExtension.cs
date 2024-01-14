@@ -16,6 +16,14 @@ namespace LCHFramework.Extensions
                 if (k != n) (list[k], list[n]) = (list[n], list[k]);
             }
         }
-    }
+        
+        public static int LastIndexOf<T>(this IList<T> list, Predicate<T> predicate)
+        {
+            for (var i = list.Count - 1; 0 <= i; i--)
+                if (predicate.Invoke(list[i]))
+                    return i;
 
+            return -1;
+        }
+    }
 }

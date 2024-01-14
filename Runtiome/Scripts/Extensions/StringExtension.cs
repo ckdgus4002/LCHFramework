@@ -1,13 +1,16 @@
+using System.Text;
+
 namespace LCHFramework.Extensions
 {
     public static class StringExtension
     {
-        public static int[] SplitInts(this string str, char separator)
+        public static string ToCapitalize(this string str, char repetition = char.MinValue)
         {
-            var split = str.Split(separator);
-            var array = new int[split.Length];
-            for (var i = 0; i < array.Length; i++) array[i] = int.Parse(split[i]);
-            return array;
+            var stringBuilder = new StringBuilder();
+            for (var i = 0; i < str.Length; i++)
+                stringBuilder.Append(i == 0 || str[i - 1] == repetition ? char.ToUpper(str[i]) : char.ToLower(str[i]));
+
+            return stringBuilder.ToString();
         }
     }
 }

@@ -2,17 +2,23 @@ using System;
 using System.Reflection;
 using UnityEngine;
 
-namespace LCHFramework.Attributes.ShowInInspector
+namespace ShowInInspector
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class ShowInInspectorAttribute : PropertyAttribute
     {
-        public string labelName;
-        public string methodName;
-        public MethodInfo methodInfo;
+        public ShowInInspectorAttribute()
+        {
+        }
 
+        public ShowInInspectorAttribute(string labelName)
+        {
+            this.labelName = labelName;
+        }
         
-
-        public MethodInfo GetMethod(object obj) => obj.GetType().GetMethod(methodName);
+        
+        
+        public string labelName;
+        public MethodInfo methodInfo;
     }   
 }

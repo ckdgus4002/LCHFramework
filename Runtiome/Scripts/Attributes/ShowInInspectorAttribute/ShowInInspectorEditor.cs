@@ -1,9 +1,8 @@
-#if UNITY_EDITOR
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace LCHFramework.Attributes.ShowInInspector
+namespace ShowInInspector
 {
     [CanEditMultipleObjects, CustomEditor(typeof(MonoBehaviour), true)]
     public class ShowInInspectorEditor : Editor
@@ -21,8 +20,7 @@ namespace LCHFramework.Attributes.ShowInInspector
                 foreach (var attribute in methodInfo.GetCustomAttributes(typeof(ShowInInspectorAttribute), true))
                 {
                     var button = (ShowInInspectorAttribute)attribute;
-                    button.labelName = methodInfo.Name.Replace('_', ' ');
-
+                    button.labelName = string.IsNullOrWhiteSpace(button.labelName) ? methodInfo.Name : button.labelName;
                     button.methodInfo = methodInfo;
                     DrawButtonInspector(button, objects);
                 }
@@ -33,12 +31,7 @@ namespace LCHFramework.Attributes.ShowInInspector
         {
             if (!GUILayout.Button(button.labelName)) return;
             
-            var methodInfo = string.IsNullOrWhiteSpace(button.methodName) 
-                    ? button.methodInfo
-                    : button.GetMethod(objects[0])
-                    ;
-            foreach (var o in objects) methodInfo.Invoke(o, null);
+            foreach (var o in objects) button.methodInfo.Invoke(o, null);
         }
     }
 }
-#endif
