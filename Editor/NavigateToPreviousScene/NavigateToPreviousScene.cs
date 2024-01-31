@@ -13,39 +13,25 @@ namespace LCHFramework.Editor.NavigateToPreviousScene
         private const string Key = "previous_scene";
         private const string SeparatorValue = "\n";
         
+        
+        
         [InitializeOnLoadMethod]
-        private static void Initialize()
-        {
-            EditorSceneManager.sceneOpened += SceneOpened;
-        }
+        private static void Initialize() => EditorSceneManager.sceneOpened += SceneOpened;
 
         private static void SceneOpened(Scene scene, OpenSceneMode mode)
         {
-            try
-            {
-                var split = PlayerPrefs.GetString(Key, string.Empty).Split(SeparatorValue);
-                var values = new List<string>(split[..Mathf.Min(split.Length, 5)]);
-                if (values.Contains(scene.path)) values.Remove(scene.path);
-                values.Insert(0, scene.path);
-                PlayerPrefs.SetString(Key, values.Aggregate(string.Empty, (result, value) =>
-                {
-                    if (string.IsNullOrWhiteSpace(result)) return value;
-                    else if (string.IsNullOrWhiteSpace(value)) return result;
-                    else return $"{result}{SeparatorValue}{value}";
-                }));
-                PlayerPrefs.Save();
-            }
-            catch (Exception e)
-            {
-                Debug.Log(e);
-                throw;
-            }
+            var split = PlayerPrefs.GetString(Key, string.Empty).Split(SeparatorValue);
+            var values = new List<string>(split[..Mathf.Min(split.Length, 5)]);
+            if (values.Contains(scene.path)) values.Remove(scene.path);
+            values.Insert(0, scene.path);
+            PlayerPrefs.SetString(Key, values.Aggregate(string.Empty, (result, value) => string.IsNullOrWhiteSpace(result) ? value : string.IsNullOrWhiteSpace(value) ? result : $"{result}{SeparatorValue}{value}"));
+            PlayerPrefs.Save();
         }
 
         [MenuItem("Developer Tool/LCHFramework/Navigate To PreviousScene")]
-        private static void _GoToPreviousScene() => _GoToPreviousScene(1);
+        private static void GoToPreviousScene() => GoToPreviousScene(1);
 
-        private static void _GoToPreviousScene(int index)
+        private static void GoToPreviousScene(int index)
         {
             while (true)
             {
@@ -65,6 +51,7 @@ namespace LCHFramework.Editor.NavigateToPreviousScene
                     continue;
                 }
 
+                EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
                 EditorSceneManager.OpenScene(split[index]);
                 break;
             }
