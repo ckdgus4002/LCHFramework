@@ -13,7 +13,7 @@ namespace LCHFramework.Managers
         
         
         
-        protected virtual void OnValidate() => name = $"{Index} {GetType().Name}";
+        protected virtual void OnValidate() => name = $"{GetType().Name} ({Index})";
 
         protected virtual void OnEnable() => _Show();
 
