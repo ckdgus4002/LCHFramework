@@ -4,33 +4,32 @@ namespace LCHFramework
 {
     public class ReactiveProperty<T> where T : class
     {
-        public ReactiveProperty(T currentValue)
+        public ReactiveProperty(T value = null, Action<T, T> onCurrentValueChanged = null)
         {
-            _currentValue = currentValue;
+            _value = value;
+            OnCurrentValueChanged = onCurrentValueChanged;
         }
         
         
         
-        public Action<T, T> onCurrentValueChanged; // prev, current.
+        public event Action<T, T> OnCurrentValueChanged; // prev, current.
         
         
-        public T PreviousValueOrNull { get; private set; }
+        public T PreviousValue { get; private set; }
         
         
-        public T CurrentValue
+        public T Value
         {
-            get => _currentValue;
+            get => _value;
             set
             {
-                if (ReferenceEquals(_currentValue, value)) return;
+                if (_value == value) return;
                 
-                if (Equals(_currentValue, value)) return;
-                
-                PreviousValueOrNull = _currentValue;
-                _currentValue = value;
-                onCurrentValueChanged?.Invoke(PreviousValueOrNull, _currentValue);
+                PreviousValue = _value;
+                _value = value;
+                OnCurrentValueChanged?.Invoke(PreviousValue, _value);
             }
         }
-        private T _currentValue;
+        private T _value;
     }
 }
