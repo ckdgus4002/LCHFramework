@@ -6,7 +6,7 @@ namespace LCHFramework.Managers
     {
         public static T Instance
         {
-            get => _instance == null ? _instance = FindObjectOfType<T>() : _instance;
+            get => _instance == null ? _instance = FindAnyObjectByType<T>() : _instance;
             protected set => _instance = value;
         }
         private static T _instance;

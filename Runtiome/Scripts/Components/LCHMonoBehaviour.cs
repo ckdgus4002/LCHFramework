@@ -107,9 +107,9 @@ namespace LCHFramework.Components
             NameIsInitialized = true;
         }
         
-        public bool TryFindObjectOfType<T>(bool includeInactive, out T result) where T : Object => (result = FindObjectOfType<T>(includeInactive)) != null;
+        public bool TryFindAnyObjectOfType<T>(FindObjectsInactive findObjectsInactive, out T result) where T : Object => (result = FindAnyObjectByType<T>(findObjectsInactive)) != null;
         
-        public bool TryFindObjectOfType<T>(out T result) where T : Object => (result = FindObjectOfType<T>()) != null;
+        public bool TryFindAnyObjectOfType<T>(out T result) where T : Object => (result = FindAnyObjectByType<T>()) != null;
 
         public T GetComponentInParents<T>(bool includeInactive)
         {
