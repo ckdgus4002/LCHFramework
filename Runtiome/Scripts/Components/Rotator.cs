@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using LCHFramework.Data;
 using LCHFramework.Extensions;
-using LCHFramework.Utils;
+using LCHFramework.Utility;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Debug = UnityEngine.Debug;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
@@ -114,7 +115,7 @@ namespace LCHFramework.Components
         
         private void Awake()
         {
-            UnityEventUtil.AddPersistentListener(onEndDragComplete, Initialize);
+            UnityEventUtility.AddPersistentListener(onEndDragComplete, Initialize);
             
             if (Canvas.worldCamera == null) Canvas.worldCamera = Camera.main;
             
@@ -154,7 +155,7 @@ namespace LCHFramework.Components
         private Coroutine _setType;
         public void SetType(string type)
         {
-            _setType = CoroutineUtil.RestartCoroutine(this, _setType, Coroutine());
+            _setType = CoroutineUtility.RestartCoroutine(this, _setType, Coroutine());
             IEnumerator Coroutine()
             {
                 yield return new WaitWhile(() => GestureType != Gesture.Type.None);
@@ -271,7 +272,7 @@ namespace LCHFramework.Components
         private void _OnEndDrag()
         {
             onEndDragStart?.Invoke();
-            _onEndDrag = CoroutineUtil.RestartCoroutine(this, _onEndDrag, Coroutine());
+            _onEndDrag = CoroutineUtility.RestartCoroutine(this, _onEndDrag, Coroutine());
             IEnumerator Coroutine()
             {
                 if (!UseSnap)

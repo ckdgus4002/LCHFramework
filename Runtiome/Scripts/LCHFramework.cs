@@ -5,19 +5,18 @@ using System.Linq;
 using LCHFramework.Data;
 using LCHFramework.Extensions;
 using LCHFramework.Managers;
+using LCHFramework.Utility;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace LCHFramework
 {
-    public class LCHFramework : Singleton<LCHFramework>
+    public class LCHFramework : MonoSingleton<LCHFramework>
     {
-        [RuntimeInitializeOnLoadMethod]
-        private static void RuntimeInitializeOnLoadMethod()
-        {
-            Instance = new GameObject(nameof(LCHFramework)).AddComponent<LCHFramework>();
-            DontDestroyOnLoad(Instance.gameObject);
-        }
+#if UNITY_EDITOR
+        public const string MenuItemRootPath = "DevTool/LCHFramework";
+#endif
+        public const bool IsSupported = true;
         
         
         
@@ -91,20 +90,28 @@ namespace LCHFramework
         
         
         
-        private Vector2 _prevScreenSize;
+        public Vector2 targetScreenResolution = new(3840, 2160);
+        
+        
+        
+        public Vector2 _prevScreenSize;
+        public float _prevMainCameraAspect;
         private void Update()
         {
             var screenSize = new Vector2(Screen.width, Screen.height);
-            if (!Mathf.Approximately(_prevScreenSize.x, screenSize.x)  
-                || !Mathf.Approximately(_prevScreenSize.y, screenSize.y)
-               )
-            {
+            if (ScreenUtility.IsSizeChanged(_prevScreenSize))
                 foreach (var rootGameObject in SceneManager.GetActiveScene().GetRootGameObjects())
                     foreach (var item in rootGameObject.GetComponentsInChildren<IScreenSizeChanged>())
-                        item.OnScreenSizeChanged();
-            }
-                
+                        item.OnChanged(_prevScreenSize, screenSize);
             _prevScreenSize = screenSize;
+
+
+            var mainCameraAspect = Camera.main.aspect;
+            if (CameraUtility.IsAspectChanged(Camera.main, _prevMainCameraAspect))
+                foreach (var rootGameObject in SceneManager.GetActiveScene().GetRootGameObjects())
+                    foreach (var item in rootGameObject.GetComponentsInChildren<IMainCameraAspectChanged>())
+                        item.OnChanged(_prevMainCameraAspect, mainCameraAspect);
+            _prevMainCameraAspect = mainCameraAspect;
         }
     }
 }

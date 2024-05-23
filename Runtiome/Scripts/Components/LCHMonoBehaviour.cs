@@ -2,50 +2,20 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using LCHFramework.Extensions;
-using LCHFramework.Utils;
+using LCHFramework.Utility;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace LCHFramework.Components
 {
     public class LCHMonoBehaviour : MonoBehaviour
     {
-        [RuntimeInitializeOnLoadMethod]
-        public static void RuntimeInitializeOnLoadMethod()
-        {
-            SceneManager.sceneUnloaded += OnSceneUnloaded;
-        }
-
-        private static void OnSceneUnloaded(Scene scene)
-        {
-            foreach (var item in _getOrAddComponent)
-                if (scene == item.Value.gameObject.scene)
-                    _getOrAddComponent.Remove(item.Key);
-        }
-        
-        public static LCHMonoBehaviour GetOrAddMonoBehaviour(GameObject gameObject)
-        {
-            if (_getOrAddComponent == null)
-            {
-                _getOrAddComponent = new Dictionary<GameObject, LCHMonoBehaviour>();
-                if (!_getOrAddComponent.ContainsKey(gameObject)) _getOrAddComponent.Add(gameObject, gameObject.GetOrAddComponent<LCHMonoBehaviour>());
-            }
-
-            return _getOrAddComponent[gameObject];
-        }
-        private static Dictionary<GameObject, LCHMonoBehaviour> _getOrAddComponent;
-        
-        
-        
         [NonSerialized] public Matrix4x4 defaultTRS;
         [NonSerialized] public Matrix4x4 defaultLocalTRS;
         [NonSerialized] public string defaultName;
         
         
         public bool TRSIsInitialized { get; private set; }
-        public bool NameIsInitialized { get; private set; }
         public bool IsDestroyed { get; private set; }
         
         
@@ -53,29 +23,28 @@ namespace LCHFramework.Components
         
         public float HalfHeight => Height * .5f;
         
-        public virtual float Width => transform is RectTransform ? RectTransform.rect.size.x
+        public virtual float Width => transform is RectTransform ? RectTransformOrNull.rect.size.x
                         : TryGetComponent<Renderer>(out var renderer) ? renderer.bounds.size.x
                         : TryGetComponent<Collider>(out var colliderComponent) ? colliderComponent.bounds.size.x
                         : throw new ArgumentOutOfRangeException(null, "Width", null)
                         ;
         
-        public virtual float Height => transform is RectTransform ? RectTransform.rect.size.y
+        public virtual float Height => transform is RectTransform ? RectTransformOrNull.rect.size.y
             : TryGetComponent<Renderer>(out var renderer) ? renderer.bounds.size.y
             : TryGetComponent<Collider>(out var collider) ? collider.bounds.size.y
             : throw new ArgumentOutOfRangeException(null, "Height", null)
             ;
 
-        public Canvas RootCanvas => GetComponentInParent<Canvas>().rootCanvas;
+        public Canvas RootCanvasOrNull => GetComponentInParent<Canvas>().rootCanvas;
         
-        public RectTransform RectTransform => _rectTransform == null ? _rectTransform = (RectTransform)transform : _rectTransform;
+        public RectTransform RectTransformOrNull => _rectTransform == null ? _rectTransform = (RectTransform)transform : _rectTransform;
         private RectTransform _rectTransform;
         
         
         
         protected virtual void Awake()
         {
-            if (transform is not UnityEngine.RectTransform) InitializeTRS();
-            InitializeName();
+            if (transform is not RectTransform) InitializeTRS();
         }
 
         protected virtual void Start()
@@ -101,12 +70,6 @@ namespace LCHFramework.Components
             TRSIsInitialized = true;
         }
 
-        private void InitializeName()
-        {
-            defaultName = name;
-            NameIsInitialized = true;
-        }
-        
         public bool TryFindAnyObjectOfType<T>(FindObjectsInactive findObjectsInactive, out T result) where T : Object => (result = FindAnyObjectByType<T>(findObjectsInactive)) != null;
         
         public bool TryFindAnyObjectOfType<T>(out T result) where T : Object => (result = FindAnyObjectByType<T>()) != null;
@@ -169,9 +132,9 @@ namespace LCHFramework.Components
         }
 
         public Coroutine RestartCoroutine(Coroutine stopCoroutine, IEnumerator startCoroutine) 
-            => CoroutineUtil.RestartCoroutine(this, stopCoroutine, startCoroutine);
+            => CoroutineUtility.RestartCoroutine(this, stopCoroutine, startCoroutine);
 
         public Coroutine RestartCoroutine(IEnumerable<Coroutine> stopCoroutines, IEnumerator startCoroutine)
-            => CoroutineUtil.RestartCoroutine(this, stopCoroutines, startCoroutine);
+            => CoroutineUtility.RestartCoroutine(this, stopCoroutines, startCoroutine);
     }
 }

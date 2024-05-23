@@ -10,8 +10,7 @@ namespace LCHFramework.Extensions
         public static void SetLayerInChildren(this GameObject gameObject, string layerName)
         {
             gameObject.layer = LayerMask.NameToLayer(layerName);
-            foreach (Transform child in gameObject.transform)
-                child.gameObject.SetLayerInChildren(layerName);
+            foreach (Transform child in gameObject.transform) child.gameObject.SetLayerInChildren(layerName);
         }
     }
 }

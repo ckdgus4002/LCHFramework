@@ -1,7 +1,9 @@
+using UnityEngine;
+
 namespace LCHFramework.Data
 {
     public interface IScreenSizeChanged
     {
-        public void OnScreenSizeChanged();
+        public void OnChanged(Vector2 prev, Vector2 current);
     }
 }

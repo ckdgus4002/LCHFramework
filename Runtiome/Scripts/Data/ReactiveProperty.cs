@@ -1,6 +1,6 @@
 using System;
 
-namespace LCHFramework
+namespace LCHFramework.Data
 {
     public class ReactiveProperty<T> where T : class
     {

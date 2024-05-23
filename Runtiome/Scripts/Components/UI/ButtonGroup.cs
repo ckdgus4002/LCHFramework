@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using LCHFramework.Extensions;
-using LCHFramework.Utils;
+using LCHFramework.Utility;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace LCHFramework
+namespace LCHFramework.Components.UI
 {
     public class ButtonGroup : MonoBehaviour
     {
@@ -28,7 +28,7 @@ namespace LCHFramework
                     foreach (var button in GetComponentsInChildren<Button>(true))
                     {
                         var buttonInfo = new ButtonInfo(this, button);
-                        UnityEventUtil.AddPersistentListener(button.onClick, () => OnButtonClick(button));
+                        UnityEventUtility.AddPersistentListener(button.onClick, () => OnButtonClick(button));
                         _buttonInfos.Add(buttonInfo);
                     }
                 }

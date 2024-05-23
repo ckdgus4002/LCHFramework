@@ -11,7 +11,7 @@ namespace LCHFramework.Components
         [SerializeField] private Vector2 offset;
         
         
-        private Vector2 ColliderSize => Vector2.Scale(CanvasSize + offset, only);
+        private Vector2 ColliderSize => Vector2.Scale(LCHFramework.Instance.targetScreenResolution + offset, only);
         
         private BoxCollider2D Collider => _collider == null ? _collider = GetComponent<BoxCollider2D>() : _collider;
         private BoxCollider2D _collider;

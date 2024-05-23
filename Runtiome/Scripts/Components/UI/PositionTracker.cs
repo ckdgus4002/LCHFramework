@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using LCHFramework.Extensions;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -23,7 +24,8 @@ namespace LCHFramework.Components.UI
         public float? DefaultTargetPositionY { get; private set; }
         
         
-        private LCHMonoBehaviour LCHMonoBehaviour => LCHMonoBehaviour.GetOrAddMonoBehaviour(gameObject);
+        private LCHMonoBehaviour LCHMonoBehaviour => _lchMonoBehaviour == null ? _lchMonoBehaviour = gameObject.GetOrAddComponent<LCHMonoBehaviour>() : _lchMonoBehaviour;
+        private LCHMonoBehaviour _lchMonoBehaviour;
         
         
         
@@ -75,7 +77,7 @@ namespace LCHFramework.Components.UI
         private void SetPosition()
         {
             tracker.Clear();
-            tracker.Add(this, LCHMonoBehaviour.RectTransform, xTarget != null && yTarget != null ? DrivenTransformProperties.AnchoredPosition 
+            tracker.Add(this, LCHMonoBehaviour.RectTransformOrNull, xTarget != null && yTarget != null ? DrivenTransformProperties.AnchoredPosition 
                 : xTarget != null ? DrivenTransformProperties.AnchoredPositionX
                 : yTarget != null ? DrivenTransformProperties.AnchoredPositionY
                 : DrivenTransformProperties.None
@@ -83,7 +85,7 @@ namespace LCHFramework.Components.UI
             
             if (xTarget != null) onSetPositionX?.Invoke(xTarget.position.x, DefaultTargetPositionX == null ? 0 : xTarget.position.x - (float)DefaultTargetPositionX);
             if (yTarget != null) onSetPositionY?.Invoke(yTarget.position.y, DefaultTargetPositionY == null ? 0 : yTarget.position.y - (float)DefaultTargetPositionY);
-            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(LCHMonoBehaviour.RectTransform);
+            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(LCHMonoBehaviour.RectTransformOrNull);
         }
     }
 }

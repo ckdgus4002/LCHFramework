@@ -1,8 +1,9 @@
+using LCHFramework.Data;
 using UnityEngine;
 
 namespace LCHFramework.Components
 {
-    public class ScreenSizeRenderTextureGenerator : RenderTextureGenerator
+    public class ScreenSizeRenderTextureGenerator : RenderTextureGenerator, IScreenSizeChanged
     {
         protected override int GetRenderTextureWidth() => Screen.width;
 
@@ -11,6 +12,6 @@ namespace LCHFramework.Components
         
         
         // LCHFramework Event.
-        private void OnScreenSizeChanged() => Generate();
+        public void OnChanged(Vector2 prev, Vector2 current) => Generate();
     }
 }

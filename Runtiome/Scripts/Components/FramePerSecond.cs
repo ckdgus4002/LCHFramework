@@ -1,5 +1,5 @@
 using LCHFramework.Extensions;
-using LCHFramework.Utils;
+using LCHFramework.Utility;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -15,8 +15,8 @@ namespace LCHFramework.Components
         {
 	        var rect = new Rect(Vector2.zero, new Vector2(Screen.width, Screen.height));
 	        var guiLabel = $"FPS: {(int)Time.deltaTime.Reverse()}"
-	                       + $"\nMem: {FileUtil.ToHumanReadableFileSize(Profiler.GetTotalAllocatedMemoryLong(), 2)}"
-	                       + $"\n!Mem: {FileUtil.ToHumanReadableFileSize(Profiler.GetTotalUnusedReservedMemoryLong(), 2)}"
+	                       + $"\nMem: {FileUtility.ToHumanReadableFileSize(Profiler.GetTotalAllocatedMemoryLong(), 2)}"
+	                       + $"\n!Mem: {FileUtility.ToHumanReadableFileSize(Profiler.GetTotalUnusedReservedMemoryLong(), 2)}"
 	                       ;
 	        var guiStyle = new GUIStyle { fontSize = 50, alignment = TextAnchor.UpperLeft, normal = { textColor = textColor } };
 	        GUI.Label(rect, guiLabel, guiStyle);

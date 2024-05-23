@@ -1,3 +1,4 @@
+using LCHFramework.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,7 +11,8 @@ namespace LCHFramework.Components.UI
         protected DrivenRectTransformTracker tracker;
         
         
-        private LCHMonoBehaviour LCHMonoBehaviour => LCHMonoBehaviour.GetOrAddMonoBehaviour(gameObject);
+        private LCHMonoBehaviour LCHMonoBehaviour => _lchMonoBehaviour == null ? _lchMonoBehaviour = gameObject.GetOrAddComponent<LCHMonoBehaviour>() : _lchMonoBehaviour;
+        private LCHMonoBehaviour _lchMonoBehaviour;
         
         
         
@@ -25,7 +27,7 @@ namespace LCHFramework.Components.UI
         private void OnDisable()
         {
             tracker.Clear();
-            LayoutRebuilder.MarkLayoutForRebuild(LCHMonoBehaviour.RectTransform);
+            LayoutRebuilder.MarkLayoutForRebuild(LCHMonoBehaviour.RectTransformOrNull);
         }
 
 
