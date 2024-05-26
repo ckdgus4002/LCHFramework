@@ -1,7 +1,4 @@
 using UnityEngine;
-#if !UNITY_EDITOR
-using UnityEngine;
-#endif
 
 namespace LCHFramework.Managers
 {

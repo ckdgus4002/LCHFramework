@@ -7,6 +7,9 @@
     "type": "git",
     "url": "git+https://github.com/ckdgus4002/LCHFramework.git"
   },
+  "dependencies": {
+    "com.unity.ugui": "2.0.0"
+  },
   "author": {
     "name": "LCH",
     "email": "lch@lch.kr",
