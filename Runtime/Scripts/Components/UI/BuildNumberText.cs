@@ -1,4 +1,4 @@
-﻿using LCHFramework.Utils;
+﻿using LCHFramework.Utilies;
 using TMPro;
 using UnityEngine;
 #if UNITY_EDITOR

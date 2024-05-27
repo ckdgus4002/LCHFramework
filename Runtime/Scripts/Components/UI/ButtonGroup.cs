@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using LCHFramework.Extensions;
-using LCHFramework.Utility;
+using LCHFramework.Utilies;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;

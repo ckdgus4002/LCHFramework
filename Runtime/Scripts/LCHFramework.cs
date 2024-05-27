@@ -5,7 +5,7 @@ using System.Linq;
 using LCHFramework.Data;
 using LCHFramework.Extensions;
 using LCHFramework.Managers;
-using LCHFramework.Utility;
+using LCHFramework.Utilies;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 

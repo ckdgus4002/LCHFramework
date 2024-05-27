@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace LCHFramework.Utility
+namespace LCHFramework.Utilies
 {
     public static class PoolingUtility
     {

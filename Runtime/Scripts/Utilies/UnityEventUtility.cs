@@ -3,7 +3,7 @@ using UnityEngine.Events;
 using UnityEditor.Events;
 #endif
 
-namespace LCHFramework.Utility
+namespace LCHFramework.Utilies
 {
     public static partial class UnityEventUtility
     {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace LCHFramework
+namespace LCHFramework.Utilies
 {
     public static class CameraUtility
     {

@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace LCHFramework.Utility
+namespace LCHFramework.Utilies
 {
-    public static class SimulatorUtils
+    public static class SimulatorUtility
     {
         public static bool IsSimulator
         {

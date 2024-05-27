@@ -1,6 +1,7 @@
+#if UNITY_EDITOR
 using UnityEditor;
 
-namespace LCHFramework.Utils
+namespace LCHFramework.Utilies
 {
     public static class PlayerSettingsUtility
     {
@@ -30,3 +31,4 @@ namespace LCHFramework.Utils
         }
     }
 }
+#endif

@@ -5,9 +5,9 @@ using UnityEngine;
 using UnityEngine.iOS;
 #endif
 
-namespace LCHFramework.Utility
+namespace LCHFramework.Utilies
 {
-    public static class SystemInfoUtils
+    public static class SystemInfoUtility
     {
         public static int AndroidAPIVersion
         {

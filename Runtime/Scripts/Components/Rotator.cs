@@ -4,14 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using LCHFramework.Data;
 using LCHFramework.Extensions;
-using LCHFramework.Utility;
+using LCHFramework.Utilies;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
-using Vector2 = UnityEngine.Vector2;
-using Vector3 = UnityEngine.Vector3;
 
 namespace LCHFramework.Components
 {

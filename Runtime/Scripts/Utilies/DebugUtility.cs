@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace LCHFramework.Utility
+namespace LCHFramework.Utilies
 {
     public static class Debug
     {

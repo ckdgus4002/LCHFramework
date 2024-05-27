@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace LCHFramework.Utility
+namespace LCHFramework.Utilies
 {
-    public static class TextureUtils
+    public static class TextureUtility
     {
         public static void Copy(Texture2D source, Texture2D destination, Rect sourceRect, Vector2 destinationPosition = default)
         {

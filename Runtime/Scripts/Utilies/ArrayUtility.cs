@@ -1,6 +1,6 @@
 using System;
 
-namespace LCHFramework.Utility
+namespace LCHFramework.Utilies
 {
     public static class ArrayUtils
     {

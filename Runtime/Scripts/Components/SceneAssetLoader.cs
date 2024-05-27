@@ -24,7 +24,13 @@ namespace LCHFramework.Components
         
         
         
-        public override void OnAllocate() => sceneName = scene != null ? scene.name : string.Empty;
+        public override void OnAllocate()
+        {
+#if UNITY_EDITOR
+            sceneName = scene != null ? scene.name : string.Empty;
+#endif
+        }
+        
         
         private AsyncOperation _loadAsync;
         public AsyncOperation LoadAsync()
