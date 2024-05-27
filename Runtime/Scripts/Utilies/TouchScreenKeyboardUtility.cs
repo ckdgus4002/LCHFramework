@@ -4,7 +4,7 @@ namespace LCHFramework.Utilies
 {
     public static class TouchScreenKeyboardUtility
     {
-        public static float GetTouchScreenKeyboardHeight()
+        public static float GetHeight()
         {
             /// TouchScreenKeyboard.area.height는 Android 에서 0을 반환합니다.
             /// https://docs.unity3d.com/ScriptReference/TouchScreenKeyboard-area.html
