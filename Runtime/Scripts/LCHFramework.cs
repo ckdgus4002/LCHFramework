@@ -102,7 +102,7 @@ namespace LCHFramework
             if (ScreenUtility.IsSizeChanged(_prevScreenSize))
                 foreach (var rootGameObject in SceneManager.GetActiveScene().GetRootGameObjects())
                     foreach (var item in rootGameObject.GetComponentsInChildren<IScreenSizeChanged>())
-                        item.OnChanged(_prevScreenSize, screenSize);
+                        item.OnScreenSizeChanged(_prevScreenSize, screenSize);
             _prevScreenSize = screenSize;
 
 
@@ -110,7 +110,7 @@ namespace LCHFramework
             if (CameraUtility.IsAspectChanged(Camera.main, _prevMainCameraAspect))
                 foreach (var rootGameObject in SceneManager.GetActiveScene().GetRootGameObjects())
                     foreach (var item in rootGameObject.GetComponentsInChildren<IMainCameraAspectChanged>())
-                        item.OnChanged(_prevMainCameraAspect, mainCameraAspect);
+                        item.OnMainCameraAspectChanged(_prevMainCameraAspect, mainCameraAspect);
             _prevMainCameraAspect = mainCameraAspect;
         }
     }

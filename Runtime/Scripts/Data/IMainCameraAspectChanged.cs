@@ -2,6 +2,6 @@ namespace LCHFramework.Data
 {
     public interface IMainCameraAspectChanged
     {
-        public void OnChanged(float prev, float current);
+        public void OnMainCameraAspectChanged(float prev, float current);
     }
 }

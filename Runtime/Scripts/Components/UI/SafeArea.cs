@@ -22,7 +22,7 @@ namespace LCHFramework.Components.UI
         
         
         // LCHFramework Event.
-        public void OnChanged(Vector2 prev, Vector2 current)
+        public void OnScreenSizeChanged(Vector2 prev, Vector2 current)
         {
             var reverseScale = CanvasScaler.transform.localScale.x.Reverse();
             var horizontalSize = ((IsPortraitOrientation ? Screen.width : Screen.safeArea.width) - NavigationBarSize) * reverseScale;

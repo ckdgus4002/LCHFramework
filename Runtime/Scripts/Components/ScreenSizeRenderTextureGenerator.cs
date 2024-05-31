@@ -12,6 +12,6 @@ namespace LCHFramework.Components
         
         
         // LCHFramework Event.
-        public void OnChanged(Vector2 prev, Vector2 current) => Generate();
+        public void OnScreenSizeChanged(Vector2 prev, Vector2 current) => Generate();
     }
 }
