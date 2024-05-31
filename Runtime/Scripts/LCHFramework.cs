@@ -8,6 +8,7 @@ using LCHFramework.Managers;
 using LCHFramework.Utilies;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 namespace LCHFramework
 {
@@ -90,28 +91,31 @@ namespace LCHFramework
         
         
         
-        public Vector2 targetScreenResolution = new(3840, 2160);
+        public Vector2 targetScreenResolution = new(2160, 2160);
+        
+        
+        public Vector2 PrevScreenSize { get; private set; }
+        
+        public float PrevMainCameraAspect { get; private set; }
         
         
         
-        public Vector2 _prevScreenSize;
-        public float _prevMainCameraAspect;
         private void Update()
         {
             var screenSize = new Vector2(Screen.width, Screen.height);
-            if (ScreenUtility.IsSizeChanged(_prevScreenSize))
+            if (ScreenUtility.IsSizeChanged(PrevScreenSize))
                 foreach (var rootGameObject in SceneManager.GetActiveScene().GetRootGameObjects())
                     foreach (var item in rootGameObject.GetComponentsInChildren<IScreenSizeChanged>())
-                        item.OnScreenSizeChanged(_prevScreenSize, screenSize);
-            _prevScreenSize = screenSize;
+                        item.OnScreenSizeChanged(PrevScreenSize, screenSize);
+            PrevScreenSize = screenSize;
 
 
             var mainCameraAspect = Camera.main.aspect;
-            if (CameraUtility.IsAspectChanged(Camera.main, _prevMainCameraAspect))
+            if (CameraUtility.IsAspectChanged(Camera.main, PrevMainCameraAspect))
                 foreach (var rootGameObject in SceneManager.GetActiveScene().GetRootGameObjects())
                     foreach (var item in rootGameObject.GetComponentsInChildren<IMainCameraAspectChanged>())
-                        item.OnMainCameraAspectChanged(_prevMainCameraAspect, mainCameraAspect);
-            _prevMainCameraAspect = mainCameraAspect;
+                        item.OnMainCameraAspectChanged(PrevMainCameraAspect, mainCameraAspect);
+            PrevMainCameraAspect = mainCameraAspect;
         }
     }
 }
