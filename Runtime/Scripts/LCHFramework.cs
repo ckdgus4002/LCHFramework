@@ -15,7 +15,7 @@ namespace LCHFramework
     public class LCHFramework : MonoSingleton<LCHFramework>
     {
 #if UNITY_EDITOR
-        public const string MenuItemRootPath = "DevTool/LCHFramework";
+        public const string MenuItemRootPath = "Tools/LCHFramework";
 #endif
         public const bool IsSupported = true;
         

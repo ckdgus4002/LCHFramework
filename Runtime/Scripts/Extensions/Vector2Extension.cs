@@ -1,48 +1,35 @@
-using System;
 using UnityEngine;
 
 namespace LCHFramework.Extensions
 {
     public static class Vector2Extension
     {
-        public static void AbsX(this ref Vector2 v) => v.x = Math.Abs(v.x);
+        public static Vector2 AbsX(this Vector2 v) { v.x = Mathf.Abs(v.x); return v; }
+
+        public static Vector2 AbsY(this Vector2 v) { v.y = Mathf.Abs(v.y); return v; }
+
+        public static Vector2 AddX(this Vector2 v, float add) { v.x += add; return v; }
+
+        public static Vector2 AddY(this Vector2 v, float add) { v.y += add; return v; }
         
-        public static void AbsY(this ref Vector2 v) => v.y = Math.Abs(v.y);
+        public static Vector2 ModX(this Vector2 v, float divisor) { v.x %= divisor; return v; }
 
-        public static void AddX(this ref Vector2 v, float add) => v.AddXY(new Vector2(add, 0));
-
-        public static void AddY(this ref Vector2 v, float add) => v.AddXY(new Vector2(0, add));
-
-        private static void AddXY(this ref Vector2 v, Vector2 add) => v += add;
-
-        public static void NegateX(this ref Vector2 v) => v.x = v.x.Negative();
-
-        public static void NegateY(this ref Vector2 v) => v.y = v.y.Negative();
+        public static Vector2 ModY(this Vector2 v, float divisor) { v.y %= divisor; return v; }
         
-        public static Vector2 NewX(this Vector2 v, float x) => new(x, v.y);
-        
-        public static Vector2 NewY(this Vector2 v, float y) => new(v.x, y);
-        
-        public static Vector3 NewZ(this Vector2 v, float z) => new(v.x, v.y, z);
+        public static Vector2 NegateX(this Vector2 v) { v.x = v.x.Negate(); return v; }
 
-        public static void RemainderX(this ref Vector2 v, float divisor) => v.x %= divisor;
+        public static Vector2 NegateY(this Vector2 v) { v.y = v.y.Negate(); return v; }
+        
+        public static Vector2 ReverseX(this Vector2 v) { v.x = v.x.Reverse(); return v; }
 
-        public static void RemainderY(this ref Vector2 v, float divisor) => v.y %= divisor;
+        public static Vector2 ReverseY(this Vector2 v) { v.y = v.y.Reverse(); return v; }
 
-        public static void RemainderXY(this ref Vector2 v, float divisorXY) => v.RemainderXY(new Vector2(divisorXY, divisorXY));
+        public static Vector2 ScaleX(this Vector2 v, float scale) { v.x *= scale; return v; }
+        
+        public static Vector2 ScaleY(this Vector2 v, float scale) { v.y *= scale; return v; }
+        
+        public static Vector2 SetX(this Vector2 v, float x) { v.x = x; return v; }
 
-        public static void RemainderXY(this ref Vector2 v, Vector2 divisor)
-        {
-            v.x %= divisor.x;
-            v.y %= divisor.y;
-        }
-        
-        public static void ReverseX(this ref Vector2 v) => v.x = v.x.Reverse();
-        
-        public static void ReverseY(this ref Vector2 v) => v.y = v.y.Reverse();
-        
-        public static void SetX(this ref Vector2 v, float x) => v.x = x;
-        
-        public static void SetY(this ref Vector2 v, float y) => v.y = y;
+        public static Vector2 SetY(this Vector2 v, float y) { v.y = y; return v; }
     }
 }

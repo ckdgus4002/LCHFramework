@@ -6,13 +6,13 @@ namespace LCHFramework.Extensions
 {
     public static class TransformExtension
     {
-        public static List<Transform> GetChildren(this Transform transform)
+        public static List<Transform> GetChildren(this Transform transform, bool recursive = false)
         {
             var result = new List<Transform>();
             foreach (Transform child in transform)
             {
                 result.Add(child);
-                result.AddRange(GetChildren(child));
+                if (recursive) result.AddRange(GetChildren(child, true));
             }
             
             return result;
