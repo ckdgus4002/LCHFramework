@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace LCHFramework.Utilies
+namespace LCHFramework.Utilities
 {
     public static class CoroutineUtility
     {

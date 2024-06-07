@@ -1,5 +1,5 @@
 using LCHFramework.Extensions;
-using LCHFramework.Utilies;
+using LCHFramework.Utilities;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;

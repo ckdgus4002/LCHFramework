@@ -1,7 +1,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace LCHFramework.Utilies
+namespace LCHFramework.Utilities
 {
     public static class RandomUtility
     {

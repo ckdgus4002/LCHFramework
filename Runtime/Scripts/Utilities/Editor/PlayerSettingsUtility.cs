@@ -1,7 +1,7 @@
 #if UNITY_EDITOR
 using UnityEditor;
 
-namespace LCHFramework.Utilies
+namespace LCHFramework.Utilities
 {
     public static class PlayerSettingsUtility
     {

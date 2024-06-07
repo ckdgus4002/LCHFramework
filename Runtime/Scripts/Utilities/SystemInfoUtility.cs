@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.iOS;
 #endif
 
-namespace LCHFramework.Utilies
+namespace LCHFramework.Utilities
 {
     public static class SystemInfoUtility
     {
@@ -13,9 +13,8 @@ namespace LCHFramework.Utilies
         {
             get
             {
-                if (_androidAPIVersion == null)
+                if (_androidAPIVersion < 1)
                 {
-                    _androidAPIVersion = -1;
                     if (Application.platform == RuntimePlatform.Android)
                     {
                         var result = SystemInfo.operatingSystem;
@@ -32,13 +31,19 @@ namespace LCHFramework.Utilies
                         }
                     }
                 }
+
+                if (_androidAPIVersion < 1)
+                {
+                    using var version = new AndroidJavaClass("android.os.Build$VERSION");
+                    _androidAPIVersion = version.GetStatic<int>("SDK_INT");
+                }
                 
-                return (int)_androidAPIVersion;
+                return _androidAPIVersion;
             }
         }
-        private static int? _androidAPIVersion;
+        private static int _androidAPIVersion = -1;
         
-        public static Version IOSVersion
+        public static Version IOSVersionOrNull
         {
             get
             {

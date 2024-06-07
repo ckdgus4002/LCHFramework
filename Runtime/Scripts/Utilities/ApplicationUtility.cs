@@ -1,4 +1,4 @@
-namespace LCHFramework.Utilies
+namespace LCHFramework.Utilities
 {
     public static class ApplicationUtility
     {

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace LCHFramework.Utilies
+namespace LCHFramework.Utilities
 {
     public static class TextureUtility
     {

@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace LCHFramework.Utilies
+namespace LCHFramework.Utilities
 {
     public static class FileUtility
     {
