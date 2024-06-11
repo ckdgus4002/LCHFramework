@@ -38,16 +38,17 @@ namespace LCHFramework.Extensions
         }
         
         public static bool IsEmpty<T>(this IEnumerable<T> enumerable)
-        {
-            return enumerable == null || enumerable.All(item => EqualityComparer<T>.Default.Equals(item, default));
-        }
+            => enumerable == null || enumerable.All(item => EqualityComparer<T>.Default.Equals(item, default));
 
-        public static int IndexOf<T>(this IEnumerable<T> enumerable, T value)
+        public static int IndexOf<T>(this IEnumerable<T> enumerable, T value) 
+            => IndexOf(enumerable, t => EqualityComparer<T>.Default.Equals(t, value));
+        
+        public static int IndexOf<T>(this IEnumerable<T> enumerable, Func<T, bool> func)
         {
             var result = 0;
             foreach (var item in enumerable)
             {
-                if (!EqualityComparer<T>.Default.Equals(item, value)) result++;
+                if (!func.Invoke(item)) result++;
                 else return result;
             }
             return -1;
