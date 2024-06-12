@@ -10,8 +10,6 @@ namespace LCHFramework.Managers
             {
                 if (_instance == null) _instance = FindAnyObjectByType<T>();
                 
-                if (_instance == null) _instance = new GameObject(nameof(T)).AddComponent<T>();
-                
                 return _instance;
             }
             private set => _instance = value;
@@ -26,7 +24,7 @@ namespace LCHFramework.Managers
         
         protected virtual void Awake()
         {
-            if (Instance != null && Instance != this) DestroyInstance();
+            if (Instance != null && Instance != this) Destroy(Instance);
 
             Instance = (T)(Component)this;
             
@@ -37,9 +35,5 @@ namespace LCHFramework.Managers
         {
             if (Instance == this) Instance = null;
         }
-
-
-
-        public virtual void DestroyInstance() => Destroy(Instance.gameObject);
     }
 }
