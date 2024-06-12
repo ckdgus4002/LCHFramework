@@ -1,3 +1,4 @@
+using System.Linq;
 using LCHFramework.Extensions;
 using UnityEngine;
 using Debug = LCHFramework.Utilities.Debug;
@@ -12,10 +13,12 @@ namespace LCHFramework.Managers
         public static int Choose()
         {
             var shaderLevel = SystemInfo.graphicsShaderLevel;
-            var fillrate = SystemInfo.graphicsPixelFillrate;
+            int fillrate;
             var vram = SystemInfo.graphicsMemorySize;
             var cpus = SystemInfo.processorCount;
-            if (fillrate < 0)
+#if !UNITY_5_3_OR_NEWER
+            if ((fillrate = SystemInfo.graphicsPixelFillrate) < 0)
+#endif
             {
                 if (shaderLevel < 10)
                     fillrate = 1000;

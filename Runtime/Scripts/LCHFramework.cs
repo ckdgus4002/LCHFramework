@@ -88,9 +88,9 @@ namespace LCHFramework
                 } while (loop);
             }
         }
-        
-        
-        
+
+
+
         public Vector2 targetScreenResolution = new(2160, 2160);
         
         
