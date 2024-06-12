@@ -1,4 +1,5 @@
 ﻿using LCHFramework.Data;
+using LCHFramework.Extensions;
 using UnityEngine;
 
 namespace LCHFramework.Components.UI
@@ -9,8 +10,9 @@ namespace LCHFramework.Components.UI
         public void OnScreenSizeChanged(Vector2 prev, Vector2 current)
         {
             Canvas.ForceUpdateCanvases();
-            RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Screen.safeArea.width * RootCanvasOrNull.scaleFactor);
-            RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Screen.safeArea.height * RootCanvasOrNull.scaleFactor);
+            var scaleFactor = RootCanvasOrNull.scaleFactor.Reverse();
+            RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Screen.safeArea.width * scaleFactor);
+            RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Screen.safeArea.height * scaleFactor);
         }
     }
 }
