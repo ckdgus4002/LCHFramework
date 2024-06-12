@@ -18,7 +18,7 @@ namespace LCHFramework.Managers
         
         
         
-        protected virtual bool IsDontDestroyOnLoad { get; }
+        [SerializeField] private bool isDontDestroyOnLoad;
         
         
         
@@ -28,7 +28,7 @@ namespace LCHFramework.Managers
 
             Instance = (T)(Component)this;
             
-            if (IsDontDestroyOnLoad) DontDestroyOnLoad(gameObject);
+            if (isDontDestroyOnLoad) DontDestroyOnLoad(gameObject);
         }
         
         protected virtual void OnDestroy()
