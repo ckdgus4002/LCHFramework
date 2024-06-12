@@ -6,14 +6,9 @@ namespace LCHFramework.Components.UI
 {
     [ExecuteAlways]
     [RequireComponent(typeof(RectTransform))]
-    public abstract class LayoutSelfController : MonoBehaviour, ILayoutSelfController
+    public abstract class LayoutSelfController : LCHMonoBehaviour, ILayoutSelfController
     {
         protected DrivenRectTransformTracker tracker;
-        
-        
-        private LCHMonoBehaviour LCHMonoBehaviour => _lchMonoBehaviour == null ? _lchMonoBehaviour = gameObject.GetOrAddComponent<LCHMonoBehaviour>() : _lchMonoBehaviour;
-        private LCHMonoBehaviour _lchMonoBehaviour;
-        
         
         
         private void Update()
@@ -27,7 +22,7 @@ namespace LCHFramework.Components.UI
         private void OnDisable()
         {
             tracker.Clear();
-            LayoutRebuilder.MarkLayoutForRebuild(LCHMonoBehaviour.RectTransformOrNull);
+            LayoutRebuilder.MarkLayoutForRebuild(RectTransformOrNull);
         }
 
 

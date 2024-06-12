@@ -8,7 +8,6 @@ using LCHFramework.Managers;
 using LCHFramework.Utilities;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 
 namespace LCHFramework
 {
@@ -100,7 +99,7 @@ namespace LCHFramework
         
         
         
-        private void Update()
+        protected virtual void Update()
         {
             var screenSize = new Vector2(Screen.width, Screen.height);
             if (ScreenUtility.IsSizeChanged(PrevScreenSize))

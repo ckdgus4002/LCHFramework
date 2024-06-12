@@ -19,10 +19,6 @@ namespace LCHFramework.Components.UI
         private float _prevHeight = float.MinValue;
         
         
-        private LCHMonoBehaviour LCHMonoBehaviour => _lchMonoBehaviour == null ? _lchMonoBehaviour = gameObject.GetOrAddComponent<LCHMonoBehaviour>() : _lchMonoBehaviour;
-        private LCHMonoBehaviour _lchMonoBehaviour;
-        
-        
         
         protected override bool HorizontalIsChanged()
         {
@@ -49,15 +45,15 @@ namespace LCHFramework.Components.UI
         private void SetLayout()
         {
             tracker.Clear();
-            tracker.Add(this, LCHMonoBehaviour.RectTransformOrNull, widthTarget != null && heightTarget != null ? DrivenTransformProperties.SizeDelta
+            tracker.Add(this, RectTransformOrNull, widthTarget != null && heightTarget != null ? DrivenTransformProperties.SizeDelta
                 : widthTarget != null ? DrivenTransformProperties.SizeDeltaX
                 : heightTarget != null ? DrivenTransformProperties.SizeDeltaY
                 : DrivenTransformProperties.None
             );
             
-            if (widthTarget != null) LCHMonoBehaviour.RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, leftPadding + widthTarget.rect.size.x + rightPadding);
-            if (heightTarget != null) LCHMonoBehaviour.RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, topPadding + heightTarget.rect.size.y + bottomPadding);
-            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(LCHMonoBehaviour.RectTransformOrNull);
+            if (widthTarget != null) RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, leftPadding + widthTarget.rect.size.x + rightPadding);
+            if (heightTarget != null) RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, topPadding + heightTarget.rect.size.y + bottomPadding);
+            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransformOrNull);
         }
     }
 }
