@@ -1,5 +1,3 @@
-using System;
-using LCHFramework.Utilities;
 using UnityEngine;
 
 namespace LCHFramework.Managers
@@ -12,8 +10,6 @@ namespace LCHFramework.Managers
             {
                 if (_instance == null) _instance = FindAnyObjectByType<T>();
 
-                if (_instance == null) throw new NullReferenceException($"Can't find any objects by type<{nameof(T)} in {string.Concat(SceneManagerUtility.GetAllScenes(), ", ")} scene.");
-                
                 return _instance;
             }
             private set => _instance = value;
