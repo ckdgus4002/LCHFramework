@@ -35,7 +35,7 @@ namespace LCHFramework.Components
             : throw new ArgumentOutOfRangeException(null, "Height", null)
             ;
 
-        public Canvas RootCanvasOrNull => GetComponentInParent<Canvas>().rootCanvas;
+        public Canvas RootCanvasOrNull => !TryGetComponentInParent<Canvas>(out var result) ? null : result.rootCanvas;
         
         public RectTransform RectTransformOrNull => _rectTransform == null ? _rectTransform = (RectTransform)transform : _rectTransform;
         private RectTransform _rectTransform;
@@ -74,20 +74,7 @@ namespace LCHFramework.Components
         
         public bool TryFindAnyObjectOfType<T>(out T result) where T : Object => (result = FindAnyObjectByType<T>()) != null;
 
-        public T GetComponentInParents<T>(bool includeInactive)
-        {
-            T result = default;
-            var parent = transform.parent;
-            while (true)
-            {
-                if ((includeInactive || parent.gameObject.activeSelf) && parent.TryGetComponent(out result)) break;
-
-                if (parent.parent != null) parent = parent.parent;
-                else break;
-            }
-
-            return result;
-        }
+        public bool TryGetComponentInParent<T>(out T result) => (result = GetComponentInParent<T>()) != null;
         
         public T[] GetComponentsInParents<T>(bool includeInactive) where T : class
         {

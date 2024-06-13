@@ -72,8 +72,8 @@ namespace LCHFramework.Components.UI
 
         private void SetPosition()
         {
-            tracker.Clear();
-            tracker.Add(this, RectTransformOrNull, xTarget != null && yTarget != null ? DrivenTransformProperties.AnchoredPosition 
+            Tracker.Clear();
+            Tracker.Add(this, RectTransformOrNull, xTarget != null && yTarget != null ? DrivenTransformProperties.AnchoredPosition 
                 : xTarget != null ? DrivenTransformProperties.AnchoredPositionX
                 : yTarget != null ? DrivenTransformProperties.AnchoredPositionY
                 : DrivenTransformProperties.None

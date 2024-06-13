@@ -1,32 +1,22 @@
-using LCHFramework.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace LCHFramework.Components.UI
 {
     [ExecuteAlways]
-    [RequireComponent(typeof(RectTransform))]
-    public abstract class LayoutSelfController : LCHMonoBehaviour, ILayoutSelfController
+    public abstract class LayoutSelfController : DrivenRectTransformBehaviour, ILayoutSelfController
     {
-        protected DrivenRectTransformTracker tracker;
-        
-        
         private void Update()
         {
             if (PositionXIsChanged()) SetPositionX();
             if (PositionYIsChanged()) SetPositionY();
+            if (PositionZIsChanged()) SetPositionZ();
             if (HorizontalIsChanged()) SetLayoutHorizontal();
             if (VerticalIsChanged()) SetLayoutVertical();
         }
-
-        private void OnDisable()
-        {
-            tracker.Clear();
-            LayoutRebuilder.MarkLayoutForRebuild(RectTransformOrNull);
-        }
-
-
-
+        
+        
+        
         protected virtual bool PositionXIsChanged() => false;
 
         protected virtual void SetPositionX()
@@ -36,6 +26,12 @@ namespace LCHFramework.Components.UI
         protected virtual bool PositionYIsChanged() => false;
 
         protected virtual void SetPositionY()
+        {
+        }
+        
+        protected virtual bool PositionZIsChanged() => false;
+
+        protected virtual void SetPositionZ()
         {
         }
         

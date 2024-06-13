@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace LCHFramework.Utilities
 {
     public static class ApplicationUtility
@@ -6,8 +8,9 @@ namespace LCHFramework.Utilities
         {
             get
             {
-                // return UnityEngine.Application.isEditor;
-#if UNITY_EDITOR
+#if UNITY_2023_2_OR_NEWER
+                return Application.isEditor;
+#elif UNITY_EDITOR 
                 return true;
 #else
                 return false;

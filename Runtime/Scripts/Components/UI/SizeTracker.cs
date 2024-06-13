@@ -44,8 +44,8 @@ namespace LCHFramework.Components.UI
 
         private void SetLayout()
         {
-            tracker.Clear();
-            tracker.Add(this, RectTransformOrNull, widthTarget != null && heightTarget != null ? DrivenTransformProperties.SizeDelta
+            Tracker.Clear();
+            Tracker.Add(this, RectTransformOrNull, widthTarget != null && heightTarget != null ? DrivenTransformProperties.SizeDelta
                 : widthTarget != null ? DrivenTransformProperties.SizeDeltaX
                 : heightTarget != null ? DrivenTransformProperties.SizeDeltaY
                 : DrivenTransformProperties.None

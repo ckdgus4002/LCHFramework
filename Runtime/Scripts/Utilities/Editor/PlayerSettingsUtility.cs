@@ -5,11 +5,7 @@ namespace LCHFramework.Utilities
 {
     public static class PlayerSettingsUtility
     {
-        public static bool TryGetBuildNumber(out string result)
-        {
-            result = GetBuildNumber();
-            return result != string.Empty;
-        }
+        public static bool TryGetBuildNumber(out string result) => (result = GetBuildNumber()) != string.Empty;
 
         public static string GetBuildNumber()
         {
