@@ -1,30 +1,12 @@
 ﻿using System;
 using LCHFramework.Extensions;
+using LCHFramework.Managers;
 using UnityEngine;
 
 namespace LCHFramework.Components.UI
 {
     public class SafeArea : DrivenRectTransformBehaviour
     {
-        protected int CurrentDeviceOrientationIndex { get; private set; } = -1;
-        protected int PrevDeviceOrientationIndex { get; private set; } = -1;
-        
-        
-        
-        protected override void Start()
-        {
-            base.Start();
-
-            CurrentDeviceOrientationIndex = (int)Input.deviceOrientation;
-        }
-        
-        protected virtual void Update()
-        {
-            if (CurrentDeviceOrientationIndex == (int)Input.deviceOrientation) return;
-            
-            SetOrientationIndexes((int)Input.deviceOrientation);
-        }
-        
         private void OnRectTransformDimensionsChange()
         {
             Tracker.Clear();
@@ -32,15 +14,9 @@ namespace LCHFramework.Components.UI
             SetSize();
             SetAnchoredPosition();
         }
-
-
-
-        protected void SetOrientationIndexes(int currentDeviceOrientationIndex)
-        {
-            PrevDeviceOrientationIndex = CurrentDeviceOrientationIndex;
-            CurrentDeviceOrientationIndex = currentDeviceOrientationIndex;
-        }
-
+        
+        
+        
         private void SetSize()
         {
             if (RootCanvasOrNull == null) return;
@@ -59,7 +35,7 @@ namespace LCHFramework.Components.UI
         
         protected virtual Vector2 GetAnchoredPosition()
         {
-            var orientationIndex = GetOrientationIndex();
+            var orientationIndex = OrientationManager.Instance.GetScreenOrientationIndex();
             if (orientationIndex is < 1 or > 4) return Vector2.zero;
 
             var scaleFactor = Mathf.Min(Screen.width / Screen.safeArea.width, Screen.height / Screen.safeArea.height);
@@ -73,10 +49,5 @@ namespace LCHFramework.Components.UI
                 _ => throw new ArgumentOutOfRangeException(nameof(orientationIndex), orientationIndex, null)
             };
         }
-        
-        protected virtual int GetOrientationIndex() => Screen.orientation < ScreenOrientation.AutoRotation ? (int)Screen.orientation 
-            : DeviceOrientation.Portrait <= Input.deviceOrientation && Input.deviceOrientation <= DeviceOrientation.LandscapeRight ? (int)Input.deviceOrientation 
-            : DeviceOrientation.FaceUp <= Input.deviceOrientation && Input.deviceOrientation <= DeviceOrientation.FaceDown ? PrevDeviceOrientationIndex 
-            : -1;
     }
 }
