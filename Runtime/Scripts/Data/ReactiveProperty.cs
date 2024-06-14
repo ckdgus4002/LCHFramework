@@ -12,10 +12,10 @@ namespace LCHFramework.Data
         
         
         
-        public event Action<T, T> OnValueChanged; // prevValue, value.
+        public event Action<T, T> OnValueChanged; // prevOrNull, current.
         
         
-        public T PrevValue { get; private set; }
+        public T PrevValueOrNull { get; private set; }
         
         
         public T Value
@@ -25,9 +25,9 @@ namespace LCHFramework.Data
             {
                 if (_value == value) return;
                 
-                PrevValue = _value;
+                PrevValueOrNull = _value;
                 _value = value;
-                OnValueChanged?.Invoke(PrevValue, _value);
+                OnValueChanged?.Invoke(PrevValueOrNull, _value);
             }
         }
         private T _value;

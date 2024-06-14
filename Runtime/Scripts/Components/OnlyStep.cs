@@ -30,17 +30,17 @@ namespace LCHFramework.Components
         
         
         
-        private void OnCurrentStepChanged(T prev, T current)
+        private void OnCurrentStepChanged(T prevOrNull, T current)
         {
             if (steps.Contains(current))
             {
                 Show();
-                onShow?.Invoke(prev, current);
+                onShow?.Invoke(prevOrNull, current);
             }
             else
             {
                 Hide();
-                onHide?.Invoke(prev, current);
+                onHide?.Invoke(prevOrNull, current);
             }
         }
 
