@@ -7,22 +7,26 @@ using UnityEngine;
 
 namespace LCHFramework.Managers
 {
-    public class StepManager : StepManager<Step>
+    public class StepManager : StepManager<StepManager<Step>, Step>
+    {
+    }
+
+    public class StepManager<T> : StepManager<StepManager<T>, T> where T : Step
     {
     }
     
-    public class StepManager<T> : MonoSingleton<StepManager<T>> where T : Step
+    public class StepManager<T1, T2> : MonoSingleton<T1> where T1 : StepManager<T2> where T2 : Step 
     {
         [SerializeField] private bool playOnAwake;
         [SerializeField] private bool loop;
-        [SerializeField] private T firstStep;
+        [SerializeField] protected T2 firstStep;
         
         
-        public ReactiveProperty<T> CurrentStep => _currentStep ??= new ReactiveProperty<T>(null, OnCurrentStepChanged);
-        private ReactiveProperty<T> _currentStep;
+        public ReactiveProperty<T2> CurrentStep => _currentStep ??= new ReactiveProperty<T2>(onValueChanged: OnCurrentStepChanged);
+        private ReactiveProperty<T2> _currentStep;
         
-        public IReadOnlyList<T> Steps => _steps.IsEmpty() ? _steps = GetComponentsInChildren<T>(true).ToArray() : _steps;
-        private IReadOnlyList<T> _steps;
+        public IReadOnlyList<T2> Steps => _steps.IsEmpty() ? _steps = GetComponentsInChildren<T2>(true).ToArray() : _steps;
+        private IReadOnlyList<T2> _steps;
         
         
         
@@ -35,18 +39,12 @@ namespace LCHFramework.Managers
         
         
         
-        protected virtual void OnCurrentStepChanged(T prevStep, T currentStep)
+        protected virtual void OnCurrentStepChanged(T2 prevStep, T2 currentStep)
         {
             foreach (var t in Steps.Where(t => t.IsShown)) t.Hide();
             currentStep.Show();
         }
 
-        [ShowInInspector]
-        public void ReturnCurrentStep() => CurrentStep.Value
-            = !loop && CurrentStep.Value.Index == 0 ? Steps[0]
-            : loop && CurrentStep.Value.Index == 0 ? Steps[^1]
-            : Steps[CurrentStep.Value.Index - 1];
-        
         [ShowInInspector]
         public void PassCurrentStep() => CurrentStep.Value
             = CurrentStep.Value.Index < Steps.Count - 1 ? Steps[CurrentStep.Value.Index + 1] 
