@@ -6,11 +6,7 @@ using UnityEngine;
 
 namespace LCHFramework.Managers
 {
-    public class StepManager : StepManager<Step>
-    {
-    }
-
-    public class StepManager<T> : StepManager<StepManager<T>, T> where T : Step
+    public class StepManager : StepManager<StepManager, Step>
     {
     }
     

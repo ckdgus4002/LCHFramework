@@ -11,8 +11,8 @@ namespace LCHFramework.Managers
 
         public virtual bool IsShown => gameObject.activeSelf;
 
-        protected StepManager<Step> StepManager => _stepManager == null ? _stepManager = GetComponentInParent<StepManager<Step>>() : _stepManager;
-        private StepManager<Step> _stepManager;
+        protected StepManager<Component, Step> StepManager => _stepManager == null ? _stepManager = GetComponentInParent<StepManager<Component, Step>>() : _stepManager;
+        private StepManager<Component, Step> _stepManager;
         
         
         
