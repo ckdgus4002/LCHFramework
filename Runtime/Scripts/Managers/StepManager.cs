@@ -15,7 +15,7 @@ namespace LCHFramework.Managers
     {
     }
     
-    public class StepManager<T1, T2> : MonoSingleton<T1> where T1 : StepManager<T2> where T2 : Step 
+    public class StepManager<T1, T2> : MonoSingleton<T1> where T1 : Component where T2 : Step 
     {
         [SerializeField] private bool playOnAwake;
         [SerializeField] private bool loop;
