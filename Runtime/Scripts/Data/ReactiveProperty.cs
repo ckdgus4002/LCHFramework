@@ -2,6 +2,7 @@ using System;
 
 namespace LCHFramework.Data
 {
+    [Serializable]
     public class ReactiveProperty<T> where T : class
     {
         public ReactiveProperty(T value = null, Action<T, T> onValueChanged = null)
