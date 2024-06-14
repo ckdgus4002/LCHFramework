@@ -12,6 +12,8 @@ namespace LCHFramework.Managers
         
         public T[] Steps { get; }
 
+        public void ShowStep(T step);
+        
         public void PassCurrentStep();
     }
     
@@ -45,7 +47,7 @@ namespace LCHFramework.Managers
 
         protected virtual void OnCurrentStepChanged(T2 prevStepOrNull, T2 currentStep) => ShowStep(currentStep);
 
-        private void ShowStep(T2 step)
+        public void ShowStep(T2 step)
         {
             foreach (var t in Steps.Where(t => t.IsShown)) t.Hide();
             step.Show();
