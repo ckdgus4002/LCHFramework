@@ -7,18 +7,22 @@ using UnityEngine;
 
 namespace LCHFramework.Managers
 {
-    public class StepManager : MonoSingleton<StepManager>
+    public class StepManager : StepManager<Step>
+    {
+    }
+    
+    public class StepManager<T> : MonoSingleton<StepManager<T>> where T : Step
     {
         [SerializeField] private bool playOnAwake;
         [SerializeField] private bool loop;
-        [SerializeField] private Step firstStep;
+        [SerializeField] private T firstStep;
         
         
-        public ReactiveProperty<Step> CurrentStep => _currentSequence ??= new ReactiveProperty<Step>(null, OnCurrentSequenceChanged);
-        private ReactiveProperty<Step> _currentSequence;
+        public ReactiveProperty<T> CurrentStep => _currentSequence ??= new ReactiveProperty<T>(null, OnCurrentSequenceChanged);
+        private ReactiveProperty<T> _currentSequence;
         
-        public IReadOnlyList<Step> Steps => _sequences.IsEmpty() ? _sequences = GetComponentsInChildren<Step>(true).ToArray() : _sequences;
-        private IReadOnlyList<Step> _sequences;
+        public IReadOnlyList<T> Steps => _sequences.IsEmpty() ? _sequences = GetComponentsInChildren<T>(true).ToArray() : _sequences;
+        private IReadOnlyList<T> _sequences;
         
         
         
@@ -31,7 +35,7 @@ namespace LCHFramework.Managers
         
         
         
-        protected virtual void OnCurrentSequenceChanged(Step prevStep, Step currentStep)
+        protected virtual void OnCurrentSequenceChanged(T prevStep, T currentStep)
         {
             foreach (var t in Steps.Where(t => t.IsShown)) t.Hide();
             currentStep.Show();

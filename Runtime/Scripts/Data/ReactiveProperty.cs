@@ -4,18 +4,18 @@ namespace LCHFramework.Data
 {
     public class ReactiveProperty<T> where T : class
     {
-        public ReactiveProperty(T value = null, Action<T, T> onCurrentValueChanged = null)
+        public ReactiveProperty(T value = null, Action<T, T> onValueChanged = null)
         {
             _value = value;
-            OnCurrentValueChanged = onCurrentValueChanged;
+            OnValueChanged = onValueChanged;
         }
         
         
         
-        public event Action<T, T> OnCurrentValueChanged; // prev, current.
+        public event Action<T, T> OnValueChanged; // prevValue, value.
         
         
-        public T PreviousValue { get; private set; }
+        public T PrevValue { get; private set; }
         
         
         public T Value
@@ -25,9 +25,9 @@ namespace LCHFramework.Data
             {
                 if (_value == value) return;
                 
-                PreviousValue = _value;
+                PrevValue = _value;
                 _value = value;
-                OnCurrentValueChanged?.Invoke(PreviousValue, _value);
+                OnValueChanged?.Invoke(PrevValue, _value);
             }
         }
         private T _value;
