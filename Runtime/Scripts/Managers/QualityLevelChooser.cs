@@ -1,4 +1,3 @@
-using System.Linq;
 using LCHFramework.Extensions;
 using UnityEngine;
 using Debug = LCHFramework.Utilities.Debug;
@@ -8,9 +7,9 @@ namespace LCHFramework.Managers
     /// <remarks>
     /// Bootcamp/GameQualitySettings.js/AutoChooseQualityLevel()
     /// </remarks>
-    public static class QualityLevelChooser
+    public static class QualitySettingsChooser
     {
-        public static int Choose()
+        public static int ChooseQualityLevel()
         {
             var shaderLevel = SystemInfo.graphicsShaderLevel;
             int fillrate;
@@ -46,9 +45,9 @@ namespace LCHFramework.Managers
             var levelmult = new[] { 5.0f, 30.0f, 80.0f, 130.0f, 200.0f, 320.0f };
 
             var level = 0;
-            var fantasticLevelIndex = QualitySettings.names.IndexOf(t => t is "Fantastic" or "Ultra");
+            var fantasticIndex = QualitySettings.names.IndexOf(t => t is "Fantastic" or "Ultra");
 
-            while (level < fantasticLevelIndex && fillneed * levelmult[level + 1] < fillrate)
+            while (level < fantasticIndex && fillneed * levelmult[level + 1] < fillrate)
                 ++level;
             
             Debug.Log($"{resx}x{resy} need {fillneed} has {fillrate} = {level} level");

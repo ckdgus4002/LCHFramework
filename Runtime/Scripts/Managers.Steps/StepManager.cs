@@ -7,10 +7,9 @@ using UnityEngine;
 
 namespace LCHFramework.Managers
 {
-    public class StepManager : MonoBehaviour
+    public class StepManager : MonoSingleton<StepManager>
     {
         [SerializeField] private bool playOnAwake;
-        [SerializeField] private bool playOnEnable;
         [SerializeField] private bool loop;
         [SerializeField] private Step firstStep;
         
@@ -23,18 +22,15 @@ namespace LCHFramework.Managers
         
         
         
-        protected virtual void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+            
             if (playOnAwake) CurrentStep.Value = firstStep;
         }
         
-        protected virtual void OnEnable()
-        {
-            if (playOnEnable) CurrentStep.Value = firstStep;
-        }
-
-
-
+        
+        
         protected virtual void OnCurrentSequenceChanged(Step prevStep, Step currentStep)
         {
             foreach (var t in Steps.Where(t => t.IsShown)) t.Hide();
