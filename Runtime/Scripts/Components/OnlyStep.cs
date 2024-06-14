@@ -6,31 +6,48 @@ using UnityEngine.Events;
 
 namespace LCHFramework.Components
 {
-    public class OnlyStep : OnlyStep<StepManager, Step>
+    public class OnlyStep : OnlyStep<Step>
     {
     }
     
-    public class OnlyStep<T1, T2> : MonoBehaviour where T1 : StepManager<T1, T2> where T2 : Step
+    public class OnlyStep<T> : MonoBehaviour where T : Step
     {
-        [SerializeField] private T2[] steps;
-        [SerializeField] private UnityEvent<T2, T2> onShow;
-        [SerializeField] private UnityEvent<T2, T2> onHide;
+        [SerializeField] private T[] steps;
+        [SerializeField] private UnityEvent<T, T> onShow;
+        [SerializeField] private UnityEvent<T, T> onHide;
+        
+        
+        private IReadOnlyStepManager<T> StepManager
+        {
+            get
+            {
+                foreach (var t in FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                    if (t.TryGetComponent<IReadOnlyStepManager<T>>(out var result))
+                    {
+                        _stepManager = result;
+                        break;
+                    }
+
+                return _stepManager;
+            }
+        }
+        private IReadOnlyStepManager<T> _stepManager;
         
         
         
         private void Start()
         {
-            StepManager<T1, T2>.Instance.CurrentStep.OnValueChanged += OnCurrentStepChanged;
+            StepManager.CurrentStep.OnValueChanged += OnCurrentStepChanged;
         }
 
         private void OnDestroy()
         {
-            if (StepManager<T1, T2>.Instance.TryIsNotNull(out var stepManager)) stepManager.CurrentStep.OnValueChanged -= OnCurrentStepChanged;
+            if (StepManager != null) StepManager.CurrentStep.OnValueChanged -= OnCurrentStepChanged;
         }
         
         
         
-        private void OnCurrentStepChanged(T2 prevOrNull, T2 current)
+        private void OnCurrentStepChanged(T prevOrNull, T current)
         {
             if (steps.Contains(current))
             {

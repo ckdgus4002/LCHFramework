@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace LCHFramework.Data
 {
@@ -31,6 +32,6 @@ namespace LCHFramework.Data
                 OnValueChanged?.Invoke(PrevValueOrNull, _value);
             }
         }
-        private T _value;
+        [SerializeField] private T _value;
     }
 }

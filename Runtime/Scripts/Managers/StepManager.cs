@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using LCHFramework.Attributes;
 using LCHFramework.Data;
@@ -6,19 +7,24 @@ using UnityEngine;
 
 namespace LCHFramework.Managers
 {
+    public interface IReadOnlyStepManager<T> where T : Step
+    {
+        public ReactiveProperty<T> CurrentStep { get; }
+        
+        public T[] Steps { get; }
+    }
+    
     public class StepManager : StepManager<StepManager, Step>
     {
     }
     
-    public class StepManager<T1, T2> : MonoSingleton<T1> where T1 : Component where T2 : Step 
+    public class StepManager<T1, T2> : MonoSingleton<T1>, IReadOnlyStepManager<T2> where T1 : Component where T2 : Step
     {
         [SerializeField] private bool playOnAwake;
         [SerializeField] private bool loop;
-        [SerializeField] protected T2 firstStep;
-        
-        
-        public ReactiveProperty<T2> CurrentStep => _currentStep ??= new ReactiveProperty<T2>(onValueChanged: OnCurrentStepChanged);
-        private ReactiveProperty<T2> _currentStep;
+
+        public ReactiveProperty<T2> CurrentStep => _currentStep;
+        [SerializeField] private ReactiveProperty<T2> _currentStep;
         
         public T2[] Steps => _steps.IsEmpty() ? _steps = GetComponentsInChildren<T2>(true).ToArray() : _steps;
         private T2[] _steps;
@@ -28,16 +34,20 @@ namespace LCHFramework.Managers
         protected override void Awake()
         {
             base.Awake();
+
+            CurrentStep.OnValueChanged += OnCurrentStepChanged;
             
-            if (playOnAwake) CurrentStep.Value = firstStep;
+            if (playOnAwake) ShowStep(CurrentStep.Value);
         }
-        
-        
-        
-        protected virtual void OnCurrentStepChanged(T2 prevStep, T2 currentStep)
+
+
+
+        protected virtual void OnCurrentStepChanged(T2 prevStepOrNull, T2 currentStep) => ShowStep(currentStep);
+
+        private void ShowStep(T2 step)
         {
             foreach (var t in Steps.Where(t => t.IsShown)) t.Hide();
-            currentStep.Show();
+            step.Show();
         }
 
         [ShowInInspector]
