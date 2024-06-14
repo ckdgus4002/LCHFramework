@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using LCHFramework.Attributes;
 using LCHFramework.Data;
@@ -12,6 +11,8 @@ namespace LCHFramework.Managers
         public ReactiveProperty<T> CurrentStep { get; }
         
         public T[] Steps { get; }
+
+        public void PassCurrentStep();
     }
     
     public class StepManager : StepManager<StepManager, Step>
