@@ -18,11 +18,11 @@ namespace LCHFramework.Managers
         [SerializeField] private T firstStep;
         
         
-        public ReactiveProperty<T> CurrentStep => _currentSequence ??= new ReactiveProperty<T>(null, OnCurrentSequenceChanged);
-        private ReactiveProperty<T> _currentSequence;
+        public ReactiveProperty<T> CurrentStep => _currentStep ??= new ReactiveProperty<T>(null, OnCurrentStepChanged);
+        private ReactiveProperty<T> _currentStep;
         
-        public IReadOnlyList<T> Steps => _sequences.IsEmpty() ? _sequences = GetComponentsInChildren<T>(true).ToArray() : _sequences;
-        private IReadOnlyList<T> _sequences;
+        public IReadOnlyList<T> Steps => _steps.IsEmpty() ? _steps = GetComponentsInChildren<T>(true).ToArray() : _steps;
+        private IReadOnlyList<T> _steps;
         
         
         
@@ -35,14 +35,14 @@ namespace LCHFramework.Managers
         
         
         
-        protected virtual void OnCurrentSequenceChanged(T prevStep, T currentStep)
+        protected virtual void OnCurrentStepChanged(T prevStep, T currentStep)
         {
             foreach (var t in Steps.Where(t => t.IsShown)) t.Hide();
             currentStep.Show();
         }
 
         [ShowInInspector]
-        public void ReturnCurrentSequence() => CurrentStep.Value
+        public void ReturnCurrentStep() => CurrentStep.Value
             = !loop && CurrentStep.Value.Index == 0 ? Steps[0]
             : loop && CurrentStep.Value.Index == 0 ? Steps[^1]
             : Steps[CurrentStep.Value.Index - 1];

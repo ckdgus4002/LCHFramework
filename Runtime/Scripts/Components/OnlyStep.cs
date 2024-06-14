@@ -20,17 +20,17 @@ namespace LCHFramework.Components
         
         private void Start()
         {
-            StepManager<T>.Instance.CurrentStep.OnValueChanged += OnCurrentSequenceChanged;
+            StepManager<T>.Instance.CurrentStep.OnValueChanged += OnCurrentStepChanged;
         }
 
         private void OnDestroy()
         {
-            if (StepManager<T>.Instance != null) StepManager<T>.Instance.CurrentStep.OnValueChanged -= OnCurrentSequenceChanged;   
+            if (StepManager<T>.Instance != null) StepManager<T>.Instance.CurrentStep.OnValueChanged -= OnCurrentStepChanged;   
         }
         
         
         
-        private void OnCurrentSequenceChanged(T prev, T current)
+        private void OnCurrentStepChanged(T prev, T current)
         {
             if (steps.Contains(current))
             {
