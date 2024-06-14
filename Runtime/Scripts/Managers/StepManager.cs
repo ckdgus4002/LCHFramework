@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace LCHFramework.Managers
 {
-    public class StepManager : StepManager<StepManager<Step>, Step>
+    public class StepManager : StepManager<Step>
     {
     }
 
