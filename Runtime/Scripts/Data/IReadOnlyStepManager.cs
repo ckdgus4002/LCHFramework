@@ -10,16 +10,24 @@ namespace LCHFramework.Data
     {
         public event OnValueChangedDelegate<T> OnCurrentStepChanged;
         
+        
         public T PrevStepOrNull { get; }
+        
+        public T LeftStepOrNull { get; }
+        
+        public T RightStepOrNull { get; }
+        
         
         public T CurrentStep { get; }
         
-        public T RightStepOrNull { get; }
+        public T FirstStep { get; }
         
         public T LastStep { get; }
         
         public T[] Steps { get; }
-
+        
+        
+        
         public void PassCurrentStep();
     }
 }

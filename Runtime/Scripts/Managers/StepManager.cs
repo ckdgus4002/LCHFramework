@@ -26,6 +26,9 @@ namespace LCHFramework.Managers
         
         public T2 PrevStepOrNull { get; private set; }
         
+        public T2 LeftStepOrNull { get; private set; }
+        
+        public T2 RightStepOrNull { get; private set; }
         
         
         public T2 CurrentStep
@@ -42,6 +45,8 @@ namespace LCHFramework.Managers
                 
                 PrevStepOrNull = _currentStep;
                 _currentStep = value;
+                LeftStepOrNull = 0 < _currentStep.Index ? Steps[_currentStep.Index - 1] : loop ? Steps[^1] : null;
+                RightStepOrNull = _currentStep.Index < Steps.Length - 1 ? Steps[_currentStep.Index + 1] : loop ? Steps[0] : null;
                 
                 foreach (var t in Steps.Where(t => t.IsShown)) t.Hide();
                 _currentStep.Show();
@@ -51,10 +56,8 @@ namespace LCHFramework.Managers
         }
         private T2 _currentStep;
 
-        public T2 RightStepOrNull => CurrentStep.Index < Steps.Length - 1 ? Steps[CurrentStep.Index + 1]
-            : loop ? Steps[0]
-            : null;
-
+        public T2 FirstStep => Steps[0];
+        
         public T2 LastStep => Steps[^1];
 
         public T2[] Steps => _steps.IsEmpty() ? _steps = GetComponentsInChildren<T2>(true).ToArray() : _steps;
