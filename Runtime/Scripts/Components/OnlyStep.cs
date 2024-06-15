@@ -1,5 +1,4 @@
 using System.Linq;
-using LCHFramework.Data;
 using LCHFramework.Extensions;
 using LCHFramework.Managers;
 using UnityEngine;
@@ -9,41 +8,37 @@ namespace LCHFramework.Components
 {
     public class OnlyStep : LCHMonoBehaviour
     {
-        [SerializeField] private IIndex[] steps;
-        [SerializeField] private UnityEvent<int, int> onShow;
-        [SerializeField] private UnityEvent<int, int> onHide;
-        
-        
-        private ICurrentStepIndexChanged CurrentStepIndexChanged
+        private static ICurrentStepIndexChanged CurrentStepIndexChanged
         {
             get
             {
-                foreach (var t in FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None))
-                    if (t.TryGetComponent<ICurrentStepIndexChanged>(out var result))
-                    {
-                        _stepManager = result;
-                        break;
-                    }
+                if (_stepManager == null)
+                    foreach (var t in FindObjectsByType<LCHMonoBehaviour>(FindObjectsSortMode.None))
+                        if (t.TryGetComponent<ICurrentStepIndexChanged>(out var result))
+                        {
+                            _stepManager = result;
+                            break;
+                        }    
 
                 return _stepManager;
             }
         }
-        private ICurrentStepIndexChanged _stepManager;
+        private static ICurrentStepIndexChanged _stepManager;
         
         
         
-        protected override void Start()
+        [SerializeField] private Step[] steps;
+        [SerializeField] private UnityEvent<int, int> onShow;
+        [SerializeField] private UnityEvent<int, int> onHide;
+        
+        
+        
+        protected override void OnEnable()
         {
-            base.Start();
+            base.OnEnable();
             
-            CurrentStepIndexChanged.OnCurrentStepIndexChanged += OnCurrentStepIndexChanged;
-        }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            
-            if (CurrentStepIndexChanged != null) CurrentStepIndexChanged.OnCurrentStepIndexChanged -= OnCurrentStepIndexChanged;
+            if (!CurrentStepIndexChanged.OnCurrentStepIndexChanged.Contains((OnCurrentStepIndexChangedDelegate)OnCurrentStepIndexChanged))
+                CurrentStepIndexChanged.OnCurrentStepIndexChanged += OnCurrentStepIndexChanged;
         }
         
         

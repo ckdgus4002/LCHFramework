@@ -11,9 +11,11 @@ using UnityEditor;
 
 namespace LCHFramework.Managers
 {
+    public delegate void OnCurrentStepIndexChangedDelegate(int prev, int current);
+    
     public interface ICurrentStepIndexChanged
     {
-        public event OnValueChangedDelegate<int> OnCurrentStepIndexChanged;
+        public OnCurrentStepIndexChangedDelegate OnCurrentStepIndexChanged { get; set; }
     }
     
     public class StepManager : StepManager<StepManager, Step>
@@ -22,11 +24,11 @@ namespace LCHFramework.Managers
     
     public class StepManager<T1, T2> : MonoSingleton<T1>, IStepManager<T2>, IPassCurrentStep, ICurrentStepIndexChanged where T1 : Component where T2 : Step
     {
-        [SerializeField] private T2 playOnStartOrNull;
         [SerializeField] private bool loop;
+        [SerializeField] private T2 playOnStartOrNull;
         
         
-        public event OnValueChangedDelegate<int> OnCurrentStepIndexChanged;
+        public OnCurrentStepIndexChangedDelegate OnCurrentStepIndexChanged { get; set; }
         
         
         public T2 PrevStepOrNull { get; private set; }
@@ -74,7 +76,10 @@ namespace LCHFramework.Managers
         {
             base.Start();
 
-            if (playOnStartOrNull != null) CurrentStep = playOnStartOrNull;
+            if (playOnStartOrNull != null)
+            {
+                CurrentStep = playOnStartOrNull;
+            }
         }
         
         
