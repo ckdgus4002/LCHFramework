@@ -1,7 +1,8 @@
 using System;
-using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using LCHFramework.Extensions;
+using LCHFramework.Utilities;
 using UnityEngine;
 
 namespace LCHFramework.Managers
@@ -9,35 +10,30 @@ namespace LCHFramework.Managers
     public class DelayStep : Step
     {
         [SerializeField] private float delay;
-
-
+        
+        
         private float _defaultDelay;
-        private readonly List<Task> tasks = new();
         
         
         
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+            
             _defaultDelay = delay;
         }
-
-        private void OnDisable()
-        {
-            foreach (var t in tasks) t.Dispose();
-            tasks.Clear();
-        }
-
         
-
+        
+        
         public override async void Show()
         {
             base.Show();
             
-            foreach (var t in tasks) t.Dispose();
-            tasks.Clear();
+            CancellationTokenSourceUtility.ClearTokenSources(_ctses);
             
             delay = _defaultDelay;
-            await tasks.AddAndReturn(Task.Delay(TimeSpan.FromSeconds(delay))); 
+            
+            await Task.Delay(TimeSpan.FromSeconds(delay), _ctses.AddAndReturn(new CancellationTokenSource()).Token);
 
             StepManager.PassCurrentStep();
         }

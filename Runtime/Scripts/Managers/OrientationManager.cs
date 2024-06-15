@@ -13,8 +13,10 @@ namespace LCHFramework.Managers
         
         
         
-        protected virtual void Start()
+        protected override void Start()
         {
+            base.Start();
+            
             CurrentDeviceOrientationIndex = (int)Input.deviceOrientation;
         }
         

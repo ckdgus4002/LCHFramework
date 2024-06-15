@@ -12,7 +12,7 @@ namespace LCHFramework.Components.UI
     /// </summary>
     [ExecuteAlways]
     [RequireComponent(typeof(TMP_Text))]
-    public class BuildNumberText : MonoBehaviour
+    public class BuildNumberText : LCHMonoBehaviour
     {
         [SerializeField] private bool displayVersion;
         

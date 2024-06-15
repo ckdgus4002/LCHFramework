@@ -1,12 +1,10 @@
-using System;
-using UnityEngine;
+using System.Collections.Generic;
 
 namespace LCHFramework.Data
 {
-    [Serializable]
-    public class ReactiveProperty<T> where T : class
+    public class ReactiveProperty<T>
     {
-        public ReactiveProperty(T value = null, Action<T, T> onValueChanged = null)
+        public ReactiveProperty(T value = default, OnValueChangedDelegate<T> onValueChanged = null)
         {
             _value = value;
             OnValueChanged = onValueChanged;
@@ -14,7 +12,7 @@ namespace LCHFramework.Data
         
         
         
-        public event Action<T, T> OnValueChanged; // prevOrNull, current.
+        public event OnValueChangedDelegate<T> OnValueChanged;
         
         
         public T PrevValueOrNull { get; private set; }
@@ -25,13 +23,13 @@ namespace LCHFramework.Data
             get => _value;
             set
             {
-                if (_value == value) return;
+                if (EqualityComparer<T>.Default.Equals(_value, value)) return;
                 
                 PrevValueOrNull = _value;
                 _value = value;
                 OnValueChanged?.Invoke(PrevValueOrNull, _value);
             }
         }
-        [SerializeField] private T _value;
+        private T _value;
     }
 }

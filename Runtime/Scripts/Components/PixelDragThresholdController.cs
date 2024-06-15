@@ -5,7 +5,7 @@ namespace LCHFramework.Components
 {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(EventSystem))]
-    public class PixelDragThresholdController : MonoBehaviour
+    public class PixelDragThresholdController : LCHMonoBehaviour
     {
         // https://developer.android.com/training/multiscreen/screendensities?hl=ko#TaskUseDP
         [SerializeField] private int mediumDensityScreenDpi = 160;
@@ -19,8 +19,10 @@ namespace LCHFramework.Components
         
         
         
-        private void Start()
+        protected override void Start()
         {
+            base.Start();
+            
             _defaultPixelDragThreshold = EventSystem.pixelDragThreshold;
             
             SetPixelDragThresholdInch(_defaultPixelDragThreshold);

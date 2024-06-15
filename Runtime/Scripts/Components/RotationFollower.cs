@@ -3,7 +3,7 @@ using UnityEngine;
 namespace LCHFramework.Components
 {
     [ExecuteAlways]
-    public class RotationFollower : MonoBehaviour
+    public class RotationFollower : LCHMonoBehaviour
     {
         [SerializeField] private Transform target;
         [SerializeField] private Vector3 offset;

@@ -5,7 +5,7 @@ using UnityEngine.Profiling;
 
 namespace LCHFramework.Components
 {
-    public class FramePerSecond : MonoBehaviour
+    public class FramePerSecond : LCHMonoBehaviour
     {
 	    [SerializeField] private Color textColor;
 	    

@@ -13,7 +13,7 @@ using Debug = UnityEngine.Debug;
 
 namespace LCHFramework.Components
 {
-    public class Rotator_Rotator : MonoBehaviour, IDragHandler, IEndDragHandler
+    public class Rotator_Rotator : LCHMonoBehaviour, IDragHandler, IEndDragHandler
     {
         public Transform target;
         public Image rotateButton;
@@ -111,8 +111,10 @@ namespace LCHFramework.Components
         
         
         
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+            
             UnityEventUtility.AddPersistentListener(onEndDragComplete, Initialize);
             
             if (Canvas.worldCamera == null) Canvas.worldCamera = Camera.main;
@@ -141,12 +143,7 @@ namespace LCHFramework.Components
             
             GUI.Label(new Rect(Vector2.zero , new Vector2(Screen.width, Screen.height)), _guiLabel, new GUIStyle { fontSize = 50, alignment = TextAnchor.MiddleCenter });
         }
-
-        private void OnDisable()
-        {
-            StopAllCoroutines();
-        }
-
+        
         
         
         // UnityEvent event.

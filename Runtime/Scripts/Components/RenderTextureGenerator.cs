@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 namespace LCHFramework.Components
 {
-    public abstract class RenderTextureGenerator : MonoBehaviour
+    public abstract class RenderTextureGenerator : LCHMonoBehaviour
     {
         [SerializeField] private bool generateOnAwake = true;
         [SerializeField] private bool generateOnEnable;
@@ -24,8 +24,10 @@ namespace LCHFramework.Components
         
         
         
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+            
             if (generateOnAwake) Generate();
         }
         

@@ -1,5 +1,5 @@
 using System.Linq;
-using LCHFramework.Extensions;
+using LCHFramework.Data;
 using LCHFramework.Managers;
 using UnityEngine;
 using UnityEngine.Events;
@@ -10,7 +10,7 @@ namespace LCHFramework.Components
     {
     }
     
-    public class OnlyStep<T> : MonoBehaviour where T : Step
+    public class OnlyStep<T> : LCHMonoBehaviour where T : Step
     {
         [SerializeField] private T[] steps;
         [SerializeField] private UnityEvent<T, T> onShow;
@@ -21,7 +21,7 @@ namespace LCHFramework.Components
         {
             get
             {
-                foreach (var t in FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                foreach (var t in FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None))
                     if (t.TryGetComponent<IReadOnlyStepManager<T>>(out var result))
                     {
                         _stepManager = result;
@@ -35,14 +35,18 @@ namespace LCHFramework.Components
         
         
         
-        private void Start()
+        protected override void Start()
         {
-            StepManager.CurrentStep.OnValueChanged += OnCurrentStepChanged;
+            base.Start();
+            
+            StepManager.OnCurrentStepChanged += OnCurrentStepChanged;
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
-            if (StepManager != null) StepManager.CurrentStep.OnValueChanged -= OnCurrentStepChanged;
+            base.OnDestroy();
+            
+            if (StepManager != null) StepManager.OnCurrentStepChanged -= OnCurrentStepChanged;
         }
         
         

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace LCHFramework.Components
 {
-    public class ParabolaMover : MonoBehaviour
+    public class ParabolaMover : LCHMonoBehaviour
     {
         public float max_height;
 

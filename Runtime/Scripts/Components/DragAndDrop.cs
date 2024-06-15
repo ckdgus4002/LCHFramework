@@ -16,7 +16,7 @@ namespace LCHFramework.Components
         public Vector3 Center => areas.Aggregate(Vector3.zero, (aggregate, area) => aggregate + area.position) / areas.Length;
     }
     
-    public class DragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+    public class DragAndDrop : LCHMonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         public static Vector3[] GetCornerAtWorld(Transform target)
         {
@@ -83,17 +83,16 @@ namespace LCHFramework.Components
             }
         }
 
-        private Canvas RootCanvasOrNull => _rootCanvas == null ? _rootCanvas = GetComponentsInParent<Canvas>().Last() : _rootCanvas;
-        private Canvas _rootCanvas;
-
         public virtual Canvas CanvasOrNull => GetComponent<Canvas>();
 
         public virtual Renderer RendererOrNull => GetComponent<Renderer>();
         
         
         
-        private void Start()
+        protected override void  Start()
         {
+            base.Start();
+            
             DefaultSortingOrder = SortingOrder;
         }
         

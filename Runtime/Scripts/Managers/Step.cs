@@ -1,18 +1,32 @@
-using LCHFramework.Attributes;
+using LCHFramework.Components;
+using LCHFramework.Data;
 using LCHFramework.Extensions;
-using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace LCHFramework.Managers
 {
-    public class Step : MonoBehaviour
+    public class Step : LCHMonoBehaviour
     {
-        public int Index => _index < 0 ? _index = StepManager.Steps.IndexOf(this) : _index;
-        private int _index = -1;
+        public int Index
+        {
+            get
+            {
+#if UNITY_EDITOR
+                if (!EditorApplication.isPlaying) return GetIndex();
+#endif
+                return _index < 0 ? _index = GetIndex() : _index;
 
+                int GetIndex() => StepManager.Steps.IndexOf(this);
+            }
+        }
+        private int _index = -1;
+        
         public virtual bool IsShown => gameObject.activeSelf;
 
-        protected IReadOnlyStepManager<Step> StepManager => _stepManager ??= GetComponentInParent<IReadOnlyStepManager<Step>>();
-        private IReadOnlyStepManager<Step> _stepManager;
+        protected IReadOnlyStepManager StepManager => _stepManager ??= GetComponentInParent<IReadOnlyStepManager>();
+        private IReadOnlyStepManager _stepManager;
         
         
         
@@ -20,21 +34,9 @@ namespace LCHFramework.Managers
         
         
         
-        public virtual void Show()
-        {
-            gameObject.SetActive(true);
-        }
+        public virtual void Show() => gameObject.SetActive(true);
 
-        public virtual void Hide()
-        {
-            gameObject.SetActive(false);
-        }
-
-        [ShowInInspector]
-        public void SetCurrentStep()
-        {
-            StepManager.CurrentStep.Value = this;   
-        }
+        public virtual void Hide() => gameObject.SetActive(false);
     }
 }
 

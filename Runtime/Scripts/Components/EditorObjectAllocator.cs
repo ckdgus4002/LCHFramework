@@ -1,13 +1,13 @@
+using LCHFramework.Components;
+using UnityEngine.SceneManagement;
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.Callbacks;
 #endif
-using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace LCHFramework
 {
-    public abstract class EditorObjectAllocator : MonoBehaviour
+    public abstract class EditorObjectAllocator : LCHMonoBehaviour
     {
 #if UNITY_EDITOR
         [PostProcessScene(-1)]

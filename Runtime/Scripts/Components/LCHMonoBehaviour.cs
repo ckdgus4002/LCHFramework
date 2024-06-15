@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using LCHFramework.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -14,6 +15,9 @@ namespace LCHFramework.Components
         [NonSerialized] public Matrix4x4 defaultLocalTRS;
         [NonSerialized] public string defaultName;
         
+        
+        protected readonly List<CancellationTokenSource> _ctses = new();
+
         
         public bool TRSIsInitialized { get; private set; }
         public bool IsDestroyed { get; private set; }
@@ -54,7 +58,8 @@ namespace LCHFramework.Components
 
         protected virtual void OnDisable()
         {
-            StopAllCoroutines();   
+            StopAllCoroutines();
+            CancellationTokenSourceUtility.ClearTokenSources(_ctses);
         }
 
         protected virtual void OnDestroy()

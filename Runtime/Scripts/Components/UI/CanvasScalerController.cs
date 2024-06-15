@@ -5,7 +5,7 @@ namespace LCHFramework.Components.UI
 {
     [ExecuteAlways]
     [RequireComponent(typeof(CanvasScaler))]
-    public class CanvasScalerController : MonoBehaviour
+    public class CanvasScalerController : LCHMonoBehaviour
     {
         private CanvasScaler CanvasScaler => _canvasScaler == null ? _canvasScaler = GetComponent<CanvasScaler>() : _canvasScaler; 
         private CanvasScaler _canvasScaler;

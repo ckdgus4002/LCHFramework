@@ -1,8 +1,9 @@
+using LCHFramework.Components;
 using UnityEngine;
 
 namespace LCHFramework.Managers
 {
-    public class MonoSingleton<T> : MonoBehaviour where T : Component
+    public class MonoSingleton<T> : LCHMonoBehaviour where T : Component
     {
         public static T Instance
         {
@@ -22,8 +23,10 @@ namespace LCHFramework.Managers
         
         
         
-        protected virtual void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+            
             if (Instance != null && Instance != this) Destroy(Instance);
 
             Instance = (T)(Component)this;
@@ -31,8 +34,10 @@ namespace LCHFramework.Managers
             if (isDontDestroyOnLoad) DontDestroyOnLoad(gameObject);
         }
         
-        protected virtual void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
+            
             if (Instance == this) Instance = null;
         }
     }

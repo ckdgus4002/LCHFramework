@@ -3,7 +3,7 @@ using UnityEngine;
 namespace LCHFramework.Components
 {
     [ExecuteAlways]
-    public class PositionFollower : MonoBehaviour
+    public class PositionFollower : LCHMonoBehaviour
     {
         [SerializeField] private Transform target;
         [SerializeField] private Vector3 offset;
