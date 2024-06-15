@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using LCHFramework.Extensions;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -26,8 +25,10 @@ namespace LCHFramework.Components.UI
         
         
         private readonly Coroutine[] _onEnable = new Coroutine[2];
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
+            
             if (DefaultTargetPositionX == null) _onEnable[0] = RestartCoroutine(_onEnable[0], Coroutine(0));
             if (DefaultTargetPositionY == null) _onEnable[1] = RestartCoroutine(_onEnable[1], Coroutine(1));
             IEnumerator Coroutine(int index)

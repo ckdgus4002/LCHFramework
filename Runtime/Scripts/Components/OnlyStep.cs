@@ -1,28 +1,25 @@
 using System.Linq;
 using LCHFramework.Data;
+using LCHFramework.Extensions;
 using LCHFramework.Managers;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace LCHFramework.Components
 {
-    public class OnlyStep : OnlyStep<Step>
+    public class OnlyStep : LCHMonoBehaviour
     {
-    }
-    
-    public class OnlyStep<T> : LCHMonoBehaviour where T : Step
-    {
-        [SerializeField] private T[] steps;
-        [SerializeField] private UnityEvent<T, T> onShow;
-        [SerializeField] private UnityEvent<T, T> onHide;
+        [SerializeField] private IIndex[] steps;
+        [SerializeField] private UnityEvent<int, int> onShow;
+        [SerializeField] private UnityEvent<int, int> onHide;
         
         
-        private IReadOnlyStepManager<T> StepManager
+        private ICurrentStepIndexChanged CurrentStepIndexChanged
         {
             get
             {
                 foreach (var t in FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None))
-                    if (t.TryGetComponent<IReadOnlyStepManager<T>>(out var result))
+                    if (t.TryGetComponent<ICurrentStepIndexChanged>(out var result))
                     {
                         _stepManager = result;
                         break;
@@ -31,7 +28,7 @@ namespace LCHFramework.Components
                 return _stepManager;
             }
         }
-        private IReadOnlyStepManager<T> _stepManager;
+        private ICurrentStepIndexChanged _stepManager;
         
         
         
@@ -39,29 +36,29 @@ namespace LCHFramework.Components
         {
             base.Start();
             
-            StepManager.OnCurrentStepChanged += OnCurrentStepChanged;
+            CurrentStepIndexChanged.OnCurrentStepIndexChanged += OnCurrentStepIndexChanged;
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
             
-            if (StepManager != null) StepManager.OnCurrentStepChanged -= OnCurrentStepChanged;
+            if (CurrentStepIndexChanged != null) CurrentStepIndexChanged.OnCurrentStepIndexChanged -= OnCurrentStepIndexChanged;
         }
         
         
         
-        private void OnCurrentStepChanged(T prevOrNull, T current)
+        private void OnCurrentStepIndexChanged(int prevStepIndex, int currentStepIndex)
         {
-            if (steps.Contains(current))
+            if (steps.Any(t => t.Index == currentStepIndex))
             {
                 Show();
-                onShow?.Invoke(prevOrNull, current);
+                onShow?.Invoke(prevStepIndex, currentStepIndex);
             }
             else
             {
                 Hide();
-                onHide?.Invoke(prevOrNull, current);
+                onHide?.Invoke(prevStepIndex, currentStepIndex);
             }
         }
 

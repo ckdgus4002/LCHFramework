@@ -31,8 +31,10 @@ namespace LCHFramework.Components
             if (generateOnAwake) Generate();
         }
         
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
+            
             if (generateOnEnable) Generate();
         }
 

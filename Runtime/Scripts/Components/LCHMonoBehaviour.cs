@@ -3,13 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using LCHFramework.Data;
 using LCHFramework.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace LCHFramework.Components
 {
-    public class LCHMonoBehaviour : MonoBehaviour
+    public class LCHMonoBehaviour : MonoBehaviour, IIndex
     {
         [NonSerialized] public Matrix4x4 defaultTRS;
         [NonSerialized] public Matrix4x4 defaultLocalTRS;
@@ -17,11 +18,18 @@ namespace LCHFramework.Components
         
         
         protected readonly List<CancellationTokenSource> _ctses = new();
-
+        
         
         public bool TRSIsInitialized { get; private set; }
-        public bool IsDestroyed { get; private set; }
         
+        public int EnableCount { get; private set; }
+        
+        public int DisableCount { get; private set; }
+        
+        public bool IsDestroyed { get; private set; }
+
+
+        public virtual int Index => transform.GetSiblingIndex();
         
         public float HalfWidth => Width * .5f;
         
@@ -51,6 +59,11 @@ namespace LCHFramework.Components
             if (transform is not RectTransform) InitializeTRS();
         }
 
+        protected virtual void OnEnable()
+        {
+            EnableCount++;
+        }
+
         protected virtual void Start()
         {
             if (transform is RectTransform) InitializeTRS();
@@ -58,6 +71,7 @@ namespace LCHFramework.Components
 
         protected virtual void OnDisable()
         {
+            DisableCount++;
             StopAllCoroutines();
             CancellationTokenSourceUtility.ClearTokenSources(_ctses);
         }

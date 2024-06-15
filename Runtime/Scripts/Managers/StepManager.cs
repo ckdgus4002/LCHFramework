@@ -1,27 +1,32 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using LCHFramework.Attributes;
 using LCHFramework.Data;
 using LCHFramework.Extensions;
 using UnityEngine;
+using Debug = LCHFramework.Utilities.Debug;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 namespace LCHFramework.Managers
 {
+    public interface ICurrentStepIndexChanged
+    {
+        public event OnValueChangedDelegate<int> OnCurrentStepIndexChanged;
+    }
+    
     public class StepManager : StepManager<StepManager, Step>
     {
     }
     
-    public class StepManager<T1, T2> : MonoSingleton<T1>, IReadOnlyStepManager<T2> where T1 : Component where T2 : Step
+    public class StepManager<T1, T2> : MonoSingleton<T1>, IStepManager<T2>, IPassCurrentStep, ICurrentStepIndexChanged where T1 : Component where T2 : Step
     {
         [SerializeField] private T2 playOnStartOrNull;
         [SerializeField] private bool loop;
         
         
-        public event OnValueChangedDelegate<T2> OnCurrentStepChanged;
+        public event OnValueChangedDelegate<int> OnCurrentStepIndexChanged;
         
         
         public T2 PrevStepOrNull { get; private set; }
@@ -31,29 +36,28 @@ namespace LCHFramework.Managers
         public T2 RightStepOrNull { get; private set; }
 
 
-        public T2 GetCurrentStep()
+        public T2 CurrentStep
         {
-            if (_currentStep == null) SetCurrentStep(Steps[0]);
+            get
+            {
+                if (_currentStep == null) CurrentStep = Steps[0];
 
-            return _currentStep;
-        }
-
-        public void SetCurrentStep(Step value) => SetCurrentStep(value.Index);
-        
-        private void SetCurrentStep(int index)
-        {
-            var value = Steps[index];
-            if (_currentStep == value) return;
+                return _currentStep;    
+            }
+            set
+            {
+                if (_currentStep == value) return;
                 
-            PrevStepOrNull = _currentStep;
-            _currentStep = value;
-            LeftStepOrNull = 0 < _currentStep.Index ? Steps[_currentStep.Index - 1] : loop ? Steps[^1] : null;
-            RightStepOrNull = _currentStep.Index < Steps.Length - 1 ? Steps[_currentStep.Index + 1] : loop ? Steps[0] : null;
+                PrevStepOrNull = _currentStep;
+                _currentStep = value;
+                LeftStepOrNull = 0 < _currentStep.Index ? Steps[_currentStep.Index - 1] : loop ? Steps[^1] : null;
+                RightStepOrNull = _currentStep.Index < Steps.Length - 1 ? Steps[_currentStep.Index + 1] : loop ? Steps[0] : null;
                 
-            foreach (var t in Steps.Where(t => t.IsShown)) t.Hide();
-            _currentStep.Show();
+                foreach (var t in Steps.Where(t => t.IsShown)) t.Hide();
+                _currentStep.Show();
                 
-            OnCurrentStepChanged?.Invoke(PrevStepOrNull, _currentStep);
+                OnCurrentStepIndexChanged?.Invoke(PrevStepOrNull == null ? -1 : PrevStepOrNull.Index, _currentStep.Index);
+            }
         }
         private T2 _currentStep;
 
@@ -70,7 +74,7 @@ namespace LCHFramework.Managers
         {
             base.Start();
 
-            if (playOnStartOrNull != null) SetCurrentStep(playOnStartOrNull);
+            if (playOnStartOrNull != null) CurrentStep = playOnStartOrNull;
         }
         
         
@@ -79,9 +83,13 @@ namespace LCHFramework.Managers
         public void PassCurrentStep()
         {
 #if UNITY_EDITOR
-            if (!EditorApplication.isPlaying) throw new Exception("Can't execute when edit mode in editor. because cache variables is cached.");
+            if (!EditorApplication.isPlaying)
+                throw new Exception("Can't execute when edit mode in editor. because cache variables is cached.");
 #endif
-            if (RightStepOrNull != null) SetCurrentStep(RightStepOrNull);
+            if (RightStepOrNull == null)
+                Debug.LogError("Step is end.");
+            else
+                CurrentStep = RightStepOrNull;
         }
     }   
 }

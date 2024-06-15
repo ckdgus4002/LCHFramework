@@ -35,7 +35,7 @@ namespace LCHFramework.Managers
             
             await Task.Delay(TimeSpan.FromSeconds(delay), _ctses.AddAndReturn(new CancellationTokenSource()).Token);
 
-            StepManager.PassCurrentStep();
+            PassCurrentStep.PassCurrentStep();
         }
     }
 }

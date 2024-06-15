@@ -122,7 +122,12 @@ namespace LCHFramework.Components
             rotateButton.SetActive(rotateAxis != Vector3Bool.False);
         }
         
-        private void OnEnable() => Initialize();
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            
+            Initialize();
+        }
 
         // private void LateUpdate()
         // {
