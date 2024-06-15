@@ -21,15 +21,16 @@ namespace LCHFramework.Editor
         {
             if (_isSet) return;
 
-            var fileInfo = new FileInfo("../Resources/KeystorePassword.txt");
-            if (!fileInfo.Exists) return;
+            var keystoreFileInfo = new FileInfo(PlayerSettings.Android.keystoreName);
+            if (!keystoreFileInfo.Exists) return;
+            
+            var keystorePasswordFileInfoOrNull = new FileInfo($"{keystoreFileInfo.Directory.FullName}{Path.DirectorySeparatorChar}KeystorePassword.txt");
+            if (!keystorePasswordFileInfoOrNull.Exists) return;
 
-            foreach (var line in File.ReadAllLines(fileInfo.FullName))
+            foreach (var line in File.ReadAllLines(keystorePasswordFileInfoOrNull.FullName))
                 if (line.Contains(KeystorePass)) PlayerSettings.Android.keystorePass = line.Replace(KeystorePass, "");
-                else if (line.Contains(KeyaliasName))
-                    PlayerSettings.Android.keyaliasName = line.Replace(KeyaliasName, "");
-                else if (line.Contains(KeyaliasPass))
-                    PlayerSettings.Android.keyaliasPass = line.Replace(KeyaliasPass, "");
+                else if (line.Contains(KeyaliasName)) PlayerSettings.Android.keyaliasName = line.Replace(KeyaliasName, "");
+                else if (line.Contains(KeyaliasPass)) PlayerSettings.Android.keyaliasPass = line.Replace(KeyaliasPass, "");
 
             _isSet = true;
         }
