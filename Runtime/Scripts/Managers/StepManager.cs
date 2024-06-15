@@ -29,30 +29,31 @@ namespace LCHFramework.Managers
         public T2 LeftStepOrNull { get; private set; }
         
         public T2 RightStepOrNull { get; private set; }
-        
-        
-        public T2 CurrentStep
-        {
-            get
-            {
-                if (_currentStep == null) _currentStep = Steps[0];
 
-                return _currentStep;
-            }
-            private set
-            {
-                if (EqualityComparer<T2>.Default.Equals(_currentStep, value)) return;
+
+        public T2 GetCurrentStep()
+        {
+            if (_currentStep == null) SetCurrentStep(Steps[0]);
+
+            return _currentStep;
+        }
+
+        public void SetCurrentStep(Step value) => SetCurrentStep(value.Index);
+        
+        private void SetCurrentStep(int index)
+        {
+            var value = Steps[index];
+            if (_currentStep == value) return;
                 
-                PrevStepOrNull = _currentStep;
-                _currentStep = value;
-                LeftStepOrNull = 0 < _currentStep.Index ? Steps[_currentStep.Index - 1] : loop ? Steps[^1] : null;
-                RightStepOrNull = _currentStep.Index < Steps.Length - 1 ? Steps[_currentStep.Index + 1] : loop ? Steps[0] : null;
+            PrevStepOrNull = _currentStep;
+            _currentStep = value;
+            LeftStepOrNull = 0 < _currentStep.Index ? Steps[_currentStep.Index - 1] : loop ? Steps[^1] : null;
+            RightStepOrNull = _currentStep.Index < Steps.Length - 1 ? Steps[_currentStep.Index + 1] : loop ? Steps[0] : null;
                 
-                foreach (var t in Steps.Where(t => t.IsShown)) t.Hide();
-                _currentStep.Show();
+            foreach (var t in Steps.Where(t => t.IsShown)) t.Hide();
+            _currentStep.Show();
                 
-                OnCurrentStepChanged?.Invoke(PrevStepOrNull, _currentStep);
-            }
+            OnCurrentStepChanged?.Invoke(PrevStepOrNull, _currentStep);
         }
         private T2 _currentStep;
 
@@ -69,7 +70,7 @@ namespace LCHFramework.Managers
         {
             base.Start();
 
-            if (playOnStartOrNull != null) CurrentStep = playOnStartOrNull;
+            if (playOnStartOrNull != null) SetCurrentStep(playOnStartOrNull);
         }
         
         
@@ -80,7 +81,7 @@ namespace LCHFramework.Managers
 #if UNITY_EDITOR
             if (!EditorApplication.isPlaying) throw new Exception("Can't execute when edit mode in editor. because cache variables is cached.");
 #endif
-            if (RightStepOrNull != null) CurrentStep = RightStepOrNull;
+            if (RightStepOrNull != null) SetCurrentStep(RightStepOrNull);
         }
     }   
 }

@@ -5,7 +5,7 @@ namespace LCHFramework.Data
     public interface IReadOnlyStepManager : IReadOnlyStepManager<Step>
     {
     }
-        
+    
     public interface IReadOnlyStepManager<out T> where T : Step
     {
         public event OnValueChangedDelegate<T> OnCurrentStepChanged;
@@ -16,9 +16,11 @@ namespace LCHFramework.Data
         public T LeftStepOrNull { get; }
         
         public T RightStepOrNull { get; }
-        
-        
-        public T CurrentStep { get; }
+
+
+        public T GetCurrentStep();
+
+        public void SetCurrentStep(Step value);
         
         public T FirstStep { get; }
         
