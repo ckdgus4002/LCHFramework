@@ -10,7 +10,7 @@ using Object = UnityEngine.Object;
 
 namespace LCHFramework.Components
 {
-    public class LCHMonoBehaviour : MonoBehaviour, IIndex
+    public class LCHMonoBehaviour : MonoBehaviour
     {
         [NonSerialized] public Matrix4x4 defaultTRS;
         [NonSerialized] public Matrix4x4 defaultLocalTRS;
@@ -25,11 +25,13 @@ namespace LCHFramework.Components
         public int EnableCount { get; private set; }
         
         public int DisableCount { get; private set; }
-        
-        public bool IsDestroyed { get; private set; }
 
+
+        public bool IsDestroyed => this == null;
 
         public virtual int Index => transform.GetSiblingIndex();
+        
+        public virtual bool IsShown => gameObject.activeSelf;
         
         public float HalfWidth => Width * .5f;
         
@@ -75,13 +77,9 @@ namespace LCHFramework.Components
             StopAllCoroutines();
             CancellationTokenSourceUtility.ClearTokenSources(_ctses);
         }
-
-        protected virtual void OnDestroy()
-        {
-            IsDestroyed = true;
-        }
-
-
+        
+        
+        
         public virtual void InitializeTRS()
         {
             defaultTRS = Matrix4x4.TRS(transform.position, transform.rotation, transform.lossyScale);

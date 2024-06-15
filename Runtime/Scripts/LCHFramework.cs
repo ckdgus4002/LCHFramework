@@ -28,7 +28,7 @@ namespace LCHFramework
             IEnumerator Coroutine()
             {
                 var now = DateTime.Now;
-                yield return new WaitWhile(() => now.AddSeconds(seconds) < DateTime.Now);
+                yield return new WaitWhile(() => DateTime.Now < now.AddSeconds(seconds));
                 
                 callback?.Invoke();
             }

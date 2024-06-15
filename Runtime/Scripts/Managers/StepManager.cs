@@ -67,7 +67,7 @@ namespace LCHFramework.Managers
         
         public T2 LastStep => Steps[^1];
 
-        public T2[] Steps => _steps.IsEmpty() ? _steps = GetComponentsInChildren<T2>(true).ToArray() : _steps;
+        public T2[] Steps => _steps.IsEmpty() ? _steps = GetComponentsInChildren<T2>(true).OrderBy(t => t.Index).ToArray() : _steps;
         private T2[] _steps;
         
         

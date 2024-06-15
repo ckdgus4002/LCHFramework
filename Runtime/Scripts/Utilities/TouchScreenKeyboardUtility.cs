@@ -4,10 +4,12 @@ namespace LCHFramework.Utilities
 {
     public static class TouchScreenKeyboardUtility
     {
+        /// <remarks>
+        /// TouchScreenKeyboard.area.height는 Android 에서 0을 반환합니다.
+        /// https://docs.unity3d.com/ScriptReference/TouchScreenKeyboard-area.html
+        /// </remarks>
         public static float GetHeight()
         {
-            /// TouchScreenKeyboard.area.height는 Android 에서 0을 반환합니다.
-            /// https://docs.unity3d.com/ScriptReference/TouchScreenKeyboard-area.html
 #if UNITY_ANDROID
             using var unityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
             using var rect = new AndroidJavaObject("android.graphics.Rect");

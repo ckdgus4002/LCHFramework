@@ -34,10 +34,8 @@ namespace LCHFramework.Managers
             if (isDontDestroyOnLoad) DontDestroyOnLoad(gameObject);
         }
         
-        protected override void OnDestroy()
+        private void OnDestroy()
         {
-            base.OnDestroy();
-            
             if (Instance == this) Instance = null;
         }
     }
