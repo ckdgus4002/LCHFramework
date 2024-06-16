@@ -1,12 +1,12 @@
-#if UNITY_EDITOR
 using System.Reflection;
+using LCHFramework.Attributes;
 using UnityEditor;
 using UnityEngine;
 
-namespace LCHFramework.Attributes
+namespace LCHFramework.Editor.Attributes
 {
     [CanEditMultipleObjects, CustomEditor(typeof(MonoBehaviour), true)]
-    public class ShowInInspectorEditor : Editor
+    public class ShowInInspectorEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
@@ -36,4 +36,3 @@ namespace LCHFramework.Attributes
         }
     }
 }
-#endif

@@ -1,9 +1,9 @@
-#if UNITY_EDITOR
 using System;
+using LCHFramework.Attributes;
 using UnityEditor;
 using UnityEngine;
 
-namespace LCHFramework.Attributes
+namespace LCHFramework.Editor.Attributes
 {
     [CustomPropertyDrawer(typeof(StringInListAttribute))]
     public class StringInListDrawer : PropertyDrawer
@@ -25,4 +25,3 @@ namespace LCHFramework.Attributes
         }
     }
 }
-#endif
