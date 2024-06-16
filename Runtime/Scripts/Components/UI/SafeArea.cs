@@ -5,9 +5,10 @@ using UnityEngine;
 
 namespace LCHFramework.Components.UI
 {
+    [ExecuteAlways]
     public class SafeArea : DrivenRectTransformBehaviour
     {
-        private void OnRectTransformDimensionsChange()
+        protected virtual void LateUpdate()
         {
             Tracker.Clear();
             
@@ -15,7 +16,7 @@ namespace LCHFramework.Components.UI
             SetAnchoredPosition();
         }
         
-        
+                
         
         private void SetSize()
         {
