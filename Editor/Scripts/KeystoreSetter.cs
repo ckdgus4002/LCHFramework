@@ -21,6 +21,8 @@ namespace LCHFramework.Editor
         {
             if (_isSet) return;
 
+            if (string.IsNullOrWhiteSpace(PlayerSettings.Android.keystoreName)) return;
+            
             var keystoreFileInfo = new FileInfo(PlayerSettings.Android.keystoreName);
             if (!keystoreFileInfo.Exists) return;
             
