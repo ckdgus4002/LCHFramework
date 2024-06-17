@@ -2,6 +2,7 @@
 
 namespace LCHFramework.Components
 {
+    [RequireComponent(typeof(Collider))]
     public class Bullet : LCHMonoBehaviour
     {
         private static float Gravity
