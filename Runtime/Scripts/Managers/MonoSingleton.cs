@@ -29,14 +29,9 @@ namespace LCHFramework.Managers
             
             if (Instance != null && Instance != this) Destroy(Instance);
 
-            Instance = (T)(Component)this;
+            Instance = (object)this as T;
             
             if (isDontDestroyOnLoad) DontDestroyOnLoad(gameObject);
-        }
-        
-        private void OnDestroy()
-        {
-            if (Instance == this) Instance = null;
         }
     }
 }

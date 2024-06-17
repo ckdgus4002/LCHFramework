@@ -9,18 +9,15 @@ namespace LCHFramework.Components
 {
     public class OnlyStep : LCHMonoBehaviour
     {
-        [SerializeField] private  Step[] steps;
-        [SerializeField] private  UnityEvent<int, int> onShow;
-        [SerializeField] private  UnityEvent<int, int> onHide;
+        private ICurrentStepIndexChanged CurrentStepIndexChanged => (ICurrentStepIndexChanged)(_currentStepIndexChanged == null ? _currentStepIndexChanged = (LCHMonoBehaviour)FindAnyComponentByType<ICurrentStepIndexChanged>() : _currentStepIndexChanged);
+        [SerializeField] private LCHMonoBehaviour _currentStepIndexChanged;
         
         
-        private static IStepIndexManager StepIndexManager => _stepIndexManager ??= FindAnyComponentByType<IStepIndexManager>();
-        private static IStepIndexManager _stepIndexManager;
-
-        private  static ICurrentStepIndexChanged CurrentStepIndexChanged => _currentStepIndexChanged ??= FindAnyComponentByType<ICurrentStepIndexChanged>();
-        private static ICurrentStepIndexChanged _currentStepIndexChanged;
-        
-        
+        [SerializeField] private Step[] steps;
+        [SerializeField] private UnityEvent<int, int> onShow;
+        [SerializeField] private UnityEvent<int, int> onHide;
+            
+            
         
         protected override void Start()
         {
@@ -32,7 +29,7 @@ namespace LCHFramework.Components
         
         
         private void OnCurrentStepIndexChanged(int prevStepIndex, int currentStepIndex)
-            => OnCurrentStepIndexChanged(() => StepIndexManager.PrevStepIndex, () => StepIndexManager.CurrentStepIndex);
+            => OnCurrentStepIndexChanged(() => CurrentStepIndexChanged.PrevStepIndex, () => CurrentStepIndexChanged.CurrentStepIndex);
         
         private void OnCurrentStepIndexChanged(Func<int> prevStepIndex, Func<int> currentStepIndex)
         {

@@ -1,14 +1,23 @@
+using System;
+
 namespace LCHFramework.Managers
 {
-    public abstract class Singleton<T> where T : new()
+    public abstract class Singleton<T> : IDisposable where T : class, new()
     {
-        public static T Instance { get; protected set; }
+        public static T Instance
+        {
+            get => _instance ??= new T();
+            set
+            {
+                if (_instance != null && _instance != value) ((IDisposable)_instance).Dispose();
+                
+                _instance = value;
+            }
+        }
+        private static T _instance;
         
         
         
-        /// <remarks>
-        /// ex. Instance = new T();
-        /// </remarks>>
-        protected abstract void InitializeInstance();
+        public virtual void Dispose() => Instance = null;
     }
 }

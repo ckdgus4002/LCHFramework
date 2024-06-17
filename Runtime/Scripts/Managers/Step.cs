@@ -5,7 +5,8 @@ namespace LCHFramework.Managers
 {
     public class Step : LCHMonoBehaviour
     {
-        protected IPassCurrentStep PassCurrentStep => _passCurrentStep ??= GetComponentInParent<IPassCurrentStep>();
+        // ReSharper disable once MergeConditionalExpression
+        protected IPassCurrentStep PassCurrentStep => _passCurrentStep == null ? _passCurrentStep = GetComponentInParent<IPassCurrentStep>() : _passCurrentStep;
         private IPassCurrentStep _passCurrentStep;
         
         

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using LCHFramework.Extensions;
 using LCHFramework.Utilities;
@@ -15,13 +16,22 @@ namespace LCHFramework.Components
         
         public static bool TryFindAnyObjectOfType<T>(out T result) where T : Object => (result = FindAnyObjectByType<T>()) != null;
         
-        public static T FindAnyComponentByType<T>() where T : class
+        public static Object FindAnyComponentByTypes(params Type[] types)
+        {
+            foreach (var result in FindObjectsByType<LCHMonoBehaviour>(FindObjectsSortMode.None))
+                if (types.All(type => result.GetComponent(type)))
+                    return result;
+
+            return null;
+        }
+        
+        public static T FindAnyComponentByType<T>()
         {
             foreach (var t in FindObjectsByType<LCHMonoBehaviour>(FindObjectsSortMode.None))
                 if (t.TryGetComponent<T>(out var result))
                     return result;
 
-            return null;
+            return default;
         }
         
         public static Coroutine RestartCoroutine(MonoBehaviour monoBehaviour, Coroutine stopCoroutine, IEnumerator startCoroutine)

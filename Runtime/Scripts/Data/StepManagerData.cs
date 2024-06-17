@@ -4,7 +4,7 @@ namespace LCHFramework.Data
 {
     public delegate void OnCurrentStepIndexChangedDelegate(int prev, int current);
     
-    public interface ICurrentStepIndexChanged
+    public interface ICurrentStepIndexChanged : IStepIndexManager
     {
         public OnCurrentStepIndexChangedDelegate OnCurrentStepIndexChanged { get; set; }
     }

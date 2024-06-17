@@ -15,7 +15,7 @@ namespace LCHFramework.Managers
     {
     }
     
-    public class StepManager<T1, T2> : MonoSingleton<T1>, IStepManager<T2>, IStepIndexManager, ICurrentStepIndexChanged, IPassCurrentStep where T1 : Component where T2 : Step
+    public class StepManager<T1, T2> : MonoSingleton<T1>, IStepManager<T2>, ICurrentStepIndexChanged, IPassCurrentStep where T1 : Component where T2 : Step
     {
         [SerializeField] private bool loop;
         public PlayOnStart playOnStart = new() { delayFrame = 1 };
