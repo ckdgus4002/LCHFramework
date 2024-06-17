@@ -9,6 +9,7 @@ namespace LCHFramework.Managers
         
         
         public int CurrentDeviceOrientationIndex { get; private set; } = -1;
+        
         public int PrevDeviceOrientationIndex { get; private set; } = -1;
         
         
