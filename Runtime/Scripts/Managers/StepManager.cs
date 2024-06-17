@@ -11,18 +11,11 @@ using UnityEditor;
 
 namespace LCHFramework.Managers
 {
-    public delegate void OnCurrentStepIndexChangedDelegate(int prev, int current);
-    
-    public interface ICurrentStepIndexChanged
-    {
-        public OnCurrentStepIndexChangedDelegate OnCurrentStepIndexChanged { get; set; }
-    }
-    
     public class StepManager : StepManager<StepManager, Step>
     {
     }
     
-    public class StepManager<T1, T2> : MonoSingleton<T1>, IStepManager<T2>, IPassCurrentStep, ICurrentStepIndexChanged where T1 : Component where T2 : Step
+    public class StepManager<T1, T2> : MonoSingleton<T1>, IStepManager<T2>, IStepIndexManager, ICurrentStepIndexChanged, IPassCurrentStep where T1 : Component where T2 : Step
     {
         [SerializeField] private bool loop;
         public PlayOnStart playOnStart = new() { delayFrame = 1 };
@@ -36,14 +29,18 @@ namespace LCHFramework.Managers
         public T2 LeftStepOrNull { get; private set; }
         
         public T2 RightStepOrNull { get; private set; }
-
-
+        
+        
+        public int CurrentStepIndex => CurrentStep.Index;
+        
+        public int PrevStepIndex => PrevStepOrNull == null ? -1 : PrevStepOrNull.Index;
+        
         public T2 CurrentStep
         {
             get
             {
                 if (_currentStep == null) CurrentStep = Steps[0];
-
+                
                 return _currentStep;    
             }
             set
@@ -62,11 +59,11 @@ namespace LCHFramework.Managers
             }
         }
         private T2 _currentStep;
-
+        
         public T2 FirstStep => Steps[0];
         
         public T2 LastStep => Steps[^1];
-
+        
         public T2[] Steps => _steps.IsEmpty() ? _steps = GetComponentsInChildren<T2>(true) : _steps;
         private T2[] _steps;
         
@@ -75,7 +72,7 @@ namespace LCHFramework.Managers
         protected override async void Start()
         {
             base.Start();
-
+            
             if (playOnStart.stepOrNull != null)
             {
                 for (var i = 0; i < playOnStart.delayFrame; i++) await Awaitable.NextFrameAsync();

@@ -2,6 +2,8 @@ using LCHFramework.Managers;
 
 namespace LCHFramework.Data
 {
+    public delegate void OnCurrentStepIndexChangedDelegate(int prev, int current);
+    
     public interface ICurrentStepIndexChanged
     {
         public OnCurrentStepIndexChangedDelegate OnCurrentStepIndexChanged { get; set; }
