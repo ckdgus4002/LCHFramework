@@ -7,13 +7,13 @@ namespace LCHFramework.Managers
     {
         public static T Instance
         {
-            get
+            get => _instance == null ? _instance = FindAnyObjectByType<T>() : _instance; 
+            private set
             {
-                if (_instance == null) _instance = FindAnyObjectByType<T>();
-
-                return _instance;
+                if (_instance != null && _instance != value) Destroy(_instance);
+                
+                _instance = value;
             }
-            private set => _instance = value;
         }
         private static T _instance;
         
@@ -26,8 +26,6 @@ namespace LCHFramework.Managers
         protected override void Awake()
         {
             base.Awake();
-            
-            if (Instance != null && Instance != this) Destroy(Instance);
 
             Instance = (object)this as T;
             

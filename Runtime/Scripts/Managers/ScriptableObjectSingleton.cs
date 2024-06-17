@@ -1,17 +1,29 @@
-using UnityEditor;
 using UnityEngine;
 
 namespace LCHFramework.Managers
 {
-    public abstract class RuntimeScriptableSingleton<T> : ScriptableObject where T : ScriptableObject
+#if UNITY_EDITOR
+    public class ScriptableSingleton<T> : UnityEditor.ScriptableSingleton<T>
+#else
+    public class ScriptableSingleton<T> : ScriptableObject 
+#endif
+        where T : ScriptableObject
     {
-        public static T Instance { get; protected set; }
-
-
+#if !UNITY_EDITOR
+        private static T s_Instance;
         
-        /// <remarks>
-        /// ex. Instance = Resources.Load();
-        /// </remarks>>
-        protected abstract void InitializeInstance();
+        public ScriptableSingleton()
+        {
+            if (s_Instance != null && s_Instance != this) Destroy(s_Instance);
+
+            s_Instance = (object)this as T;
+        }
+
+        public static T instance
+        {
+            get => s_Instance;
+            set => s_Instance = value;
+        }
+#endif
     }
 }
