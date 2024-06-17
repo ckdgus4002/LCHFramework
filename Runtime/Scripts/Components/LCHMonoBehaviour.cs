@@ -1,9 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
-using LCHFramework.Data;
+using LCHFramework.Extensions;
 using LCHFramework.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -12,6 +11,35 @@ namespace LCHFramework.Components
 {
     public class LCHMonoBehaviour : MonoBehaviour
     {
+        public static bool TryFindAnyObjectOfType<T>(FindObjectsInactive findObjectsInactive, out T result) where T : Object => (result = FindAnyObjectByType<T>(findObjectsInactive)) != null;
+        
+        public static bool TryFindAnyObjectOfType<T>(out T result) where T : Object => (result = FindAnyObjectByType<T>()) != null;
+        
+        public static T FindAnyComponentByType<T>() where T : class
+        {
+            foreach (var t in FindObjectsByType<LCHMonoBehaviour>(FindObjectsSortMode.None))
+                if (t.TryGetComponent<T>(out var result))
+                    return result;
+
+            return null;
+        }
+        
+        public static Coroutine RestartCoroutine(MonoBehaviour monoBehaviour, Coroutine stopCoroutine, IEnumerator startCoroutine)
+        {
+            if (stopCoroutine != null) monoBehaviour.StopCoroutine(stopCoroutine);
+
+            return monoBehaviour.StartCoroutine(startCoroutine);
+        }
+        
+        public static Coroutine RestartCoroutine(MonoBehaviour monoBehaviour, IEnumerable<Coroutine> stopCoroutines, IEnumerator startCoroutine)
+        {
+            foreach (var stopCoroutine in stopCoroutines) if (stopCoroutine != null) monoBehaviour.StopCoroutine(stopCoroutine);
+            
+            return monoBehaviour.StartCoroutine(startCoroutine);
+        }
+        
+        
+        
         [NonSerialized] public Matrix4x4 defaultTRS;
         [NonSerialized] public Matrix4x4 defaultLocalTRS;
         [NonSerialized] public string defaultName;
@@ -86,59 +114,17 @@ namespace LCHFramework.Components
             defaultLocalTRS = Matrix4x4.TRS(transform.localPosition, transform.localRotation, transform.localScale);
             TRSIsInitialized = true;
         }
-
-        public bool TryFindAnyObjectOfType<T>(FindObjectsInactive findObjectsInactive, out T result) where T : Object => (result = FindAnyObjectByType<T>(findObjectsInactive)) != null;
         
-        public bool TryFindAnyObjectOfType<T>(out T result) where T : Object => (result = FindAnyObjectByType<T>()) != null;
-
-        public bool TryGetComponentInParent<T>(out T result) => (result = GetComponentInParent<T>()) != null;
+        protected Coroutine RestartCoroutine(Coroutine stopCoroutine, IEnumerator startCoroutine) => RestartCoroutine(this, stopCoroutine, startCoroutine);
         
-        public T[] GetComponentsInParents<T>(bool includeInactive) where T : class
-        {
-            LinkedList<T> results = new();
-            var parent = transform.parent;
-            while (true)
-            {
-                if ((includeInactive || parent.gameObject.activeSelf) && parent.TryGetComponent<T>(out var result)) results.AddLast(result);
-
-                if (parent.parent != null) parent = parent.parent;
-                else break;
-            }
-
-            return results.ToArray();
-        }
+        protected Coroutine RestartCoroutine(IEnumerable<Coroutine> stopCoroutines, IEnumerator startCoroutine) => RestartCoroutine(this, stopCoroutines, startCoroutine);
         
-        public T GetComponentInSibling<T>(bool includeMe = false)
-        {
-            T result = default;
-            var parent = transform.parent;
-            for (var i = 0; i < parent.childCount; i++)
-            {
-                var sibling = parent.GetChild(i);
-                if ((includeMe || sibling != transform) && sibling.TryGetComponent(out result)) break;
-            }
+        protected bool TryGetComponentInParent<T>(out T result) => ComponentExtension.TryGetComponentInParent(this, out result);
         
-            return result;
-        }
- 
-        public List<T> GetComponentsInSibling<T>(bool includeMe = true)
-        {
-            var result = new List<T>(16);
-            var parent = transform.parent;
-            for (var i = 0; i < parent.childCount; i++)
-            {
-                var sibling = parent.GetChild(i);
-                if ((includeMe || sibling != transform) && sibling.TryGetComponent(out T component))
-                    result.Add(component);
-            }
+        protected T[] GetComponentsInParents<T>(bool includeInactive) where T : class => ComponentExtension.GetComponentsInParents<T>(this, includeInactive);
         
-            return result;
-        }
-
-        public Coroutine RestartCoroutine(Coroutine stopCoroutine, IEnumerator startCoroutine) 
-            => CoroutineUtility.RestartCoroutine(this, stopCoroutine, startCoroutine);
-
-        public Coroutine RestartCoroutine(IEnumerable<Coroutine> stopCoroutines, IEnumerator startCoroutine)
-            => CoroutineUtility.RestartCoroutine(this, stopCoroutines, startCoroutine);
+        protected T GetComponentInSibling<T>(bool includeMe = false) => ComponentExtension.GetComponentInSibling<T>(this, includeMe);
+        
+        protected List<T> GetComponentsInSibling<T>(bool includeMe = true) => ComponentExtension.GetComponentsInSibling<T>(this, includeMe);
     }
 }
