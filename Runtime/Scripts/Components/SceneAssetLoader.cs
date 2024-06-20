@@ -6,16 +6,16 @@ using UnityEditor;
 
 namespace LCHFramework.Components
 {
-    public class SceneAssetLoader : EditorObjectAllocator
+    public class SceneAssetLoader : LCHMonoBehaviour
     {
 #if UNITY_EDITOR
         public SceneAsset scene;
 #endif
         
-        private string sceneName;
+        [SerializeField] private string sceneName;
         
         
-        private bool IsLoaded => _loadAsync != null && _loadAsync.isDone && 1 - float.Epsilon < _loadAsync.progress;
+        private bool IsLoaded => _loadAsync is { isDone: true, progress: > 1 - float.Epsilon };
         
         
         
@@ -24,7 +24,7 @@ namespace LCHFramework.Components
         
         
         
-        public override void OnAllocate()
+        private void OnValidate()
         {
 #if UNITY_EDITOR
             sceneName = scene != null ? scene.name : string.Empty;
