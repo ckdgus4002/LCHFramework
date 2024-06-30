@@ -1,24 +1,32 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using LCHFramework.Attributes;
 using LCHFramework.Data;
+using LCHFramework.Extensions;
 using LCHFramework.Managers;
 using UnityEngine;
 using UnityEngine.Events;
+using Object = UnityEngine.Object;
 
 namespace LCHFramework.Components
 {
     public class OnlyStep : LCHMonoBehaviour
     {
-        private ICurrentStepIndexChanged CurrentStepIndexChanged => (ICurrentStepIndexChanged)(_currentStepIndexChanged == null ? _currentStepIndexChanged = (LCHMonoBehaviour)FindAnyComponentByType<ICurrentStepIndexChanged>() : _currentStepIndexChanged);
-        [SerializeField] private LCHMonoBehaviour _currentStepIndexChanged;
-        
-        
+        [SerializeField] private Object _currentStepIndexChangedOrNull;
         [SerializeField] private Step[] steps;
         [SerializeField] private UnityEvent<int, int> onShow;
         [SerializeField] private UnityEvent<int, int> onHide;
-            
-            
         
+        
+        private ICurrentStepIndexChanged CurrentStepIndexChanged => (ICurrentStepIndexChanged)(_currentStepIndexChangedOrNull == null ? _currentStepIndexChangedOrNull = (Object)FindAnyInterfaceByType<ICurrentStepIndexChanged>() : _currentStepIndexChangedOrNull);
+
+
+        private void OnValidate()
+        {
+            _currentStepIndexChangedOrNull = (_currentStepIndexChangedOrNull is GameObject result && result.TryGetComponent<ICurrentStepIndexChanged>(out _)) || _currentStepIndexChangedOrNull is ICurrentStepIndexChanged ? _currentStepIndexChangedOrNull : null;
+        }
+
         protected override void Start()
         {
             base.Start();

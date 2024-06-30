@@ -16,18 +16,22 @@ namespace LCHFramework.Components
         
         public static bool TryFindAnyObjectOfType<T>(out T result) where T : Object => (result = FindAnyObjectByType<T>()) != null;
         
-        public static Object FindAnyComponentByTypes(params Type[] types)
+        public static Object FindAnyObjectByTypes(params Type[] types)
         {
-            foreach (var result in FindObjectsByType<LCHMonoBehaviour>(FindObjectsSortMode.None))
-                if (types.All(type => result.GetComponent(type)))
-                    return result;
-
+            var otherTypes = types.Length < 2 ? Array.Empty<Type>() : types[1..];
+            foreach (var t in FindObjectsByType(types[0], FindObjectsSortMode.None))
+            {
+                var component = (Component)t;
+                if (otherTypes.All(type => component.GetComponent(type)))
+                    return t;
+            }
+            
             return null;
         }
         
-        public static T FindAnyComponentByType<T>()
+        public static T FindAnyInterfaceByType<T>() where T : class
         {
-            foreach (var t in FindObjectsByType<LCHMonoBehaviour>(FindObjectsSortMode.None))
+            foreach (var t in FindObjectsByType<Component>(FindObjectsSortMode.None))
                 if (t.TryGetComponent<T>(out var result))
                     return result;
 

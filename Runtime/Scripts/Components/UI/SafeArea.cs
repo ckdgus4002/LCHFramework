@@ -41,7 +41,7 @@ namespace LCHFramework.Components.UI
 
             var scaleFactor = Mathf.Min(Screen.width / Screen.safeArea.width, Screen.height / Screen.safeArea.height);
             var safeArea = Screen.safeArea.size * scaleFactor;
-            return orientationIndex switch
+            var delta = orientationIndex switch
             {
                 1 => new Vector2(Screen.width - safeArea.x, safeArea.y - Screen.height),
                 2 => new Vector2(Screen.width - safeArea.x, Screen.height - safeArea.y),
@@ -49,6 +49,7 @@ namespace LCHFramework.Components.UI
                 4 => new Vector2(safeArea.x - Screen.width, Screen.height - safeArea.y),
                 _ => throw new ArgumentOutOfRangeException(nameof(orientationIndex), orientationIndex, null)
             };
+            return delta * RectTransformOrNull.pivot;
         }
     }
 }
