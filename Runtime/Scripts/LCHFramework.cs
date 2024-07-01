@@ -55,7 +55,7 @@ namespace LCHFramework
             IEnumerator Coroutine()
             {
                 var start = Time.frameCount;
-                yield return new WaitWhile(() => start + frameCount < Time.frameCount);
+                yield return new WaitWhile(() => Time.frameCount < start + frameCount);
                 
                 callback?.Invoke();
             }
