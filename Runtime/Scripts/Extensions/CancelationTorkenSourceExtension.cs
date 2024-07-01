@@ -10,10 +10,9 @@ namespace LCHFramework.Utilities
         {
             while (!cancellationTokenSources.IsEmpty())
             {
-                const int index = 0;
-                cancellationTokenSources.RemoveAt(index);
-                var cts = cancellationTokenSources[index];
+                var cts = cancellationTokenSources[0];
                 ClearTokenSource(ref cts);
+                cancellationTokenSources.RemoveAt(0);
             }
         }
         
