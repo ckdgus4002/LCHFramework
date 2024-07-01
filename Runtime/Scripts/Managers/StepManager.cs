@@ -92,7 +92,10 @@ namespace LCHFramework.Managers
             if (RightStepOrNull == null)
                 Debug.LogError("Step is end.");
             else
+            {
+                Debug.Log($"CurrentStep is Changed. {CurrentStep.name} -> {RightStepOrNull.name}");
                 CurrentStep = RightStepOrNull;
+            }
         }
         
         
