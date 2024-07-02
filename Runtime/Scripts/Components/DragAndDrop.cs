@@ -56,8 +56,8 @@ namespace LCHFramework.Components
         public int DefaultSortingOrder { get; private set; }
         
         
-        public event Action onBeginDrag;
-        public event Action onDrag;
+        public event Action<PointerEventData> onBeginDrag;
+        public event Action<PointerEventData> onDrag;
         public event Action<PointerEventData, int> onEndDrag; // 몇 번째 Rect.
         
         
@@ -105,7 +105,7 @@ namespace LCHFramework.Components
             BeginMousePosition = GetMousePosition(eventData);
             SortingOrder = GetDragSortingOrder();
 
-            onBeginDrag?.Invoke();
+            onBeginDrag?.Invoke(eventData);
         }
 
         public virtual int GetDragSortingOrder() => DefaultSortingOrder + 1;
@@ -114,7 +114,7 @@ namespace LCHFramework.Components
         {
             transform.position = GetDragPosition(eventData);
             
-            onDrag?.Invoke();
+            onDrag?.Invoke(eventData);
         }
 
         public virtual Vector3 GetDragPosition(PointerEventData eventData) => GetMousePosition(eventData) + (BeginPosition - BeginMousePosition);
