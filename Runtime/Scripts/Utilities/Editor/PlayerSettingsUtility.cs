@@ -19,8 +19,13 @@ namespace LCHFramework.Utilities
                     return PlayerSettings.iOS.buildNumber;
                 case BuildTarget.tvOS:
                     return PlayerSettings.tvOS.buildNumber;
-                case BuildTarget.Bratwurst:
+#if UNITY_6000_0_OR_NEWER
+                case BuildTarget.VisionOS:
+                    return PlayerSettings.VisionOS.buildNumber;
+#else
+                case BuildTarget.VisionOS:
                     return PlayerSettings.Bratwurst.buildNumber;
+#endif                
                 default:
                     return string.Empty;
             }

@@ -8,7 +8,7 @@ namespace LCHFramework
     {
         public void SetVelocity(Vector3 velocity)
         {
-            GetComponent<Rigidbody>().velocity = velocity;
+            GetComponent<Rigidbody>().linearVelocity = velocity;
         }
 
         public void SetForce(Vector3 force)
