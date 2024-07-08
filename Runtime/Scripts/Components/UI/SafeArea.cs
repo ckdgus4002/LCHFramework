@@ -1,6 +1,6 @@
-﻿using System;
-using LCHFramework.Extensions;
+﻿using LCHFramework.Extensions;
 using LCHFramework.Managers;
+using LCHFramework.Utilities;
 using UnityEngine;
 
 namespace LCHFramework.Components.UI
@@ -37,19 +37,7 @@ namespace LCHFramework.Components.UI
         protected virtual Vector2 GetAnchoredPosition()
         {
             var orientationIndex = OrientationManager.Instance.GetScreenOrientationIndex();
-            if (orientationIndex is < 1 or > 4) return Vector2.zero;
-
-            var scaleFactor = Mathf.Min(Screen.width / Screen.safeArea.width, Screen.height / Screen.safeArea.height);
-            var safeArea = Screen.safeArea.size * scaleFactor;
-            var delta = orientationIndex switch
-            {
-                1 => new Vector2(Screen.width - safeArea.x, safeArea.y - Screen.height),
-                2 => new Vector2(Screen.width - safeArea.x, Screen.height - safeArea.y),
-                3 => new Vector2(Screen.width - safeArea.x, Screen.height - safeArea.y),
-                4 => new Vector2(safeArea.x - Screen.width, Screen.height - safeArea.y),
-                _ => throw new ArgumentOutOfRangeException(nameof(orientationIndex), orientationIndex, null)
-            };
-            return delta * RectTransformOrNull.pivot;
+            return orientationIndex is < 1 or > 4 ? Vector2.zero : Screen.safeArea.center - ScreenUtility.HalfSize; 
         }
     }
 }
