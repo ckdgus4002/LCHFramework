@@ -6,6 +6,7 @@ using UnityEngine;
 namespace LCHFramework.Components.UI
 {
     [ExecuteAlways]
+    [RequireComponent(typeof(RectTransform))]
     public class SafeArea : DrivenRectTransformBehaviour
     {
         protected virtual void LateUpdate()
