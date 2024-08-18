@@ -29,8 +29,8 @@ namespace LCHFramework.Components.UI
         {
             base.OnEnable();
             
-            if (DefaultTargetPositionX == null) _onEnable[0] = RestartCoroutine(_onEnable[0], Coroutine(0));
-            if (DefaultTargetPositionY == null) _onEnable[1] = RestartCoroutine(_onEnable[1], Coroutine(1));
+            if (DefaultTargetPositionX == null) _onEnable[0] = RestartCoroutine(this, _onEnable[0], Coroutine(0));
+            if (DefaultTargetPositionY == null) _onEnable[1] = RestartCoroutine(this, _onEnable[1], Coroutine(1));
             IEnumerator Coroutine(int index)
             {
                 switch (index)

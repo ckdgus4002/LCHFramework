@@ -155,7 +155,7 @@ namespace LCHFramework.Components
         private Coroutine _setType;
         public void SetType(string type)
         {
-            _setType = RestartCoroutine(_setType, Coroutine());
+            _setType = RestartCoroutine(this, _setType, Coroutine());
             IEnumerator Coroutine()
             {
                 yield return new WaitWhile(() => GestureType != Gesture.Type.None);
@@ -272,7 +272,7 @@ namespace LCHFramework.Components
         private void _OnEndDrag()
         {
             onEndDragStart?.Invoke();
-            _onEndDrag = RestartCoroutine(_onEndDrag, Coroutine());
+            _onEndDrag = RestartCoroutine(this, _onEndDrag, Coroutine());
             IEnumerator Coroutine()
             {
                 if (!UseSnap)

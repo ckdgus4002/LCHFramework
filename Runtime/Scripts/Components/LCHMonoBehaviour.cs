@@ -91,7 +91,7 @@ namespace LCHFramework.Components
             : throw new ArgumentOutOfRangeException(null, "Height", null)
             ;
 
-        public Canvas RootCanvasOrNull => !TryGetComponentInParent<Canvas>(out var result) ? null : result.rootCanvas;
+        public Canvas RootCanvasOrNull => !this.TryGetComponentInParent<Canvas>(out var result) ? null : result.rootCanvas;
         
         public RectTransform RectTransformOrNull => _rectTransform == null ? _rectTransform = (RectTransform)transform : _rectTransform;
         private RectTransform _rectTransform;
@@ -128,17 +128,5 @@ namespace LCHFramework.Components
             defaultLocalTRS = Matrix4x4.TRS(transform.localPosition, transform.localRotation, transform.localScale);
             TRSIsInitialized = true;
         }
-        
-        protected Coroutine RestartCoroutine(Coroutine stopCoroutine, IEnumerator startCoroutine) => RestartCoroutine(this, stopCoroutine, startCoroutine);
-        
-        protected Coroutine RestartCoroutine(IEnumerable<Coroutine> stopCoroutines, IEnumerator startCoroutine) => RestartCoroutine(this, stopCoroutines, startCoroutine);
-        
-        protected bool TryGetComponentInParent<T>(out T result) => ComponentExtension.TryGetComponentInParent(this, out result);
-        
-        protected T[] GetComponentsInParents<T>(bool includeInactive) where T : class => ComponentExtension.GetComponentsInParents<T>(this, includeInactive);
-        
-        protected T GetComponentInSibling<T>(bool includeMe = false) => ComponentExtension.GetComponentInSibling<T>(this, includeMe);
-        
-        protected List<T> GetComponentsInSibling<T>(bool includeMe = true) => ComponentExtension.GetComponentsInSibling<T>(this, includeMe);
     }
 }

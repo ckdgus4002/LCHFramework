@@ -47,7 +47,7 @@ namespace LCHFramework.Components
             tz = -(startPos.z - endPos.z) / dat;
             elapsed_time = 0;
 
-            _move = RestartCoroutine(_move, Coroutine());
+            _move = RestartCoroutine(this, _move, Coroutine());
             IEnumerator Coroutine()
             {
                 while (true)
