@@ -5,14 +5,17 @@ namespace LCHFramework.Managers
 {
     public class MonoSingleton<T> : LCHMonoBehaviour where T : Component
     {
+        public bool InstanceIsNull => Instance == null;
+        
         public static T Instance
         {
             get => _instance == null ? _instance = FindAnyObjectByType<T>() : _instance; 
             private set
             {
-                if (_instance != null && _instance != value) Destroy(_instance);
-                
+                var prevInstance = _instance;
                 _instance = value;
+                
+                if (prevInstance != null && _instance != null && prevInstance != _instance) Destroy(prevInstance);
             }
         }
         private static T _instance;
@@ -30,6 +33,11 @@ namespace LCHFramework.Managers
             Instance = (object)this as T;
             
             if (isDontDestroyOnLoad) DontDestroyOnLoad(gameObject);
+        }
+        
+        protected virtual void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
         }
     }
 }
