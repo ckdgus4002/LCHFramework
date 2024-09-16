@@ -1,6 +1,7 @@
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+#if UNITY_EDITOR
+#endif
 
 namespace LCHFramework.Components.UI
 {
@@ -20,21 +21,4 @@ namespace LCHFramework.Components.UI
             vh.Clear();
         }
     }
-    
-#if UNITY_EDITOR
-    [CustomEditor(typeof(RectDummy))]
-    [CanEditMultipleObjects]
-    public class RectDummyInspector : Editor
-    {
-        public override void OnInspectorGUI()
-        {
-            var raycast = serializedObject.FindProperty("m_RaycastTarget");
-
-            GUILayout.Space(5);
-            EditorGUILayout.PropertyField(raycast);
-
-            serializedObject.ApplyModifiedProperties();
-        }
-    }
-#endif
 }

@@ -15,6 +15,7 @@ namespace LCHFramework
     {
 #if UNITY_EDITOR
         public const string MenuItemRootPath = "Tools/LCHFramework";
+        public const string CreateAssetMenuRootPath = "LCHFramework";
 #endif
         public const bool IsSupported = true;
         

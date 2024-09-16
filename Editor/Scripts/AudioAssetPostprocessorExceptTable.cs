@@ -1,12 +1,32 @@
 using System.Collections.Generic;
 using System.Linq;
+using LCHFramework.Extensions;
 using UnityEditor;
+using UnityEngine;
 
 namespace LCHFramework.Editor
 {
-    [FilePath("Resources/LCHFramework/AudioAssetPostprocessorExceptTable.asset", FilePathAttribute.Location.ProjectFolder)]
-    public class AudioAssetPostprocessorExceptTable : ScriptableSingleton<AudioAssetPostprocessorExceptTable>
+    [CreateAssetMenu(fileName = nameof(AudioAssetPostprocessorExceptTable), menuName = nameof(AudioAssetPostprocessorExceptTable) + "/" + "Create")]
+    public class AudioAssetPostprocessorExceptTable : ScriptableObject
     {
+        public static IEnumerable<AudioAssetPostprocessorExceptTable> Instances
+        {
+            get
+            {
+                if (_instances == null || _instancesTime != Time.frameCount)
+                {
+                    _instances = AssetDatabaseUtility.LoadAssetAtTypes<AudioAssetPostprocessorExceptTable>($"{nameof(AudioAssetPostprocessorExceptTable)}");
+                    _instancesTime = Time.frameCount;
+                }
+
+                return _instances;
+            }
+        }
+        private static IEnumerable<AudioAssetPostprocessorExceptTable> _instances;
+        private static int _instancesTime;
+        
+        
+        
         public List<string> exceptAssetPathPrefix;
         public List<string> exceptAssetNamePrefix;
         
@@ -14,10 +34,10 @@ namespace LCHFramework.Editor
         
         public bool IsExclude(AudioImporter audioImporter)
         {
-            if (exceptAssetPathPrefix.Any(t => audioImporter.assetPath[..t.Length] == t))
+            if (!exceptAssetPathPrefix.IsEmpty() && exceptAssetPathPrefix.Any(t => audioImporter.assetPath[..t.Length] == t))
                 return true;
 
-            if (exceptAssetNamePrefix.Any(t => audioImporter.name[..t.Length] == t))
+            if (!exceptAssetNamePrefix.IsEmpty() && exceptAssetNamePrefix.Any(t => audioImporter.name[..t.Length] == t))
                 return true;
                 
             return false;
