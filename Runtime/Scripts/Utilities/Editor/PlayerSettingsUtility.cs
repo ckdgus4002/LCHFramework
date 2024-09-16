@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System;
 using UnityEditor;
 
@@ -62,3 +63,4 @@ namespace LCHFramework.Utilities
         }
     }
 }
+#endif
