@@ -1,45 +1,29 @@
-using System;
+using LCHFramework.Data;
 using UnityEngine;
 
 namespace LCHFramework.Managers
 {
+    public enum Orientation
+    {
+        Unknown,
+        Portrait,
+        PortraitUpsideDown,
+        LandscapeLeft,
+        LandscapeRight,
+    }
+    
     public class OrientationManager : MonoSingleton<OrientationManager>
     {
-        public event Action<ScreenOrientation, ScreenOrientation> OnOrientationChanged; // Prev, Current
+        public ReactiveProperty<Orientation> Orientation { get; } = new();
         
         
-        public ScreenOrientation PrevOrientation { get; private set; }
         
-        
-        public virtual ScreenOrientation Orientation
-        {
-            get => _orientation;
-            private set
-            {
-                PrevOrientation = _orientation;
-                _orientation = value;
-                OnOrientationChanged?.Invoke(PrevOrientation, Orientation);
-            }
-        }
-        private ScreenOrientation _orientation;
-        
-        
-
-        protected override void Awake()
-        {
-            base.Awake();
-            
-            OnOrientationChanged += (prev, current) => Debug.Log($"Orientation Changed() PrevOrientation: {prev}, CurrentOrientation: {current}");
-        }
-    
         private void Update()
         {
-            if (Screen.orientation == ScreenOrientation.AutoRotation && Input.deviceOrientation < DeviceOrientation.Portrait && DeviceOrientation.LandscapeRight < Input.deviceOrientation) return;
+            var orientationIndex = Screen.orientation != ScreenOrientation.AutoRotation ? (int)Screen.orientation : (int)Input.deviceOrientation;
+            if (orientationIndex is < 1 or > 4) return;
             
-            var nextOrientation = Screen.orientation != ScreenOrientation.AutoRotation ? Screen.orientation : (ScreenOrientation)Input.deviceOrientation;
-            if (Orientation == nextOrientation) return;
-
-            Orientation = nextOrientation;
+            Orientation.Value = (Orientation)orientationIndex;
         }
     }
 }

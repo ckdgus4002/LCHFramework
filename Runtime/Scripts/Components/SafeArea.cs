@@ -16,8 +16,8 @@ namespace LCHFramework.Components
         
         protected virtual Vector2 GetLocalPosition()
         {
-            var orientation = OrientationManager.Instance.Orientation;
-            return orientation is < ScreenOrientation.Portrait or > ScreenOrientation.LandscapeRight ? Vector2.zero : Screen.safeArea.center - ScreenUtility.HalfSize; 
+            var orientation = OrientationManager.Instance.Orientation.Value;
+            return orientation is < Orientation.Portrait or > Orientation.LandscapeRight ? Vector2.zero : Screen.safeArea.center - ScreenUtility.HalfSize; 
         }
     }
 }
