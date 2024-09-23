@@ -5,42 +5,41 @@ namespace LCHFramework.Managers
 {
     public class OrientationManager : MonoSingleton<OrientationManager>
     {
-        public event Action<int, int> OnSetDeviceOrientationIndexes; // Prev, Current
+        public event Action<ScreenOrientation, ScreenOrientation> OnOrientationChanged; // Prev, Current
         
         
-        public int CurrentDeviceOrientationIndex { get; private set; } = -1;
-        
-        public int PrevDeviceOrientationIndex { get; private set; } = -1;
+        public ScreenOrientation PrevOrientation { get; private set; }
         
         
-        
-        protected override void Start()
+        public virtual ScreenOrientation Orientation
         {
-            base.Start();
-            
-            CurrentDeviceOrientationIndex = (int)Input.deviceOrientation;
+            get => _orientation;
+            private set
+            {
+                PrevOrientation = _orientation;
+                _orientation = value;
+                OnOrientationChanged?.Invoke(PrevOrientation, Orientation);
+            }
         }
+        private ScreenOrientation _orientation;
         
-        protected virtual void Update()
+        
+
+        protected override void Awake()
         {
-            if (CurrentDeviceOrientationIndex == (int)Input.deviceOrientation) return;
+            base.Awake();
             
-            SetDeviceOrientationIndexes((int)Input.deviceOrientation);
+            OnOrientationChanged += (prev, current) => Debug.Log($"Orientation Changed() PrevOrientation: {prev}, CurrentOrientation: {current}");
         }
-        
-        
-        
-        public void SetDeviceOrientationIndexes(int currentDeviceOrientationIndex)
+    
+        private void Update()
         {
-            PrevDeviceOrientationIndex = CurrentDeviceOrientationIndex;
-            CurrentDeviceOrientationIndex = currentDeviceOrientationIndex;
+            if (Screen.orientation == ScreenOrientation.AutoRotation && Input.deviceOrientation < DeviceOrientation.Portrait && DeviceOrientation.LandscapeRight < Input.deviceOrientation) return;
             
-            OnSetDeviceOrientationIndexes?.Invoke(PrevDeviceOrientationIndex, CurrentDeviceOrientationIndex);
+            var nextOrientation = Screen.orientation != ScreenOrientation.AutoRotation ? Screen.orientation : (ScreenOrientation)Input.deviceOrientation;
+            if (Orientation == nextOrientation) return;
+
+            Orientation = nextOrientation;
         }
-        
-        public virtual int GetScreenOrientationIndex() => Screen.orientation < ScreenOrientation.AutoRotation ? (int)Screen.orientation 
-            : DeviceOrientation.Portrait <= Input.deviceOrientation && Input.deviceOrientation <= DeviceOrientation.LandscapeRight ? (int)Input.deviceOrientation 
-            : DeviceOrientation.FaceUp <= Input.deviceOrientation && Input.deviceOrientation <= DeviceOrientation.FaceDown ? PrevDeviceOrientationIndex 
-            : -1;
     }
 }
