@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using UnityEditor;
 
 namespace LCHFramework.Editor
@@ -13,13 +13,16 @@ namespace LCHFramework.Editor
         
         [InitializeOnLoadMethod]
         private static void InitializeOnLoadMethod() => Set();
+
+        [MenuItem(LCHFramework.MenuItemRootPath + "/Set Keystore")]
+        private static void OnMenuItemClick() => Set(true);
         
         
         
         private static bool _isSet;
-        private static void Set()
+        private static void Set(bool force = false)
         {
-            if (_isSet) return;
+            if (!force && _isSet) return;
 
             if (string.IsNullOrWhiteSpace(PlayerSettings.Android.keystoreName)) return;
             
