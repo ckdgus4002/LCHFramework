@@ -1,7 +1,7 @@
-using LCHFramework.Utilities;
 using TMPro;
 using UnityEngine;
 #if UNITY_EDITOR
+using LCHFramework.Utilities.Editor;
 using UnityEditor;
 #endif
 
