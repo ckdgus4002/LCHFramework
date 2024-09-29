@@ -1,6 +1,7 @@
+using LCHFramework.Components.UI;
 using UnityEditor;
 
-namespace LCHFramework.Components.UI
+namespace LCHFramework.Editor.Inspector
 {
     [CanEditMultipleObjects]
     [CustomEditor(typeof(SizeTracker), true)]

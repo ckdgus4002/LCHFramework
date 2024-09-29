@@ -2,7 +2,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace LCHFramework.Editor
+namespace LCHFramework.Editor.Utilities
 {
     public static class AssetDatabaseUtility
     {

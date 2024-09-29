@@ -2,7 +2,7 @@ using LCHFramework.Components.UI;
 using UnityEditor;
 using UnityEngine;
 
-namespace LCHFramework
+namespace LCHFramework.Editor.Inspector
 {
     [CanEditMultipleObjects]
     [CustomEditor(typeof(RectDummy))]

@@ -20,10 +20,10 @@ namespace LCHFramework.Utilities
                     return PlayerSettings.iOS.buildNumber;
                 case BuildTarget.tvOS:
                     return PlayerSettings.tvOS.buildNumber;
-#if !UNITY_6000_0_OR_NEWER
+#if UNITY_2023_2_OR_NEWER && !UNITY_6000_0_OR_NEWER
                 case BuildTarget.Bratwurst:
                     return PlayerSettings.Bratwurst.buildNumber;
-#else
+#elif UNITY_6000_0_OR_NEWER
                 case BuildTarget.VisionOS:
                     return PlayerSettings.VisionOS.buildNumber;
 #endif                
@@ -48,11 +48,11 @@ namespace LCHFramework.Utilities
                 case BuildTarget.tvOS:
                     PlayerSettings.tvOS.buildNumber = value;
                     break;
-#if !UNITY_6000_0_OR_NEWER
+#if UNITY_2023_2_OR_NEWER && !UNITY_6000_0_OR_NEWER 
                 case BuildTarget.Bratwurst:
                     PlayerSettings.Bratwurst.buildNumber = value;
                     break;
-#else
+#elif UNITY_6000_0_OR_NEWER
                 case BuildTarget.VisionOS:
                     PlayerSettings.VisionOS.buildNumber = value;
                     break;
