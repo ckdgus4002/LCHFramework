@@ -2,7 +2,7 @@
 using System;
 using UnityEditor;
 
-namespace LCHFramework.Utilities
+namespace LCHFramework.Utilities.Editor
 {
     public static class PlayerSettingsUtility
     {
