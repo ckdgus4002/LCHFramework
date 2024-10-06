@@ -5,7 +5,7 @@ namespace LCHFramework.Managers
 {
     public class MonoSingleton<T> : LCHMonoBehaviour where T : Component
     {
-        public bool InstanceIsNull => Instance == null;
+        public static bool InstanceIsNull => Instance == null;
         
         public static T Instance
         {
