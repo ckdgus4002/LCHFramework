@@ -1,4 +1,4 @@
-Shader "Custom/LCHFramework/Two Sided"
+Shader "Custom/LCHFramework/Standard/2Sided"
 {
 	Properties
 	{

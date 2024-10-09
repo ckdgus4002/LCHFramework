@@ -1,12 +1,15 @@
-﻿Shader "Custom/LCHFramework/Outline" {
-    Properties {
+﻿Shader "Custom/LCHFramework/Outline"
+{
+    Properties
+    {
         _MainTex ("Albedo", 2D) = "white" {}
         _BumpMap("BumpMap", 2D) = "bump" {}
         _OutlineColor("OutlineColor", Color) = (1,1,1,1)
         _Outline("Outline", Range(0.0005, 0.1)) = 0.1
     }
  
-    SubShader {
+    SubShader
+    {
         Tags { "RenderType"="Opaque" }
         Cull front
  
