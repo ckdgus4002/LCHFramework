@@ -31,12 +31,12 @@ namespace LCHFramework.Editor
         
         
         
-        public bool IsExclude(string assetPath, string name1)
+        public bool IsExclude(string assetPath, string assetName)
         {
             if (!exceptAssetPathPrefix.IsEmpty() && exceptAssetPathPrefix.Any(t => assetPath[..t.Length] == t))
                 return true;
 
-            if (!exceptAssetNamePrefix.IsEmpty() && exceptAssetNamePrefix.Any(t => name1[..t.Length] == t))
+            if (!exceptAssetNamePrefix.IsEmpty() && exceptAssetNamePrefix.Any(t => assetName[..t.Length] == t))
                 return true;
                 
             return false;
