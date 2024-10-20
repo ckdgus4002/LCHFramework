@@ -1,24 +1,27 @@
-using System.Text;
-
 namespace LCHFramework.Utilities
 {
+    public enum FileUnit { B, KB, MB, GB, TB, PB, EB, }
+
     public static class FileUtility
     {
-        public static string ToHumanReadableFileSize(long @byte, int decimalNumber)
+        public static string ToHumanReadableFileSize(long @byte, int? decimalNumberOrNull = null)
         {
-            var result = (float)@byte;
-            var i = 0;
-            while (1024 <= result)
+            var (fileSize, fileUnit) = _ToHumanReadableFileSize(@byte);
+            decimalNumberOrNull ??= (int)fileUnit;
+            return $"{fileSize.ToString($"f{decimalNumberOrNull}")} {fileUnit}";
+        }
+    
+        private static (float, FileUnit) _ToHumanReadableFileSize(long @byte)
+        {
+            var fileSize = (float)@byte;
+            var fileUnit = FileUnit.B;
+            while (1024 <= fileSize)
             {
-                result /= 1024;
-                i++;
+                fileSize /= 1024;
+                fileUnit++;
             }
-
-            var stringBuilder = new StringBuilder();
-            stringBuilder.Append(result.ToString($"f{decimalNumber}"));
-            stringBuilder.Append(" ");
-            stringBuilder.Append(i switch { 0 => "B", 1 => "KB", 2 => "MB", 3 => "GB", 4 => "TB", 5 => "PB", 6 => "EB", _ => string.Empty });
-            return stringBuilder.ToString();
+            return (fileSize, fileUnit);
         }
     }
+
 }
