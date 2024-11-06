@@ -31,6 +31,9 @@ namespace LCHFramework.Editor
         
         
         
+        public bool IsExclude(string assetPath)
+            => IsExclude(assetPath, assetPath[assetPath.LastIndexOf('/')..assetPath.LastIndexOf('.')]);
+        
         public bool IsExclude(string assetPath, string assetName)
         {
             if (!exceptAssetPathPrefix.IsEmpty() && exceptAssetPathPrefix.Any(t => assetPath[..t.Length] == t))
