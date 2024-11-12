@@ -99,6 +99,9 @@ namespace LCHFramework
         public float PrevMainCameraAspect { get; private set; }
         
         
+        protected override bool IsDontDestroyOnLoad => true;
+        
+        
         
         protected virtual void Update()
         {
