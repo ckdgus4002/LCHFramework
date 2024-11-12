@@ -1,38 +1,39 @@
-using LCHFramework.Components;
 using UnityEngine;
 
 namespace LCHFramework.Managers
 {
-    public class MonoSingleton<T> : LCHMonoBehaviour where T : Component
+    public class MonoSingleton<T> : MonoBehaviour where T : MonoSingleton<T>
     {
         public static bool InstanceIsNull => Instance == null;
         
         public static T Instance
         {
-            get => _instance == null ? _instance = FindAnyObjectByType<T>() : _instance; 
+            get => _instance == null ? Instance = FindFirstObjectByType<T>() : _instance;
             private set
             {
-                var prevInstance = _instance;
-                _instance = value;
-                
-                if (prevInstance != null && _instance != null && prevInstance != _instance) Destroy(prevInstance);
+                var prevInstanceOrNull = _instance;
+                _instance = prevInstanceOrNull != null && value != null && !value.DestroyPrevInstance ? prevInstanceOrNull : value;
+                if (prevInstanceOrNull != null && prevInstanceOrNull != value)
+                    Destroy((value == null || value.DestroyPrevInstance ? prevInstanceOrNull : value).DestroyTarget);
             }
         }
         private static T _instance;
         
         
         
-        [SerializeField] private bool isDontDestroyOnLoad;
+        protected virtual Object DestroyTarget => gameObject;
+        
+        protected virtual bool IsDontDestroyOnLoad => false;
+        
+        protected virtual bool DestroyPrevInstance => true;
         
         
         
-        protected override void Awake()
+        protected virtual void Awake()
         {
-            base.Awake();
-
             Instance = (object)this as T;
             
-            if (isDontDestroyOnLoad) DontDestroyOnLoad(gameObject);
+            if (Instance == this && IsDontDestroyOnLoad) DontDestroyOnLoad(DestroyTarget);
         }
         
         protected virtual void OnDestroy()

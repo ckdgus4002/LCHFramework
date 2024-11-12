@@ -15,7 +15,7 @@ namespace LCHFramework.Managers
     {
     }
     
-    public class StepManager<T1, T2> : MonoSingleton<T1>, IStepManager<T2>, ICurrentStepIndexChanged, IPassCurrentStep where T1 : Component where T2 : Step
+    public class StepManager<T1, T2> : MonoSingleton<T1>, IStepManager<T2>, ICurrentStepIndexChanged, IPassCurrentStep where T1 : MonoSingleton<T1> where T2 : Step
     {
         [SerializeField] private bool loop;
         public PlayOnStart playOnStart = new() { delayFrame = 1 };
@@ -30,6 +30,8 @@ namespace LCHFramework.Managers
         
         public T2 RightStepOrNull { get; private set; }
         
+        
+        protected override bool IsDontDestroyOnLoad => true;
         
         public int CurrentStepIndex => CurrentStep.Index;
         
@@ -69,10 +71,8 @@ namespace LCHFramework.Managers
         
         
         
-        protected override async void Start()
+        private async void Start()
         {
-            base.Start();
-            
             if (playOnStart.stepOrNull != null)
             {
                 for (var i = 0; i < playOnStart.delayFrame; i++) await Awaitable.NextFrameAsync();

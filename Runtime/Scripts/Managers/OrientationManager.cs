@@ -14,6 +14,8 @@ namespace LCHFramework.Managers
     
     public class OrientationManager : MonoSingleton<OrientationManager>
     {
+        protected override bool IsDontDestroyOnLoad => true;
+        
         public ReactiveProperty<Orientation> Orientation { get; } = new();
         
         
