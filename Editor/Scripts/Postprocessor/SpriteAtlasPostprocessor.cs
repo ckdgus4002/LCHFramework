@@ -34,7 +34,7 @@ namespace LCHFramework.Editor
         {
             if (SpriteAtlasPostprocessorExceptTable.Instances.Any(t => t.IsExclude(spriteAtlasImporter.assetPath))) return;
             
-            var spriteAtlasPostprocessor = Assembly.GetAssembly(typeof(SpriteAtlasPostprocessor)).GetType(nameof(SpriteAtlasPostprocessor));
+            var spriteAtlasPostprocessor = Assembly.GetAssembly(typeof(SpriteAtlasPostprocessor)).GetType($"LCHFramework.Editor.{nameof(SpriteAtlasPostprocessor)}");
             var includeInBuild = Convert.ToBoolean(spriteAtlasPostprocessor.GetMethod("GetIncludeInBuild", BindingFlags.NonPublic | BindingFlags.Static)?.Invoke(null, new object[] { }) ?? spriteAtlasImporter.includeInBuild);
             spriteAtlasImporter.includeInBuild = includeInBuild;
             
