@@ -2,12 +2,17 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using LCHFramework.Data;
 using LCHFramework.Extensions;
 using LCHFramework.Managers;
 using LCHFramework.Utilities;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+#if UNITY_EDITOR
+using Codice.CM.SEIDInfo;
+using UnityEditor;
+#endif
 
 namespace LCHFramework
 {
@@ -16,8 +21,28 @@ namespace LCHFramework
 #if UNITY_EDITOR
         public const string MenuItemRootPath = "Tools/LCHFramework";
         public const string CreateAssetMenuRootPath = "LCHFramework";
+
+        
+        public static IEnumerable<BuildTargetGroup> PlatformGroups
+        {
+            get
+            {
+                if (_platformGroups.IsEmpty())
+                {
+                    _platformGroups = new List<BuildTargetGroup>();
+                    var moduleManager = Assembly.GetAssembly(typeof(Editor)).GetType("UnityEditor.Modules.ModuleManager");
+                    var isPlatformSupportLoaded = moduleManager.GetMethod("IsPlatformSupportLoaded", BindingFlags.Static | BindingFlags.NonPublic);
+                    var getTargetStringFromBuildTargetGroup = moduleManager.GetMethod("GetTargetStringFromBuildTargetGroup", BindingFlags.Static | BindingFlags.NonPublic);
+                    foreach (var value in Enum.GetValues(typeof(BuildTargetGroup)))
+                        if (Convert.ToBoolean(isPlatformSupportLoaded?.Invoke(null, new object[] { (string)getTargetStringFromBuildTargetGroup?.Invoke(null, new[] { value }) })))
+                            _platformGroups.Add((BuildTargetGroup)value);                        
+                }
+
+                return _platformGroups;
+            }
+        }
+        private static List<BuildTargetGroup> _platformGroups;
 #endif
-        public const bool IsSupported = true;
         
         
         
