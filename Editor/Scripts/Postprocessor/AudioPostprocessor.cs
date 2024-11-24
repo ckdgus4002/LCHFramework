@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -9,10 +8,6 @@ namespace LCHFramework.Editor
 {
     public class AudioPostprocessor : AssetPostprocessor
     {
-        private readonly IEnumerable<BuildTargetGroup> _platformGroups = new[] { BuildTargetGroup.Standalone, BuildTargetGroup.Android, BuildTargetGroup.iOS, };
-        
-        
-        
         private void OnPostprocessAudio(AudioClip audioClip)
         {
             var audioImporter = (AudioImporter)assetImporter;
@@ -45,7 +40,7 @@ namespace LCHFramework.Editor
             defaultSampleSettings.sampleRateSetting = AudioSampleRateSetting.PreserveSampleRate;
             audioImporter.defaultSampleSettings = defaultSampleSettings;
             
-            foreach (var platformGroup in _platformGroups) audioImporter.ClearSampleSettingOverride($"{platformGroup}");
+            foreach (var platformGroup in LCHFramework.PlatformGroups) audioImporter.ClearSampleSettingOverride($"{platformGroup}");
             
             Debug.Log($"OnPostprocessAudio: {assetPath}");
         }

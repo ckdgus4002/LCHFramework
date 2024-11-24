@@ -5,7 +5,7 @@ using UnityEngine.U2D;
 
 namespace LCHFramework.Editor
 {
-    public partial class SpriteAtlasPostprocessor
+    public static class SpriteAtlasPostprocessor_SetPackables
     {
         /// <remarks> Invoke by Reflection. </remarks>
         private static void SetPackables(SpriteAtlasImporter spriteAtlasImporter, SpriteAtlas spriteAtlas)

@@ -1,8 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using LCHFramework.Editor.Utilities;
 using UnityEditor;
 using UnityEditor.U2D;
 using UnityEngine;
@@ -11,12 +10,8 @@ using Debug = LCHFramework.Utilities.Debug;
 
 namespace LCHFramework.Editor
 {
-    public partial class SpriteAtlasPostprocessor : AssetPostprocessor
+    public class SpriteAtlasPostprocessor : AssetPostprocessor
     {
-        private static readonly IEnumerable<BuildTargetGroup> PlatformGroups = new[] { BuildTargetGroup.Standalone, BuildTargetGroup.Android, BuildTargetGroup.iOS };
-        
-        
-        
         private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
         {
             const string spriteAtlasExtension = "spriteatlas";
@@ -34,8 +29,8 @@ namespace LCHFramework.Editor
         {
             if (SpriteAtlasPostprocessorExceptTable.Instances.Any(t => t.IsExclude(spriteAtlasImporter.assetPath))) return;
             
-            var spriteAtlasPostprocessor = Assembly.GetAssembly(typeof(SpriteAtlasPostprocessor)).GetType($"LCHFramework.Editor.{nameof(SpriteAtlasPostprocessor)}");
-            var includeInBuild = Convert.ToBoolean(spriteAtlasPostprocessor.GetMethod("GetIncludeInBuild", BindingFlags.NonPublic | BindingFlags.Static)?.Invoke(null, new object[] { }) ?? spriteAtlasImporter.includeInBuild);
+            var getIncludeInBuildOrNull = AssemblyUtility.InvokeMethod($"LCHFramework.Editor.{nameof(SpriteAtlasPostprocessor)}_GetIncludeInBuild", "GetIncludeInBuild", BindingFlags.NonPublic | BindingFlags.Static, null, new object[] { spriteAtlasImporter, spriteAtlas });
+            var includeInBuild = getIncludeInBuildOrNull != null ? (bool)getIncludeInBuildOrNull : spriteAtlasImporter.includeInBuild;
             spriteAtlasImporter.includeInBuild = includeInBuild;
             
             var packingSettings = spriteAtlasImporter.packingSettings;
@@ -51,14 +46,14 @@ namespace LCHFramework.Editor
             textureSettings.filterMode = FilterMode.Bilinear;
             spriteAtlasImporter.textureSettings = textureSettings;
             
-            foreach (var platformGroup in PlatformGroups)
+            foreach (var platformGroup in LCHFramework.PlatformGroups)
             {
                 var platformSettings = spriteAtlasImporter.GetPlatformSettings($"{platformGroup}");
                 platformSettings.overridden = false;
                 spriteAtlasImporter.SetPlatformSettings(platformSettings);
             }
             
-            spriteAtlasPostprocessor.GetMethod("SetPackables", BindingFlags.NonPublic | BindingFlags.Static)?.Invoke(null, new object[] { spriteAtlasImporter, spriteAtlas });
+            AssemblyUtility.InvokeMethod($"LCHFramework.Editor.{nameof(SpriteAtlasPostprocessor)}_SetPackables", "SetPackables", BindingFlags.NonPublic | BindingFlags.Static, null, new object[] { spriteAtlasImporter, spriteAtlas });
             SpriteAtlasUtility.PackAtlases(new[] { spriteAtlas }, EditorUserBuildSettings.activeBuildTarget);
             SyncPlatformSettings();
             
