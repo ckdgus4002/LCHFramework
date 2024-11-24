@@ -10,7 +10,6 @@ using LCHFramework.Utilities;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 #if UNITY_EDITOR
-using Codice.CM.SEIDInfo;
 using UnityEditor;
 #endif
 
