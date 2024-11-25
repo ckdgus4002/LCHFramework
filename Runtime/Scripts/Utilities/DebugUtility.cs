@@ -1,27 +1,32 @@
 using System;
-using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace LCHFramework.Utilities
 {
-    [DefaultExecutionOrder(int.MinValue)]
-    [InitializeOnLoad]
     public static class Debug
     {
-        static Debug() { isDebugBuild = UnityEngine.Debug.isDebugBuild; }
+#if UNITY_EDITOR
+        [InitializeOnLoadMethod]
+#else
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+#endif
+        private static void InitializeIsDebugBuild() => isDebugBuild = UnityEngine.Debug.isDebugBuild;
         
         
         
-        public static bool isDebugBuild { get; }
+        public static bool isDebugBuild { get; private set; }
         
         
         
-        public static void Log(object message, Color color, bool onlyDebugBuild = true) => Log($"<color={color}>{message}</color>", onlyDebugBuild);
+        public static void Log(object message, Color color, bool onlyDebugBuild = true) => Log($"<color=#{ColorUtility.ToHtmlStringRGBA(color)}>{message}</color>", onlyDebugBuild);
         
         public static void Log(object message, bool onlyDebugBuild = true) { if (!onlyDebugBuild || isDebugBuild) UnityEngine.Debug.Log(message); }
         
-        public static void Log(object message, Object context, Color color, bool onlyDebugBuild = true) => Log($"<color={color}>{message}</color>", context, onlyDebugBuild);
+        public static void Log(object message, Object context, Color color, bool onlyDebugBuild = true) => Log($"<color=#{ColorUtility.ToHtmlStringRGBA(color)}>{message}</color>", context, onlyDebugBuild);
         
         public static void Log(object message, Object context, bool onlyDebugBuild = true) { if (!onlyDebugBuild || isDebugBuild) UnityEngine.Debug.Log(message, context); }
         
