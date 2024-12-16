@@ -28,8 +28,9 @@ namespace LCHFramework.Editor
         private static void OnPostprocessSpriteAtlas(SpriteAtlasImporter spriteAtlasImporter, SpriteAtlas spriteAtlas)
         {
             if (SpriteAtlasPostprocessorExceptTable.Instances.Any(t => t.IsExclude(spriteAtlasImporter.assetPath))) return;
-            
-            var getIncludeInBuildOrNull = AssemblyUtility.InvokeMethod($"LCHFramework.Editor.{nameof(SpriteAtlasPostprocessor)}_GetIncludeInBuild", "GetIncludeInBuild", BindingFlags.NonPublic | BindingFlags.Static, null, new object[] { spriteAtlasImporter, spriteAtlas });
+
+            const string getIncludeInBuildMethodName = "GetIncludeInBuild";
+            var getIncludeInBuildOrNull = AssemblyUtility.InvokeMethod($"LCHFramework.Editor.{nameof(SpriteAtlasPostprocessor)}_{getIncludeInBuildMethodName}", getIncludeInBuildMethodName, BindingFlags.NonPublic | BindingFlags.Static, null, new object[] { spriteAtlasImporter, spriteAtlas });
             var includeInBuild = getIncludeInBuildOrNull != null ? (bool)getIncludeInBuildOrNull : spriteAtlasImporter.includeInBuild;
             spriteAtlasImporter.includeInBuild = includeInBuild;
             
@@ -52,8 +53,12 @@ namespace LCHFramework.Editor
                 platformSettings.overridden = false;
                 spriteAtlasImporter.SetPlatformSettings(platformSettings);
             }
-            
-            AssemblyUtility.InvokeMethod($"LCHFramework.Editor.{nameof(SpriteAtlasPostprocessor)}_SetPackables", "SetPackables", BindingFlags.NonPublic | BindingFlags.Static, null, new object[] { spriteAtlasImporter, spriteAtlas });
+
+            spriteAtlas.Remove(spriteAtlas.GetPackables());
+            const string getPackableTargetsMethodName = "GetPackableTargets";
+            var getPackableTargetsOrNull = AssemblyUtility.InvokeMethod($"LCHFramework.Editor.{nameof(SpriteAtlasPostprocessor)}_{getPackableTargetsMethodName}", getPackableTargetsMethodName, BindingFlags.NonPublic | BindingFlags.Static, null, new object[] { spriteAtlasImporter, spriteAtlas });
+            var packableTargets = getPackableTargetsOrNull != null ? (Object[])getPackableTargetsOrNull : new[] { AssetDatabase.LoadAssetAtPath<Object>(spriteAtlasImporter.assetPath[..spriteAtlasImporter.assetPath.LastIndexOf('/')]) }; 
+            spriteAtlas.Add(packableTargets);
             SpriteAtlasUtility.PackAtlases(new[] { spriteAtlas }, EditorUserBuildSettings.activeBuildTarget);
             SyncPlatformSettings();
             
