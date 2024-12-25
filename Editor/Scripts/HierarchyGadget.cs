@@ -23,11 +23,11 @@ namespace LCHFramework.Editor
 		
 		
 		
-		[MenuItem(EnableMenuItemPath)] private static void EnableMenuItem() { Menu.SetChecked(EnableMenuItemPath, Enabled = !Enabled); }
+		[MenuItem(EnableMenuItemPath)] private static void EnableMenuItem() => Menu.SetChecked(EnableMenuItemPath, Enabled = !Enabled);
 		
-		[MenuItem(ShowActiveToggleMenuItemPath)] private static void ShowActiveToggleMenuItem() { Menu.SetChecked(ShowActiveToggleMenuItemPath, ShowActiveToggle = !ShowActiveToggle); }
+		[MenuItem(ShowActiveToggleMenuItemPath)] private static void ShowActiveToggleMenuItem() => Menu.SetChecked(ShowActiveToggleMenuItemPath, ShowActiveToggle = !ShowActiveToggle);
 		
-		[MenuItem(SqueezeWhenOverflowMenuItemPath)] private static void SqueezeWhenOverflowMenuItem() { Menu.SetChecked(SqueezeWhenOverflowMenuItemPath, SqueezeWhenOverflow = !SqueezeWhenOverflow); }
+		[MenuItem(SqueezeWhenOverflowMenuItemPath)] private static void SqueezeWhenOverflowMenuItem() => Menu.SetChecked(SqueezeWhenOverflowMenuItemPath, SqueezeWhenOverflow = !SqueezeWhenOverflow);
 		
 		[InitializeOnLoadMethod] public static void InitializeOnLoad() { if (!EditorApplication.hierarchyWindowItemOnGUI.Contains((EditorApplication.HierarchyWindowItemCallback)HierarchyWindowItemOnGUI)) EditorApplication.hierarchyWindowItemOnGUI += HierarchyWindowItemOnGUI; }
 

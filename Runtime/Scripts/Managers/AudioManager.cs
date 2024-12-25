@@ -1,15 +1,18 @@
-using LCHFramework.Managers;
+using LCHFramework.Data;
 
-namespace LCHFramework
+namespace LCHFramework.Managers
 {
     public class AudioManager : MonoSingleton<AudioManager>
     {
-        protected override bool IsDontDestroyOnLoad => true;
-
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
-        {
+        public ReactiveProperty<float> MasterVolume;
         
+        protected override bool IsDontDestroyOnLoad => true;
+        
+                
+        
+        public virtual void Play(string type, float volume)
+        {
+            
         }
 
         // Update is called once per frame

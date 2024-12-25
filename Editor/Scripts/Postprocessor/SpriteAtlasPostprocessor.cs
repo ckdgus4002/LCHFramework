@@ -14,8 +14,7 @@ namespace LCHFramework.Editor
     {
         private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
         {
-            const string spriteAtlasExtension = "spriteatlas";
-            foreach (var importedAsset in importedAssets.Where(t => Path.GetExtension(t).Contains(spriteAtlasExtension)))
+            foreach (var importedAsset in importedAssets.Where(t => Path.GetExtension(t) == "spriteatlasv2"))
             {
                 var spriteAtlasImporterOrNull = AssetImporter.GetAtPath(importedAsset) as SpriteAtlasImporter;
                 var spriteAtlasOrNull = AssetDatabase.LoadAssetAtPath<SpriteAtlas>(importedAsset);
@@ -53,7 +52,7 @@ namespace LCHFramework.Editor
                 platformSettings.overridden = false;
                 spriteAtlasImporter.SetPlatformSettings(platformSettings);
             }
-
+            
             spriteAtlas.Remove(spriteAtlas.GetPackables());
             const string getPackableTargetsMethodName = "GetPackableTargets";
             var getPackableTargetsOrNull = AssemblyUtility.InvokeMethod($"LCHFramework.Editor.{nameof(SpriteAtlasPostprocessor)}_{getPackableTargetsMethodName}", getPackableTargetsMethodName, BindingFlags.NonPublic | BindingFlags.Static, null, new object[] { spriteAtlasImporter, spriteAtlas });
