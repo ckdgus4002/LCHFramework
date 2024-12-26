@@ -8,18 +8,18 @@ namespace LCHFramework.Editor
 {
 	public class HierarchyGadget
 	{
-		private const string EnableMenuItemPath = LCHFramework.MenuItemRootPath + "/" + "HierarchyGadget" + "/" + "Enabled";
-		private const string ShowActiveToggleMenuItemPath = LCHFramework.MenuItemRootPath + "/" + "HierarchyGadget" + "/" + "ShowActiveToggle";
-		private const string SqueezeWhenOverflowMenuItemPath = LCHFramework.MenuItemRootPath + "/" + "HierarchyGadget" + "/" + "SqueezeWhenOverflow";
+		private const string EnableMenuItemPath = LCHFramework.MenuItemRootPath + "/HierarchyGadget" + "/Enabled";
+		private const string ShowActiveToggleMenuItemPath = LCHFramework.MenuItemRootPath + "/HierarchyGadget" + "/ShowActiveToggle";
+		private const string SqueezeWhenOverflowMenuItemPath = LCHFramework.MenuItemRootPath + "/HierarchyGadget" + "/SqueezeWhenOverflow";
 		
-		private static readonly string EnabledKey = $"{nameof(HierarchyGadget)}{nameof(Enabled)}";
-		private static readonly string ShowActiveToggleKey = $"{nameof(HierarchyGadget)}{nameof(ShowActiveToggle)}";
-		private static readonly string SqueezeWhenOverflowKey = $"{nameof(HierarchyGadget)}{nameof(SqueezeWhenOverflow)}";
+		private static readonly string EnabledPrefsKey = $"{nameof(HierarchyGadget)}{nameof(Enabled)}";
+		private static readonly string ShowActiveTogglePrefsKey = $"{nameof(HierarchyGadget)}{nameof(ShowActiveToggle)}";
+		private static readonly string SqueezeWhenOverflowPrefsKey = $"{nameof(HierarchyGadget)}{nameof(SqueezeWhenOverflow)}";
 		
 		
-		private static bool Enabled { get => EditorPrefs.GetBool(EnabledKey, true); set => EditorPrefs.SetBool(EnabledKey, value); }
-		private static bool ShowActiveToggle { get => EditorPrefs.GetBool(ShowActiveToggleKey, true); set => EditorPrefs.SetBool(ShowActiveToggleKey, value); }
-		private static bool SqueezeWhenOverflow { get => EditorPrefs.GetBool(SqueezeWhenOverflowKey); set => EditorPrefs.SetBool(SqueezeWhenOverflowKey, value); }
+		private static bool Enabled { get => EditorPrefs.GetBool(EnabledPrefsKey, true); set => EditorPrefs.SetBool(EnabledPrefsKey, value); }
+		private static bool ShowActiveToggle { get => EditorPrefs.GetBool(ShowActiveTogglePrefsKey, true); set => EditorPrefs.SetBool(ShowActiveTogglePrefsKey, value); }
+		private static bool SqueezeWhenOverflow { get => EditorPrefs.GetBool(SqueezeWhenOverflowPrefsKey); set => EditorPrefs.SetBool(SqueezeWhenOverflowPrefsKey, value); }
 		
 		
 		
