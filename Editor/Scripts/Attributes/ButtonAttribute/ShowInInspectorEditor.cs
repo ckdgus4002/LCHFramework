@@ -6,7 +6,7 @@ using UnityEngine;
 namespace LCHFramework.Editor.Attributes
 {
     [CanEditMultipleObjects, CustomEditor(typeof(MonoBehaviour), true)]
-    public class ShowInInspectorEditor : UnityEditor.Editor
+    public class ButtonEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
@@ -18,9 +18,9 @@ namespace LCHFramework.Editor.Attributes
         {
             foreach (var methodInfo in objects[0].GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
             {
-                foreach (var attribute in methodInfo.GetCustomAttributes(typeof(ShowInInspectorAttribute), true))
+                foreach (var attribute in methodInfo.GetCustomAttributes(typeof(ButtonAttribute), true))
                 {
-                    var button = (ShowInInspectorAttribute)attribute;
+                    var button = (ButtonAttribute)attribute;
                     button.labelName = string.IsNullOrWhiteSpace(button.labelName) ? methodInfo.Name : button.labelName;
                     button.methodInfo = methodInfo;
                     DrawButtonInspector(button, objects);
@@ -28,7 +28,7 @@ namespace LCHFramework.Editor.Attributes
             }
         }
 
-        private void DrawButtonInspector(ShowInInspectorAttribute button, Object[] objects)
+        private void DrawButtonInspector(ButtonAttribute button, Object[] objects)
         {
             if (!GUILayout.Button(button.labelName)) return;
             

@@ -82,7 +82,7 @@ namespace LCHFramework.Managers
         
         
         
-        [ShowInInspector]
+        [Button]
         public void PassCurrentStep()
         {
 #if UNITY_EDITOR

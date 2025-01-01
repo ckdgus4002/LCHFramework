@@ -5,13 +5,13 @@ using UnityEngine;
 namespace LCHFramework.Attributes
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public class ShowInInspectorAttribute : PropertyAttribute
+    public class ButtonAttribute : PropertyAttribute
     {
-        public ShowInInspectorAttribute()
+        public ButtonAttribute()
         {
         }
 
-        public ShowInInspectorAttribute(string labelName)
+        public ButtonAttribute(string labelName)
         {
             this.labelName = labelName;
         }
