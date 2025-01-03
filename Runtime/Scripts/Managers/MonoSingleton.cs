@@ -1,8 +1,9 @@
+using LCHFramework.Components;
 using UnityEngine;
 
 namespace LCHFramework.Managers
 {
-    public class MonoSingleton<T> : MonoBehaviour where T : MonoSingleton<T>
+    public class MonoSingleton<T> : LCHMonoBehaviour where T : MonoSingleton<T>
     {
         public static bool InstanceIsNull => Instance == null;
         
@@ -29,8 +30,10 @@ namespace LCHFramework.Managers
         
         
         
-        protected virtual void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+            
             Instance = (object)this as T;
             
             if (Instance == this && IsDontDestroyOnLoad) DontDestroyOnLoad(DestroyTarget);
