@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace LCHFramework.Data
 {
-    [Serializable]
     public class ReactiveProperty<T>
     {
         public ReactiveProperty(T value = default, T prevValue = default, OnValueChangedDelegate<T> onValueChanged = null)

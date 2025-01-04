@@ -5,9 +5,6 @@ using LCHFramework.Data;
 using LCHFramework.Extensions;
 using UnityEngine;
 using Debug = LCHFramework.Utilities.Debug;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace LCHFramework.Managers
 {
@@ -18,7 +15,9 @@ namespace LCHFramework.Managers
     public class StepManager<T1, T2> : MonoSingleton<T1>, IStepManager<T2>, ICurrentStepIndexChanged, IPassCurrentStep where T1 : MonoSingleton<T1> where T2 : Step
     {
         [SerializeField] private bool loop;
-        public PlayOnStart playOnStart = new() { delayFrame = 1 };
+        [SerializeField] private bool playOnStart;
+        [SerializeField] [HideIf(nameof(playOnStart))] private int playOnStartDelayFrame = 1;
+        [SerializeField] [HideIf(nameof(playOnStart))] private T2 playOnStartStep;
         
         
         public OnCurrentStepIndexChangedDelegate OnCurrentStepIndexChanged { get; set; }
@@ -57,6 +56,7 @@ namespace LCHFramework.Managers
                 foreach (var t in Steps.Where(t => t.IsShown)) t.Hide();
                 _currentStep.Show();
                 
+                Debug.Log($"CurrentStep is Changed. {PrevStepOrNull.Index} -> {_currentStep.Index}");
                 OnCurrentStepIndexChanged?.Invoke(PrevStepOrNull == null ? -1 : PrevStepOrNull.Index, _currentStep.Index);
             }
         }
@@ -68,15 +68,23 @@ namespace LCHFramework.Managers
         
         public T2[] Steps => _steps.IsEmpty() ? _steps = GetComponentsInChildren<T2>(true) : _steps;
         private T2[] _steps;
-        
-        
-        
-        private async void Start()
+
+
+        protected override async void Start()
         {
-            if (playOnStart.stepOrNull != null)
+            try
             {
-                for (var i = 0; i < playOnStart.delayFrame; i++) await Awaitable.NextFrameAsync();
-                CurrentStep = playOnStart.stepOrNull;
+                base.Start();
+            
+                if (playOnStartStep != null)
+                {
+                    for (var i = 0; i < playOnStartDelayFrame; i++) await Awaitable.NextFrameAsync();
+                    CurrentStep = playOnStartStep;
+                }
+            }
+            catch (Exception e)
+            {
+                throw; // TODO handle exception
             }
         }
         
@@ -85,26 +93,12 @@ namespace LCHFramework.Managers
         [Button]
         public void PassCurrentStep()
         {
-#if UNITY_EDITOR
-            if (!EditorApplication.isPlaying)
-                throw new Exception("Can't execute when edit mode in editor. because cache variables is cached.");
-#endif
-            if (RightStepOrNull == null)
+            if (Application.isEditor && !Application.isPlaying) 
+                Debug.LogError("Can't execute when edit mode in editor. because cache variables is cached.");
+            else if (RightStepOrNull == null)
                 Debug.LogError("Step is end.");
             else
-            {
-                Debug.Log($"CurrentStep is Changed. {CurrentStep.name} -> {RightStepOrNull.name}");
                 CurrentStep = RightStepOrNull;
-            }
-        }
-        
-        
-        
-        [Serializable]
-        public struct PlayOnStart
-        {
-            public int delayFrame;
-            public T2 stepOrNull;
         }
     }   
 }

@@ -6,15 +6,15 @@ using UnityEngine;
 
 namespace LCHFramework.Editor
 {
-	public class HierarchyGadget
+	public class LCHHierarchy
 	{
-		private const string EnableMenuItemPath = LCHFramework.MenuItemRootPath + "/HierarchyGadget" + "/Enabled";
-		private const string ShowActiveToggleMenuItemPath = LCHFramework.MenuItemRootPath + "/HierarchyGadget" + "/ShowActiveToggle";
-		private const string SqueezeWhenOverflowMenuItemPath = LCHFramework.MenuItemRootPath + "/HierarchyGadget" + "/SqueezeWhenOverflow";
+		private const string EnableMenuItemPath = LCHFramework.MenuItemRootPath + "/" + nameof(LCHHierarchy) + "/" + nameof(Enabled);
+		private const string ShowActiveToggleMenuItemPath = LCHFramework.MenuItemRootPath + "/" + nameof(LCHHierarchy) + "/" + nameof(ShowActiveToggle);
+		private const string SqueezeWhenOverflowMenuItemPath = LCHFramework.MenuItemRootPath + "/" + nameof(LCHHierarchy) + "/" + nameof(SqueezeWhenOverflow);
 		
-		private static readonly string EnabledPrefsKey = $"{nameof(HierarchyGadget)}{nameof(Enabled)}";
-		private static readonly string ShowActiveTogglePrefsKey = $"{nameof(HierarchyGadget)}{nameof(ShowActiveToggle)}";
-		private static readonly string SqueezeWhenOverflowPrefsKey = $"{nameof(HierarchyGadget)}{nameof(SqueezeWhenOverflow)}";
+		private static readonly string EnabledPrefsKey = $"{nameof(LCHHierarchy)}{nameof(Enabled)}";
+		private static readonly string ShowActiveTogglePrefsKey = $"{nameof(LCHHierarchy)}{nameof(ShowActiveToggle)}";
+		private static readonly string SqueezeWhenOverflowPrefsKey = $"{nameof(LCHHierarchy)}{nameof(SqueezeWhenOverflow)}";
 		
 		
 		private static bool Enabled { get => EditorPrefs.GetBool(EnabledPrefsKey, true); set => EditorPrefs.SetBool(EnabledPrefsKey, value); }
