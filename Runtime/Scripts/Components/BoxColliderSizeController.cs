@@ -7,7 +7,7 @@ namespace LCHFramework.Components
     [RequireComponent(typeof(BoxCollider))]
     public class BoxColliderSizeController : ColliderSizeController
     {
-        [SerializeField] private Vector3Bool only = new(true);
+        [SerializeField] private Vector3Bool only = Vector3Bool.True;
         [SerializeField] private Vector3 offset;
 
 

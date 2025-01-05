@@ -6,29 +6,15 @@ namespace LCHFramework.Data
     [Serializable]
     public struct Vector3Bool
     {
-        public Vector3Bool(bool value)
-        {
-            x = y = z = value;
-        }
+        public static Vector3Bool False => new() { x = false, y = false, z = false };
         
-        public Vector3Bool(bool x, bool y, bool z)
-        {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
+        public static Vector3Bool True => new() { x = true, y = true, z = true };
         
+        public static Vector3Bool OnlyX => new() { x = true, y = false, z = false };
         
+        public static Vector3Bool OnlyY => new() { x = false, y = true, z = false };
         
-        public static Vector3Bool False => new(false);
-        
-        public static Vector3Bool True => new(true);
-        
-        public static Vector3Bool OnlyX => new(true, false, false);
-        
-        public static Vector3Bool OnlyY => new(false, true, false);
-        
-        public static Vector3Bool OnlyZ => new(false, false, true);
+        public static Vector3Bool OnlyZ => new() { x = false, y = false, z = true };
         
         public static bool operator !=(Vector3Bool a, Vector3Bool b) => !(a == b);
 
@@ -38,22 +24,26 @@ namespace LCHFramework.Data
         
         public static Vector3 operator *(Vector3Bool a, float b) => (Vector3)a * b;
 
-        public static implicit operator Vector3Bool(Vector2 value) => (Vector3)value;
+        public static implicit operator Vector3Bool(Vector2 value) => (Vector4)value;
         
-        public static implicit operator Vector3Bool(Vector3 value) => new()
-        {
-            x = Convert.ToBoolean(value.x),
-            y = Convert.ToBoolean(value.y),
-            z = Convert.ToBoolean(value.z),
-        };
+        public static implicit operator Vector3Bool(Vector3 value) => (Vector4)value;
 
-        public static implicit operator Vector2(Vector3Bool value) => (Vector3)value;
-        
-        public static implicit operator Vector3(Vector3Bool value) => new()
+        public static implicit operator Vector3Bool(Vector4 value) => new()
         {
-            x = Convert.ToSingle(value.x),
-            y = Convert.ToSingle(value.y),
-            z = Convert.ToSingle(value.z),
+            x = 0 < value.x,
+            y = 0 < value.y,
+            z = 0 < value.z,
+        }; 
+
+        public static implicit operator Vector2(Vector3Bool value) => (Vector4)value;
+        
+        public static implicit operator Vector3(Vector3Bool value) => (Vector4)value;
+        
+        public static implicit operator Vector4(Vector3Bool value) => new()
+        {
+            x = !value.x ? 0 : 1,
+            y = !value.y ? 0 : 1,
+            z = !value.z ? 0 : 1,
         };
         
         
