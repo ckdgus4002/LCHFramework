@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using LCHFramework.Attributes;
 using LCHFramework.Data;
@@ -72,19 +71,12 @@ namespace LCHFramework.Managers
 
         protected override async void Start()
         {
-            try
+            base.Start();
+
+            if (playOnStart)
             {
-                base.Start();
-            
-                if (playOnStartStep != null)
-                {
-                    for (var i = 0; i < playOnStartDelayFrame; i++) await Awaitable.NextFrameAsync();
-                    CurrentStep = playOnStartStep;
-                }
-            }
-            catch (Exception e)
-            {
-                throw; // TODO handle exception
+                for (var i = 0; i < playOnStartDelayFrame; i++) await Awaitable.NextFrameAsync();
+                CurrentStep = playOnStartStep;
             }
         }
         

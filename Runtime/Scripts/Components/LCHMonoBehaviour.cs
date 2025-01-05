@@ -74,6 +74,10 @@ namespace LCHFramework.Components
         public virtual int Index => transform.GetSiblingIndex();
         
         public virtual bool IsShown => gameObject.activeSelf;
+
+        public virtual bool DoStopAllCoroutinesWhenDisable => true;
+        
+        public virtual bool DoClearTokenSourcesWhenDisable => true;
         
         public float HalfWidth => Width * .5f;
         
@@ -116,7 +120,8 @@ namespace LCHFramework.Components
         protected virtual void OnDisable()
         {
             DisableCount++;
-            CancellationTokenSourceUtility.ClearTokenSources(_ctses);
+            if (DoStopAllCoroutinesWhenDisable) StopAllCoroutines();
+            if (DoClearTokenSourcesWhenDisable) CancellationTokenSourceUtility.ClearTokenSources(_ctses);
         }
         
         
