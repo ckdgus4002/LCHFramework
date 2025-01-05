@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace LCHFramework.Utilities
 {
-    public class Vector4Utility
+    public static class Vector4Utility
     {
         public static Vector4 Half => New(0.5f);
         
