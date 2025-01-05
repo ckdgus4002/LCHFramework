@@ -3,6 +3,7 @@ using System.Linq;
 using LCHFramework.Extensions;
 using UnityEditor;
 using UnityEngine;
+using Debug = LCHFramework.Utilities.Debug;
 
 namespace LCHFramework.Editor
 {
@@ -20,16 +21,27 @@ namespace LCHFramework.Editor
 		private static bool Enabled { get => EditorPrefs.GetBool(EnabledPrefsKey, true); set => EditorPrefs.SetBool(EnabledPrefsKey, value); }
 		private static bool ShowActiveToggle { get => EditorPrefs.GetBool(ShowActiveTogglePrefsKey, true); set => EditorPrefs.SetBool(ShowActiveTogglePrefsKey, value); }
 		private static bool SqueezeWhenOverflow { get => EditorPrefs.GetBool(SqueezeWhenOverflowPrefsKey); set => EditorPrefs.SetBool(SqueezeWhenOverflowPrefsKey, value); }
+
+
+
+		[MenuItem(EnableMenuItemPath, true)] private static bool ValidateEnableMenuItem() { Menu.SetChecked(EnableMenuItemPath, Enabled); return true; }
 		
+		[MenuItem(EnableMenuItemPath)] private static void EnableMenuItem() { Enabled = !Enabled; EditorApplication.RepaintHierarchyWindow(); }
+
+		[MenuItem(ShowActiveToggleMenuItemPath, true)] private static bool ValidateShowActiveToggleMenuItem() { Menu.SetChecked(ShowActiveToggleMenuItemPath, ShowActiveToggle); return true; }
 		
+		[MenuItem(ShowActiveToggleMenuItemPath)] private static void ShowActiveToggleMenuItem() { ShowActiveToggle = !ShowActiveToggle; EditorApplication.RepaintHierarchyWindow(); }
+
+		[MenuItem(SqueezeWhenOverflowMenuItemPath, true)] private static bool ValidateSqueezeWhenOverflowMenuItem() { Menu.SetChecked(SqueezeWhenOverflowMenuItemPath, SqueezeWhenOverflow); return true; }
 		
-		[MenuItem(EnableMenuItemPath)] private static void EnableMenuItem() => Menu.SetChecked(EnableMenuItemPath, Enabled = !Enabled);
-		
-		[MenuItem(ShowActiveToggleMenuItemPath)] private static void ShowActiveToggleMenuItem() => Menu.SetChecked(ShowActiveToggleMenuItemPath, ShowActiveToggle = !ShowActiveToggle);
-		
-		[MenuItem(SqueezeWhenOverflowMenuItemPath)] private static void SqueezeWhenOverflowMenuItem() => Menu.SetChecked(SqueezeWhenOverflowMenuItemPath, SqueezeWhenOverflow = !SqueezeWhenOverflow);
-		
-		[InitializeOnLoadMethod] public static void InitializeOnLoad() { if (!EditorApplication.hierarchyWindowItemOnGUI.Contains((EditorApplication.HierarchyWindowItemCallback)HierarchyWindowItemOnGUI)) EditorApplication.hierarchyWindowItemOnGUI += HierarchyWindowItemOnGUI; }
+		[MenuItem(SqueezeWhenOverflowMenuItemPath)] private static void SqueezeWhenOverflowMenuItem() { SqueezeWhenOverflow = !SqueezeWhenOverflow; EditorApplication.RepaintHierarchyWindow(); }
+
+		[InitializeOnLoadMethod]
+		public static void InitializeOnLoad()
+		{
+			if (!EditorApplication.hierarchyWindowItemOnGUI.Contains((EditorApplication.HierarchyWindowItemCallback)HierarchyWindowItemOnGUI))
+				EditorApplication.hierarchyWindowItemOnGUI += HierarchyWindowItemOnGUI;
+		}
 
 		private static Transform _offsetTransform;
 		private static int _offset;
