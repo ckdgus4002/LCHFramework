@@ -30,8 +30,6 @@ namespace LCHFramework.Editor
 
         private static void OnSceneOpened(Scene scene, OpenSceneMode mode)
         {
-            Debug.Log($"OnSceneOpened({scene.name}, {mode})");
-            
             if (mode != OpenSceneMode.Single) return;
             
             _scenePaths.RemoveRange(_currentSceneIndex + 1, _scenePaths.Count - _currentSceneIndex - 1);
