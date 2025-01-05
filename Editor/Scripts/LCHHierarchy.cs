@@ -9,8 +9,8 @@ namespace LCHFramework.Editor
 	public class LCHHierarchy
 	{
 		private const string EnableMenuItemPath = LCHFramework.MenuItemRootPath + "/" + nameof(LCHHierarchy) + "/" + nameof(Enabled);
-		private const string ShowActiveToggleMenuItemPath = LCHFramework.MenuItemRootPath + "/" + nameof(LCHHierarchy) + "/" + nameof(ShowActiveToggle);
-		private const string SqueezeWhenOverflowMenuItemPath = LCHFramework.MenuItemRootPath + "/" + nameof(LCHHierarchy) + "/" + nameof(SqueezeWhenOverflow);
+		private const string ShowActiveToggleMenuItemPath = LCHFramework.MenuItemRootPath + "/" + nameof(LCHHierarchy) + "/" + "Show Active Toggle";
+		private const string SqueezeWhenOverflowMenuItemPath = LCHFramework.MenuItemRootPath + "/" + nameof(LCHHierarchy) + "/" + "Squeeze When Overflow";
 		
 		private static readonly string EnabledPrefsKey = $"{nameof(LCHHierarchy)}{nameof(Enabled)}";
 		private static readonly string ShowActiveTogglePrefsKey = $"{nameof(LCHHierarchy)}{nameof(ShowActiveToggle)}";
