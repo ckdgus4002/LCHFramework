@@ -8,7 +8,7 @@ namespace LCHFramework.Editor
 {
     public static class BuildNumberIncreaser
     {
-        private const string EnableMenuItemPath = LCHFramework.MenuItemRootPath + "/BuildNumberIncreaser" + "/Enabled";
+        private const string EnableMenuItemPath = LCHFramework.MenuItemRootPath + "/" + "Build Number Increaser"/* + "/" + nameof(Enabled)*/;
         
         private static readonly string EnabledPrefsKey = $"{nameof(BuildNumberIncreaser)}{nameof(Enabled)}";
         
