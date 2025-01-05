@@ -9,7 +9,7 @@ namespace LCHFramework.Editor
 {
 	public class LCHHierarchy
 	{
-		private const string EnableMenuItemPath = LCHFramework.MenuItemRootPath + "/" + nameof(LCHHierarchy) + "/" + nameof(Enabled);
+		private const string EnabledMenuItemPath = LCHFramework.MenuItemRootPath + "/" + nameof(LCHHierarchy) + "/" + nameof(Enabled);
 		private const string ShowActiveToggleMenuItemPath = LCHFramework.MenuItemRootPath + "/" + nameof(LCHHierarchy) + "/" + "Show Active Toggle";
 		private const string SqueezeWhenOverflowMenuItemPath = LCHFramework.MenuItemRootPath + "/" + nameof(LCHHierarchy) + "/" + "Squeeze When Overflow";
 		
@@ -24,9 +24,9 @@ namespace LCHFramework.Editor
 
 
 
-		[MenuItem(EnableMenuItemPath, true)] private static bool ValidateEnableMenuItem() { Menu.SetChecked(EnableMenuItemPath, Enabled); return true; }
+		[MenuItem(EnabledMenuItemPath, true)] private static bool ValidateEnabledMenuItem() { Menu.SetChecked(EnabledMenuItemPath, Enabled); return true; }
 		
-		[MenuItem(EnableMenuItemPath)] private static void EnableMenuItem() { Enabled = !Enabled; EditorApplication.RepaintHierarchyWindow(); }
+		[MenuItem(EnabledMenuItemPath)] private static void EnabledMenuItem() { Enabled = !Enabled; EditorApplication.RepaintHierarchyWindow(); }
 
 		[MenuItem(ShowActiveToggleMenuItemPath, true)] private static bool ValidateShowActiveToggleMenuItem() { Menu.SetChecked(ShowActiveToggleMenuItemPath, ShowActiveToggle); return true; }
 		
