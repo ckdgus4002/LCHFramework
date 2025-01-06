@@ -1,219 +1,392 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using NGTools;
+using System;
 using System.Reflection;
-
-using UnityEngine;
 using UnityEditor;
-using HideIfUtilities;
 
-public abstract class HidingAttributeDrawer : PropertyDrawer {
+namespace NGToolsEditor
+{
+	using UnityEngine;
+	
+	[CustomPropertyDrawer(typeof(HideIfAttribute))]
+	internal sealed class HideIfDrawer : PropertyDrawer
+	{
+		private ConditionalRenderer	renderer;
 
-    public static bool CheckShouldHide(SerializedProperty property) {
-        try {
-            bool shouldHide = false;
+		public override float	GetPropertyHeight(SerializedProperty property, GUIContent label)
+		{
+			if (this.renderer == null)
+				this.renderer = new ConditionalRenderer("HideIf", this, base.GetPropertyHeight, false);
 
-            var targetObject = Utilities.GetTargetObjectOfProperty(property);
-            var type = targetObject.GetType();
+			return this.renderer.GetPropertyHeight(property, label);
+		}
 
-            FieldInfo field;
-            do
-            {
-                field = type.GetField(property.name, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-                type = type.BaseType;
-            } while (field == null && type != null);
-            
-            var customAttributes = field.GetCustomAttributes(typeof (HidingAttribute), false);
-            
-            // 'property' may be a property of a serialized class or collection inside the property.serializedObject.
-            // In that case we get the serialized property just above 'property' so the ShouldDraw method can test the
-            // HideIf attribute using FindPropertyRelative on the 'propertyParent'.
-            SerializedProperty propertyParent = null;
-            var propertyPath = property.propertyPath;
-            var lastDot = propertyPath.LastIndexOf('.');
-            if (lastDot > 0)
-            {
-                var parentPath = propertyPath.Substring(0, lastDot);
-                propertyParent = property.serializedObject.FindProperty(parentPath);
-            }
-            
-            HidingAttribute[] attachedAttributes = (HidingAttribute[]) customAttributes;
-            foreach (var hider in attachedAttributes) {
-                if (!ShouldDraw(property.serializedObject, propertyParent, hider)) {
-                    shouldHide = true;
-                }
-            }
+		public override void	OnGUI(Rect position, SerializedProperty property, GUIContent label)
+		{
+			this.renderer.OnGUI(position, property, label);
+		}
+	}
 
-            return shouldHide;
-        }
-        catch {
-            return false;
-        }
-    }
+	internal sealed class ConditionalRenderer
+	{
+		private const float	EmptyHeight = -2F;
 
-  
-    private static Dictionary<Type, Type> typeToDrawerType;
+		private string										name;
+		private Func<SerializedProperty, GUIContent, float>	getPropertyHeight;
+		private PropertyDrawer								drawer;
+		private bool										normalBooleanValue;
 
-    private static Dictionary<Type, PropertyDrawer> drawerTypeToDrawerInstance;
+		private string		errorAttribute = null;
+		private FieldInfo	conditionField;
+		private string		fieldName;
+		private Op			@operator;
+		private MultiOp		multiOperator;
+		private object[]	values;
 
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-        if (!CheckShouldHide(property)) {
-            if (typeToDrawerType == null)
-                PopulateTypeToDrawer();
+		private object		lastValue;
+		private string		lastValueStringified;
+		private string[]	targetValueStringified;
+		private Decimal[]	targetValueDecimaled;
 
-            Type drawerType;
-            var typeOfProp = Utilities.GetTargetObjectOfProperty(property).GetType();
-            if (typeToDrawerType.TryGetValue(typeOfProp, out drawerType)) {
-                var drawer = drawerTypeToDrawerInstance.GetOrAdd(drawerType, () => CreateDrawerInstance(drawerType));
-                drawer.OnGUI(position, property, label);
-            }
-            else {
-                EditorGUI.PropertyField(position, property, label, true);
-            }
-        }
-    }
+		private bool	conditionResult;
+		private bool	invalidHeight = true;
+		private float	cachedHeight;
 
-    public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
-        if (CheckShouldHide(property))
-            return -2;
+		private Func<SerializedProperty, GUIContent, float>	PropertyHeight;
 
-        if (typeToDrawerType == null)
-            PopulateTypeToDrawer();
+		public	ConditionalRenderer(string name, PropertyDrawer drawer, Func<SerializedProperty, GUIContent, float> getPropertyHeight, bool normalBooleanValue)
+		{
+			this.name = name;
+			this.drawer = drawer;
+			this.getPropertyHeight = getPropertyHeight;
+			this.normalBooleanValue = normalBooleanValue;
+		}
 
-        Type drawerType;
-        var typeOfProp = Utilities.GetTargetObjectOfProperty(property).GetType();
-        if (typeToDrawerType.TryGetValue(typeOfProp, out drawerType)) {
-            var drawer = drawerTypeToDrawerInstance.GetOrAdd(drawerType, () => CreateDrawerInstance(drawerType));
-            return drawer.GetPropertyHeight(property, label);
-        }
-        return EditorGUI.GetPropertyHeight(property, label, true);
-    }
+		public float	GetPropertyHeight(SerializedProperty property, GUIContent label)
+		{
+			if (this.fieldName == null)
+				this.InitializeDrawer(property);
 
-    private PropertyDrawer CreateDrawerInstance(Type drawerType) {
-        return (PropertyDrawer) Activator.CreateInstance(drawerType);
-    }
+			if (this.errorAttribute != null)
+				return 16F;
+			if (this.conditionField == null)
+				return this.getPropertyHeight(property, label);
 
-    private void PopulateTypeToDrawer() {
-        typeToDrawerType = new Dictionary<Type, Type>();
-        drawerTypeToDrawerInstance = new Dictionary<Type, PropertyDrawer>();
-        var propertyDrawerType = typeof (PropertyDrawer);
-        var targetType = typeof (CustomPropertyDrawer).GetField("m_Type", BindingFlags.Instance | BindingFlags.NonPublic);
-        var useForChildren = typeof (CustomPropertyDrawer).GetField("m_UseForChildren", BindingFlags.Instance | BindingFlags.NonPublic);
+			return this.PropertyHeight(property, label);
+		}
 
-        var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes());
+		public void	OnGUI(Rect position, SerializedProperty property, GUIContent label)
+		{
+			if (this.errorAttribute != null)
+			{
+				Color	restore = GUI.contentColor;
+				GUI.contentColor = Color.black;
+				EditorGUI.LabelField(position, label.text, this.errorAttribute);
+				GUI.contentColor = restore;
+			}
+			else if (this.conditionField == null || this.conditionResult == this.normalBooleanValue)
+			{
+				EditorGUI.BeginChangeCheck();
+				EditorGUI.PropertyField(position, property, label, property.isExpanded);
+				if (EditorGUI.EndChangeCheck() == true)
+					this.invalidHeight = true;
+			}
+		}
 
-        foreach (Type type in types) {
-            if (propertyDrawerType.IsAssignableFrom(type)) {
-                var customPropertyDrawers = type.GetCustomAttributes(true).OfType<CustomPropertyDrawer>().ToList();
-                foreach (var propertyDrawer in customPropertyDrawers) {
-                    var targetedType = (Type) targetType.GetValue(propertyDrawer);
-                    typeToDrawerType[targetedType] = type;
+		private void	InitializeDrawer(SerializedProperty property)
+		{
+			HideIfAttribute	hideIfAttr = (this.drawer.attribute as HideIfAttribute);
 
-                    var usingForChildren = (bool) useForChildren.GetValue(propertyDrawer);
-                    if (usingForChildren) {
-                        var childTypes = types.Where(t => targetedType.IsAssignableFrom(t) && t != targetedType);
-                        foreach (var childType in childTypes) {
-                            typeToDrawerType[childType] = type;
-                        }
-                    }
-                }
+			if (hideIfAttr != null)
+			{
+				this.fieldName = hideIfAttr.fieldName;
+				this.@operator = hideIfAttr.@operator;
+				this.multiOperator = hideIfAttr.multiOperator;
+				this.values = hideIfAttr.values;
+			}
+			else
+				this.errorAttribute = "HideIfAttribute is required by field " + this.name + ".";
 
-            }
-        }
-    }
+			this.conditionField = this.drawer.fieldInfo.DeclaringType.GetField(this.fieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+			if (this.conditionField == null)
+			{
+				this.errorAttribute = this.name + " is requiring field \"" + this.fieldName + "\".";
+				return;
+			}
+			else if (this.@operator != Op.None)
+			{
+				if (this.values[0] == null)
+				{
+					this.targetValueStringified = new string[] { string.Empty };
+					this.PropertyHeight = this.GetHeightAllOpsString;
 
-    private static bool ShouldDraw(SerializedObject hidingobject, SerializedProperty serializedProperty, HidingAttribute hider) {
-        var hideIf = hider as HideIfAttribute;
-        if (hideIf != null) {
-            return HideIfAttributeDrawer.ShouldDraw(hidingobject, serializedProperty, hideIf);
-        }
+					if (this.@operator != Op.Equals &&
+						this.@operator != Op.Diff)
+					{
+						this.errorAttribute = this.name + " is requiring a null value whereas its operator is \"" + this.@operator + "\" which is impossible.";
+					}
+				}
+				else if (this.values[0] is Boolean)
+				{
+					this.targetValueStringified = new string[] { this.values[0].ToString() };
+					this.PropertyHeight = this.GetHeightAllOpsString;
 
-        var hideIfNull = hider as HideIfNullAttribute;
-        if (hideIfNull != null) {
-            return HideIfNullAttributeDrawer.ShouldDraw(hidingobject, serializedProperty, hideIfNull);
-        }
+					if (this.@operator != Op.Equals &&
+						this.@operator != Op.Diff)
+					{
+						this.errorAttribute = this.name + " is requiring a boolean whereas its operator is \"" + this.@operator + "\" which is impossible.";
+					}
+				}
+				else if (this.values[0] is Int32 ||
+						 this.values[0] is Single ||
+						 this.values[0] is Enum ||
+						 this.values[0] is Double ||
+						 this.values[0] is Decimal ||
+						 this.values[0] is Int16 ||
+						 this.values[0] is Int64 ||
+						 this.values[0] is UInt16 ||
+						 this.values[0] is UInt32 ||
+						 this.values[0] is UInt64 ||
+						 this.values[0] is Byte ||
+						 this.values[0] is SByte)
+				{
+					this.targetValueDecimaled = new Decimal[] { Convert.ToDecimal(this.values[0]) };
+					this.PropertyHeight = this.GetHeightAllOpsScalar;
+				}
+				else
+				{
+					this.targetValueStringified = new string[] { this.values[0].ToString() };
+					this.PropertyHeight = this.GetHeightAllOpsString;
+				}
+			}
+			else if (this.multiOperator != MultiOp.None)
+			{
+				if (this.CheckUseOfNonScalarValue() == true)
+				{
+					this.targetValueStringified = new string[this.values.Length];
+					for (int i = 0; i < this.values.Length; i++)
+					{
+						if (this.values[i] != null)
+							this.targetValueStringified[i] = this.values[i].ToString();
+						else
+							this.targetValueStringified[i] = string.Empty;
+					}
 
-        var hideIfNotNull = hider as HideIfNotNullAttribute;
-        if (hideIfNotNull != null) {
-            return HideIfNotNullAttributeDrawer.ShouldDraw(hidingobject, serializedProperty, hideIfNotNull);
-        }
+					this.PropertyHeight = this.GetHeightMultiOpsString;
+				}
+				else
+				{
+					this.targetValueDecimaled = new Decimal[this.values.Length];
+					for (int i = 0; i < this.values.Length; i++)
+						this.targetValueDecimaled[i] = Convert.ToDecimal(this.values[i]);
 
-        var hideIfEnum = hider as HideIfEnumValueAttribute;
-        if (hideIfEnum != null) {
-            return HideIfEnumValueAttributeDrawer.ShouldDraw(hidingobject, serializedProperty, hideIfEnum);
-        }
+					this.PropertyHeight = this.GetHeightMultiOpsScalar;
+				}
+			}
 
-        var hideIfCompare = hider as HideIfCompareValueAttribute;
-        if (hideIfCompare != null) {
-            return HideIfCompareValueAttributeDrawer.ShouldDraw(hidingobject, serializedProperty, hideIfCompare);
-        }
+			// Force the next update.
+			object	newValue = this.conditionField.GetValue(property.serializedObject.targetObject);
 
-        Debug.LogWarning("Trying to check unknown hider loadingType: " + hider.GetType().Name);
-        return false;
-    }
+			if (this.lastValue == newValue)
+				this.lastValue = true;
+		}
 
-}
+		private bool	CheckUseOfNonScalarValue()
+		{
+			for (int i = 0; i < this.values.Length; i++)
+			{
+				if (this.values[i] == null ||
+					this.values[i] is String ||
+					this.values[i] is Boolean)
+				{
+					return true;
+				}
+			}
 
-[CustomPropertyDrawer(typeof (HideIfAttribute))]
-public class HideIfAttributeDrawer : HidingAttributeDrawer {
-    public static bool ShouldDraw(SerializedObject hidingObject, SerializedProperty serializedProperty, HideIfAttribute attribute) {
-        var prop = serializedProperty == null ? hidingObject.FindProperty(attribute.variable) : serializedProperty.FindPropertyRelative(attribute.variable);
-        if (prop == null) {
-            return true;
-        }
-        return prop.boolValue != attribute.state;
-    }
-}
+			return false;
+		}
 
-[CustomPropertyDrawer(typeof (HideIfNullAttribute))]
-public class HideIfNullAttributeDrawer : HidingAttributeDrawer {
-    public static bool ShouldDraw(SerializedObject hidingObject, SerializedProperty serializedProperty, HideIfNullAttribute attribute) {
-        var prop = serializedProperty == null ? hidingObject.FindProperty(attribute.variable) : serializedProperty.FindPropertyRelative(attribute.variable);
-        if (prop == null) {
-            return true;
-        }
+		private float	GetHeightAllOpsString(SerializedProperty property, GUIContent label)
+		{
+			object	newValue = this.conditionField.GetValue(property.serializedObject.targetObject);
 
-        return prop.objectReferenceValue != null;
-    }
-}
+			if (this.lastValue != newValue)
+			{
+				this.lastValue = newValue;
 
-[CustomPropertyDrawer(typeof (HideIfNotNullAttribute))]
-public class HideIfNotNullAttributeDrawer : HidingAttributeDrawer {
-    public static bool ShouldDraw(SerializedObject hidingObject, SerializedProperty serializedProperty, HideIfNotNullAttribute attribute) {
-        var prop = serializedProperty == null ? hidingObject.FindProperty(attribute.variable) : serializedProperty.FindPropertyRelative(attribute.variable);
-        if (prop == null) {
-            return true;
-        }
+				if (this.lastValue != null &&
+					// Unity Object is not referenced as real null, it is fake. Don't trust them.
+					(typeof(Object).IsAssignableFrom(this.lastValue.GetType()) == false ||
+					 ((this.lastValue as Object).ToString() != "null")))
+				{
+					this.lastValueStringified = this.lastValue.ToString();
+				}
+				else
+					this.lastValueStringified = string.Empty;
 
-        return prop.objectReferenceValue == null;
-    }
-}
+				if (this.@operator == Op.Equals)
+					this.conditionResult = this.lastValueStringified.Equals(this.targetValueStringified[0]);
+				else if (this.@operator == Op.Diff)
+					this.conditionResult = this.lastValueStringified.Equals(this.targetValueStringified[0]) == false;
+				else if (this.@operator == Op.Sup)
+					this.conditionResult = this.lastValueStringified.CompareTo(this.targetValueStringified[0]) > 0;
+				else if (this.@operator == Op.Inf)
+					this.conditionResult = this.lastValueStringified.CompareTo(this.targetValueStringified[0]) < 0;
+				else if (this.@operator == Op.SupEquals)
+					this.conditionResult = this.lastValueStringified.CompareTo(this.targetValueStringified[0]) >= 0;
+				else if (this.@operator == Op.InfEquals)
+					this.conditionResult = this.lastValueStringified.CompareTo(this.targetValueStringified[0]) <= 0;
+			}
 
-[CustomPropertyDrawer(typeof (HideIfEnumValueAttribute))]
-public class HideIfEnumValueAttributeDrawer : HidingAttributeDrawer {
-    public static bool ShouldDraw(SerializedObject hidingObject, SerializedProperty serializedProperty, HideIfEnumValueAttribute hideIfEnumValueAttribute) {
-        var enumProp = serializedProperty == null ? hidingObject.FindProperty(hideIfEnumValueAttribute.variable) : serializedProperty.FindPropertyRelative(hideIfEnumValueAttribute.variable);
-        var states = hideIfEnumValueAttribute.states;
+			return this.CalculateHeight(property, label);
+		}
 
-        //enumProp.enumValueIndex gives the order in the enum list, not the actual enum value
-        bool equal = states.Contains(enumProp.intValue);
+		private float	GetHeightAllOpsScalar(SerializedProperty property, GUIContent label)
+		{
+			object	newValue = this.conditionField.GetValue(property.serializedObject.targetObject);
 
-        return equal != hideIfEnumValueAttribute.hideIfEqual;
-    }
-}
+			if (newValue.Equals(this.lastValue) == false)
+			{
+				this.lastValue = newValue;
 
-[CustomPropertyDrawer(typeof (HideIfCompareValueAttribute))]
-public class HideIfCompareValueAttributeDrawer : HidingAttributeDrawer {
-    public static bool ShouldDraw(SerializedObject hidingObject, SerializedProperty serializedProperty, HideIfCompareValueAttribute hideIfCompareValueAttribute) {
-        var variable = serializedProperty == null ? hidingObject.FindProperty(hideIfCompareValueAttribute.variable) : serializedProperty.FindPropertyRelative(hideIfCompareValueAttribute.variable);
-        var compareValue = hideIfCompareValueAttribute.value;
-        
-        switch (hideIfCompareValueAttribute.hideIf)
-        {
-            case HideIf.Equal: return variable.intValue != compareValue;
-            case HideIf.NotEqual: return variable.intValue == compareValue;
-            case HideIf.Greater: return variable.intValue <= compareValue;
-            default: /*case HideIf.Lower:*/ return variable.intValue >= compareValue;
-        }
-    }
+				try
+				{
+					Decimal	value = Convert.ToDecimal(newValue);
+
+					if (this.@operator == Op.Equals)
+						this.conditionResult = value == this.targetValueDecimaled[0];
+					else if (this.@operator == Op.Diff)
+						this.conditionResult = value != this.targetValueDecimaled[0];
+					else if (this.@operator == Op.Sup)
+						this.conditionResult = value > this.targetValueDecimaled[0];
+					else if (this.@operator == Op.Inf)
+						this.conditionResult = value < this.targetValueDecimaled[0];
+					else if (this.@operator == Op.SupEquals)
+						this.conditionResult = value >= this.targetValueDecimaled[0];
+					else if (this.@operator == Op.InfEquals)
+						this.conditionResult = value <= this.targetValueDecimaled[0];
+				}
+				catch
+				{
+				}
+			}
+
+			return this.CalculateHeight(property, label);
+		}
+
+		private float	GetHeightMultiOpsString(SerializedProperty property, GUIContent label)
+		{
+			object	newValue = this.conditionField.GetValue(property.serializedObject.targetObject);
+
+			if (this.lastValue != newValue)
+			{
+				this.lastValue = newValue;
+
+				if (this.lastValue != null &&
+					// Unity Object is not referenced as real null, it is fake. Don't trust them.
+					(typeof(Object).IsAssignableFrom(this.lastValue.GetType()) == false ||
+					 ((this.lastValue as Object).ToString() != "null")))
+				{
+					this.lastValueStringified = this.lastValue.ToString();
+				}
+				else
+					this.lastValueStringified = string.Empty;
+
+				if (this.multiOperator == MultiOp.Equals)
+				{
+					this.conditionResult = !this.normalBooleanValue;
+
+					for (int i = 0; i < this.targetValueStringified.Length; i++)
+					{
+						if (this.lastValueStringified.Equals(this.targetValueStringified[i]) == true)
+						{
+							this.conditionResult = this.normalBooleanValue;
+							break;
+						}
+					}
+				}
+				else if (this.multiOperator == MultiOp.Diff)
+				{
+					int	i = 0;
+
+					this.conditionResult = this.normalBooleanValue;
+
+					for (; i < this.targetValueStringified.Length; i++)
+					{
+						if (this.lastValueStringified.Equals(this.targetValueStringified[i]) == true)
+						{
+							this.conditionResult = !this.normalBooleanValue;
+							break;
+						}
+					}
+				}
+			}
+
+			return this.CalculateHeight(property, label);
+		}
+
+		private float	GetHeightMultiOpsScalar(SerializedProperty property, GUIContent label)
+		{
+			object newValue = this.conditionField.GetValue(property.serializedObject.targetObject);
+
+			if (newValue.Equals(this.lastValue) == false)
+			{
+				this.lastValue = newValue;
+
+				try
+				{
+					Decimal value = Convert.ToDecimal(newValue);
+
+					if (this.multiOperator == MultiOp.Equals)
+					{
+						this.conditionResult = !this.normalBooleanValue;
+
+						for (int i = 0; i < this.targetValueDecimaled.Length; i++)
+						{
+							if (value == this.targetValueDecimaled[i])
+							{
+								this.conditionResult = this.normalBooleanValue;
+								break;
+							}
+						}
+					}
+					else if (this.multiOperator == MultiOp.Diff)
+					{
+						int i = 0;
+
+						this.conditionResult = this.normalBooleanValue;
+
+						for (; i < this.targetValueDecimaled.Length; i++)
+						{
+							if (value == this.targetValueDecimaled[i])
+							{
+								this.conditionResult = !this.normalBooleanValue;
+								break;
+							}
+						}
+					}
+				}
+				catch
+				{
+				}
+			}
+
+			return this.CalculateHeight(property, label);
+		}
+
+		private float	CalculateHeight(SerializedProperty property, GUIContent label)
+		{
+			if (this.conditionResult == this.normalBooleanValue)
+			{
+				if (this.invalidHeight == true)
+				{
+					this.invalidHeight = false;
+					this.cachedHeight = EditorGUI.GetPropertyHeight(property, label, property.isExpanded);
+				}
+
+				return this.cachedHeight;
+			}
+
+			return ConditionalRenderer.EmptyHeight;
+		}
+	}
 }

@@ -1,83 +1,54 @@
-﻿using System;
-using System.Collections;
+﻿using UnityEngine;
 
-using UnityEngine;
-
-public abstract class HidingAttribute : PropertyAttribute {}
-
-[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = true, AllowMultiple = true)]
-public class HideIfAttribute: HidingAttribute
+namespace NGTools
 {
-    public readonly string variable;
-    public readonly bool state;
+	public enum MultiOp
+	{
+		None = -1,
+		/// <summary>Checks if the field's value equals one of the requirements.</summary>
+		Equals,
+		/// <summary>Checks if the field's value differs from all the requirements.</summary>
+		Diff,
+	}
 
-    public HideIfAttribute(string variable, bool state, int order = 0)
-    {
-        this.variable = variable;
-        this.state = state;
-        this.order = order;
-    }
-}
+	public enum Op
+	{
+		None = -1,
+		/// <summary>Checks if the field's value is equal to the requirement.</summary>
+		Equals,
+		/// <summary>Checks if the field's value is different from the requirement.</summary>
+		Diff,
+		/// <summary>Checks if the field's value is superior than the requirement.</summary>
+		Sup,
+		/// <summary>Checks if the field's value is less than the requirement.</summary>
+		Inf,
+		/// <summary>Checks if the field's value is greater or equal to the requirement.</summary>
+		SupEquals,
+		/// <summary>Checks if the field's value is less than or equal to the requirement.</summary>
+		InfEquals,
+	}
 
-[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = true, AllowMultiple = true)]
-public class HideIfNullAttribute: HidingAttribute 
-{
-    public readonly string variable;
-    
-    public HideIfNullAttribute(string variable, int order = 0)
-    {
-        this.variable = variable;
-        this.order = order;
-    }
-}
+	public class HideIfAttribute : PropertyAttribute
+	{
+		public readonly string		fieldName;
+		public readonly Op			@operator;
+		public readonly MultiOp		multiOperator;
+		public readonly object[]	values;
 
-[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = true, AllowMultiple = true)]
-public class HideIfNotNullAttribute : HidingAttribute
-{
-    public readonly string variable;
-    public HideIfNotNullAttribute(string variable, int order = 0)
-    {
-        this.variable = variable;
-        this.order = order;
-    }
-}
+		public HideIfAttribute(string fieldName, Op @operator, object value)
+		{
+			this.fieldName = fieldName;
+			this.@operator = @operator;
+			this.multiOperator = MultiOp.None;
+			this.values = new object[] { value };
+		}
 
-[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = true, AllowMultiple = true)]
-public class HideIfEnumValueAttribute : HidingAttribute
-{
-    public readonly string variable;
-    public readonly bool hideIfEqual;
-    public readonly int[] states;
-    
-    public HideIfEnumValueAttribute(string variable, HideIf hideIf, params int[] states)
-    {
-        this.variable = variable;
-        this.hideIfEqual = hideIf == HideIf.Equal;
-        this.states = states;  
-        this.order = -1;
-    }
-}
-
-[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = true, AllowMultiple = true)]
-public class HideIfCompareValueAttribute : HidingAttribute
-{
-    public readonly string variable;
-    public readonly HideIf hideIf;
-    public readonly int value;
-    
-    public HideIfCompareValueAttribute(string variable, HideIf hideIf, int value)
-    {
-        this.variable = variable;
-        this.hideIf = hideIf;
-        this.value = value;  
-        this.order = -1;
-    }
-}
-
-public enum HideIf
-{
-    Equal,
-    NotEqual,
-    Greater,
-    Lower
+		public HideIfAttribute(string fieldName, MultiOp multiOperator, params object[] values)
+		{
+			this.fieldName = fieldName;
+			this.@operator = Op.None;
+			this.multiOperator = multiOperator;
+			this.values = values;
+		}
+	}
 }
