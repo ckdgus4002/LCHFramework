@@ -1,68 +1,83 @@
 ﻿using System;
+using System.Collections;
+
 using UnityEngine;
 
-namespace LCHFramework.Attributes
+public abstract class HidingAttribute : PropertyAttribute {}
+
+[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = true, AllowMultiple = true)]
+public class HideIfAttribute: HidingAttribute
 {
-    //Original version of the ConditionalHideAttribute created by Brecht Lecluyse (www.brechtos.com)
-    //Modified by: -
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property |
-        AttributeTargets.Class | AttributeTargets.Struct, Inherited = true)]
-    public class HideIfAttribute : PropertyAttribute
+    public readonly string variable;
+    public readonly bool state;
+
+    public HideIfAttribute(string variable, bool state, int order = 0)
     {
-        public string ConditionalSourceField = "";
-        public string ConditionalSourceField2 = "";
-        public string[] ConditionalSourceFields = new string[] { };
-        public bool[] ConditionalSourceFieldInverseBools = new bool[] { };
-        public bool HideInInspector = false;
-        public bool Inverse = false;
-        public bool UseOrLogic = false;
-
-        public bool InverseCondition1 = false;
-        public bool InverseCondition2 = false;
-
-
-	    // Use this for initialization
-        public HideIfAttribute(string conditionalSourceField)
-        {
-            this.ConditionalSourceField = conditionalSourceField;
-            this.HideInInspector = false;
-            this.Inverse = false;
-        }
-
-        public HideIfAttribute(string conditionalSourceField, bool hideInInspector)
-        {
-            this.ConditionalSourceField = conditionalSourceField;
-            this.HideInInspector = hideInInspector;
-            this.Inverse = false;
-        }
-
-        public HideIfAttribute(string conditionalSourceField, bool hideInInspector, bool inverse)
-        {
-            this.ConditionalSourceField = conditionalSourceField;
-            this.HideInInspector = hideInInspector;
-            this.Inverse = inverse;
-        }
-
-        public HideIfAttribute(bool hideInInspector = false)
-        {
-            this.ConditionalSourceField = "";
-            this.HideInInspector = hideInInspector;
-            this.Inverse = false;
-        }
-
-        public HideIfAttribute(string[] conditionalSourceFields,bool[] conditionalSourceFieldInverseBools, bool hideInInspector, bool inverse)
-        {
-            this.ConditionalSourceFields = conditionalSourceFields;
-            this.ConditionalSourceFieldInverseBools = conditionalSourceFieldInverseBools;
-            this.HideInInspector = hideInInspector;
-            this.Inverse = inverse;
-        }
-
-        public HideIfAttribute(string[] conditionalSourceFields, bool hideInInspector, bool inverse)
-        {
-            this.ConditionalSourceFields = conditionalSourceFields;        
-            this.HideInInspector = hideInInspector;
-            this.Inverse = inverse;
-        }
+        this.variable = variable;
+        this.state = state;
+        this.order = order;
     }
+}
+
+[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = true, AllowMultiple = true)]
+public class HideIfNullAttribute: HidingAttribute 
+{
+    public readonly string variable;
+    
+    public HideIfNullAttribute(string variable, int order = 0)
+    {
+        this.variable = variable;
+        this.order = order;
+    }
+}
+
+[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = true, AllowMultiple = true)]
+public class HideIfNotNullAttribute : HidingAttribute
+{
+    public readonly string variable;
+    public HideIfNotNullAttribute(string variable, int order = 0)
+    {
+        this.variable = variable;
+        this.order = order;
+    }
+}
+
+[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = true, AllowMultiple = true)]
+public class HideIfEnumValueAttribute : HidingAttribute
+{
+    public readonly string variable;
+    public readonly bool hideIfEqual;
+    public readonly int[] states;
+    
+    public HideIfEnumValueAttribute(string variable, HideIf hideIf, params int[] states)
+    {
+        this.variable = variable;
+        this.hideIfEqual = hideIf == HideIf.Equal;
+        this.states = states;  
+        this.order = -1;
+    }
+}
+
+[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = true, AllowMultiple = true)]
+public class HideIfCompareValueAttribute : HidingAttribute
+{
+    public readonly string variable;
+    public readonly HideIf hideIf;
+    public readonly int value;
+    
+    public HideIfCompareValueAttribute(string variable, HideIf hideIf, int value)
+    {
+        this.variable = variable;
+        this.hideIf = hideIf;
+        this.value = value;  
+        this.order = -1;
+    }
+}
+
+public enum HideIf
+{
+    Equal,
+    NotEqual,
+    Greater,
+    Lower
 }

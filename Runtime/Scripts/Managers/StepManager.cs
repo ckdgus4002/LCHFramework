@@ -15,8 +15,8 @@ namespace LCHFramework.Managers
     {
         [SerializeField] private bool loop;
         [SerializeField] private bool playOnStart;
-        [SerializeField] [HideIf(nameof(playOnStart))] private int playOnStartDelayFrame = 1;
-        [SerializeField] [HideIf(nameof(playOnStart))] private T2 playOnStartStep;
+        [SerializeField] [HideIf(nameof(playOnStart), false)] private int playOnStartDelayFrame = 1;
+        [SerializeField] [HideIf(nameof(playOnStart), false)] private T2 playOnStartStep;
         
         
         public OnCurrentStepIndexChangedDelegate OnCurrentStepIndexChanged { get; set; }
