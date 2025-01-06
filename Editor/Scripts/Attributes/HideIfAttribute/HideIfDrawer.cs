@@ -1,59 +1,59 @@
-﻿using NGTools;
-using System;
+﻿using System;
+using System.Linq;
 using System.Reflection;
 using UnityEditor;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
-namespace NGToolsEditor
+namespace LCHFramework.Attributes
 {
-	using UnityEngine;
-	
 	[CustomPropertyDrawer(typeof(HideIfAttribute))]
-	internal sealed class HideIfDrawer : PropertyDrawer
+	public sealed class HideIfDrawer : PropertyDrawer
 	{
-		private ConditionalRenderer	renderer;
-
-		public override float	GetPropertyHeight(SerializedProperty property, GUIContent label)
+		private HideIfRenderer renderer;
+		
+		public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
 		{
-			if (this.renderer == null)
-				this.renderer = new ConditionalRenderer("HideIf", this, base.GetPropertyHeight, false);
+			if (renderer == null)
+				renderer = new HideIfRenderer("HideIf", this, base.GetPropertyHeight, false);
 
-			return this.renderer.GetPropertyHeight(property, label);
+			return renderer.GetPropertyHeight(property, label);
 		}
 
-		public override void	OnGUI(Rect position, SerializedProperty property, GUIContent label)
+		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
-			this.renderer.OnGUI(position, property, label);
+			renderer.OnGUI(position, property, label);
 		}
 	}
 
-	internal sealed class ConditionalRenderer
+	public sealed class HideIfRenderer
 	{
 		private const float	EmptyHeight = -2F;
 
-		private string										name;
-		private Func<SerializedProperty, GUIContent, float>	getPropertyHeight;
-		private PropertyDrawer								drawer;
-		private bool										normalBooleanValue;
+		private readonly string name;
+		private readonly Func<SerializedProperty, GUIContent, float>	getPropertyHeight;
+		private readonly PropertyDrawer drawer;
+		private readonly bool normalBooleanValue;
 
-		private string		errorAttribute = null;
-		private FieldInfo	conditionField;
-		private string		fieldName;
-		private Op			@operator;
-		private MultiOp		multiOperator;
-		private object[]	values;
+		private string errorAttribute;
+		private FieldInfo conditionField;
+		private string fieldName;
+		private Op @operator;
+		private MultiOp multiOperator;
+		private object[] values;
+		
+		private object lastValue;
+		private string lastValueStringIfIed;
+		private string[] targetValueStringIfIed;
+		private decimal[] targetValueDecimalIed;
 
-		private object		lastValue;
-		private string		lastValueStringified;
-		private string[]	targetValueStringified;
-		private Decimal[]	targetValueDecimaled;
+		private bool conditionResult;
+		private bool invalidHeight = true;
+		private float cachedHeight;
 
-		private bool	conditionResult;
-		private bool	invalidHeight = true;
-		private float	cachedHeight;
+		private Func<SerializedProperty, GUIContent, float>	propertyHeight;
 
-		private Func<SerializedProperty, GUIContent, float>	PropertyHeight;
-
-		public	ConditionalRenderer(string name, PropertyDrawer drawer, Func<SerializedProperty, GUIContent, float> getPropertyHeight, bool normalBooleanValue)
+		public HideIfRenderer(string name, PropertyDrawer drawer, Func<SerializedProperty, GUIContent, float> getPropertyHeight, bool normalBooleanValue)
 		{
 			this.name = name;
 			this.drawer = drawer;
@@ -61,243 +61,200 @@ namespace NGToolsEditor
 			this.normalBooleanValue = normalBooleanValue;
 		}
 
-		public float	GetPropertyHeight(SerializedProperty property, GUIContent label)
+		public float GetPropertyHeight(SerializedProperty property, GUIContent label)
 		{
-			if (this.fieldName == null)
-				this.InitializeDrawer(property);
+			if (fieldName == null)
+				InitializeDrawer(property);
 
-			if (this.errorAttribute != null)
+			if (errorAttribute != null)
 				return 16F;
-			if (this.conditionField == null)
-				return this.getPropertyHeight(property, label);
+			if (conditionField == null)
+				return getPropertyHeight(property, label);
 
-			return this.PropertyHeight(property, label);
+			return propertyHeight(property, label);
 		}
-
+		
 		public void	OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
-			if (this.errorAttribute != null)
+			if (errorAttribute != null)
 			{
-				Color	restore = GUI.contentColor;
+				var restore = GUI.contentColor;
 				GUI.contentColor = Color.black;
 				EditorGUI.LabelField(position, label.text, this.errorAttribute);
 				GUI.contentColor = restore;
 			}
-			else if (this.conditionField == null || this.conditionResult == this.normalBooleanValue)
+			else if (conditionField == null || conditionResult == normalBooleanValue)
 			{
 				EditorGUI.BeginChangeCheck();
 				EditorGUI.PropertyField(position, property, label, property.isExpanded);
-				if (EditorGUI.EndChangeCheck() == true)
-					this.invalidHeight = true;
+				if (EditorGUI.EndChangeCheck())
+					invalidHeight = true;
 			}
 		}
 
-		private void	InitializeDrawer(SerializedProperty property)
+		private void InitializeDrawer(SerializedProperty property)
 		{
-			HideIfAttribute	hideIfAttr = (this.drawer.attribute as HideIfAttribute);
-
-			if (hideIfAttr != null)
+			if (drawer.attribute is HideIfAttribute hideIfAttr)
 			{
-				this.fieldName = hideIfAttr.fieldName;
-				this.@operator = hideIfAttr.@operator;
-				this.multiOperator = hideIfAttr.multiOperator;
-				this.values = hideIfAttr.values;
+				fieldName = hideIfAttr.fieldName;
+				@operator = hideIfAttr.@operator;
+				multiOperator = hideIfAttr.multiOperator;
+				values = hideIfAttr.values;
 			}
 			else
-				this.errorAttribute = "HideIfAttribute is required by field " + this.name + ".";
+				errorAttribute = "HideIfAttribute is required by field " + name + ".";
 
-			this.conditionField = this.drawer.fieldInfo.DeclaringType.GetField(this.fieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-			if (this.conditionField == null)
+			conditionField = drawer.fieldInfo.DeclaringType!.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+			if (conditionField == null)
 			{
-				this.errorAttribute = this.name + " is requiring field \"" + this.fieldName + "\".";
+				errorAttribute = name + " is requiring field \"" + fieldName + "\".";
 				return;
 			}
-			else if (this.@operator != Op.None)
+			
+			if (@operator != Op.None)
 			{
-				if (this.values[0] == null)
+				if (values[0] == null)
 				{
-					this.targetValueStringified = new string[] { string.Empty };
-					this.PropertyHeight = this.GetHeightAllOpsString;
+					targetValueStringIfIed = new[] { string.Empty };
+					propertyHeight = GetHeightAllOpsString;
 
-					if (this.@operator != Op.Equals &&
-						this.@operator != Op.Diff)
-					{
-						this.errorAttribute = this.name + " is requiring a null value whereas its operator is \"" + this.@operator + "\" which is impossible.";
-					}
+					if (@operator != Op.Equals && @operator != Op.Diff)
+						errorAttribute = name + " is requiring a null value whereas its operator is \"" + @operator + "\" which is impossible.";
 				}
-				else if (this.values[0] is Boolean)
+				else if (values[0] is bool)
 				{
-					this.targetValueStringified = new string[] { this.values[0].ToString() };
-					this.PropertyHeight = this.GetHeightAllOpsString;
+					targetValueStringIfIed = new[] { values[0].ToString() };
+					propertyHeight = GetHeightAllOpsString;
 
-					if (this.@operator != Op.Equals &&
-						this.@operator != Op.Diff)
-					{
-						this.errorAttribute = this.name + " is requiring a boolean whereas its operator is \"" + this.@operator + "\" which is impossible.";
-					}
+					if (@operator != Op.Equals && @operator != Op.Diff)
+						errorAttribute = name + " is requiring a boolean whereas its operator is \"" + @operator + "\" which is impossible.";
 				}
-				else if (this.values[0] is Int32 ||
-						 this.values[0] is Single ||
-						 this.values[0] is Enum ||
-						 this.values[0] is Double ||
-						 this.values[0] is Decimal ||
-						 this.values[0] is Int16 ||
-						 this.values[0] is Int64 ||
-						 this.values[0] is UInt16 ||
-						 this.values[0] is UInt32 ||
-						 this.values[0] is UInt64 ||
-						 this.values[0] is Byte ||
-						 this.values[0] is SByte)
+				else if (values[0] is int || values[0] is float || values[0] is Enum || values[0] is double
+				         || values[0] is decimal || values[0] is short || values[0] is long || values[0] is ushort
+				         || values[0] is uint || values[0] is ulong || values[0] is byte || values[0] is sbyte)
 				{
-					this.targetValueDecimaled = new Decimal[] { Convert.ToDecimal(this.values[0]) };
-					this.PropertyHeight = this.GetHeightAllOpsScalar;
+					targetValueDecimalIed = new[] { Convert.ToDecimal(values[0]) };
+					propertyHeight = GetHeightAllOpsScalar;
 				}
 				else
 				{
-					this.targetValueStringified = new string[] { this.values[0].ToString() };
-					this.PropertyHeight = this.GetHeightAllOpsString;
+					targetValueStringIfIed = new[] { values[0].ToString() };
+					propertyHeight = GetHeightAllOpsString;
 				}
 			}
-			else if (this.multiOperator != MultiOp.None)
+			else if (multiOperator != MultiOp.None)
 			{
-				if (this.CheckUseOfNonScalarValue() == true)
+				var checkUseOfNonScalarValue = values.Any(t => t is null or string or bool);
+				if (checkUseOfNonScalarValue)
 				{
-					this.targetValueStringified = new string[this.values.Length];
-					for (int i = 0; i < this.values.Length; i++)
-					{
-						if (this.values[i] != null)
-							this.targetValueStringified[i] = this.values[i].ToString();
-						else
-							this.targetValueStringified[i] = string.Empty;
-					}
+					targetValueStringIfIed = new string[values.Length];
+					for (var i = 0; i < values.Length; i++)
+						targetValueStringIfIed[i] = values[i] != null ? values[i].ToString() : string.Empty;
 
-					this.PropertyHeight = this.GetHeightMultiOpsString;
+					propertyHeight = GetHeightMultiOpsString;
 				}
 				else
 				{
-					this.targetValueDecimaled = new Decimal[this.values.Length];
-					for (int i = 0; i < this.values.Length; i++)
-						this.targetValueDecimaled[i] = Convert.ToDecimal(this.values[i]);
+					targetValueDecimalIed = new decimal[values.Length];
+					for (var i = 0; i < values.Length; i++)
+						targetValueDecimalIed[i] = Convert.ToDecimal(values[i]);
 
-					this.PropertyHeight = this.GetHeightMultiOpsScalar;
+					propertyHeight = GetHeightMultiOpsScalar;
 				}
 			}
 
 			// Force the next update.
-			object	newValue = this.conditionField.GetValue(property.serializedObject.targetObject);
+			var	newValue = conditionField.GetValue(property.serializedObject.targetObject);
 
-			if (this.lastValue == newValue)
-				this.lastValue = true;
+			if (lastValue == newValue)
+				lastValue = true;
 		}
 
-		private bool	CheckUseOfNonScalarValue()
+		private float GetHeightAllOpsString(SerializedProperty property, GUIContent label)
 		{
-			for (int i = 0; i < this.values.Length; i++)
+			var	newValue = conditionField.GetValue(property.serializedObject.targetObject);
+
+			if (lastValue != newValue)
 			{
-				if (this.values[i] == null ||
-					this.values[i] is String ||
-					this.values[i] is Boolean)
+				lastValue = newValue;
+				lastValueStringIfIed = lastValue != null
+				                       && (typeof(Object).IsAssignableFrom(lastValue.GetType()) == false // Unity Object is not referenced as real null, it is fake. Don't trust them.
+				                       || (lastValue as Object)?.ToString() != "null") 
+					? lastValue.ToString()
+					: string.Empty;
+
+				conditionResult = @operator switch
 				{
-					return true;
-				}
+					Op.Equals => lastValueStringIfIed.Equals(targetValueStringIfIed[0]),
+					Op.Diff => lastValueStringIfIed.Equals(targetValueStringIfIed[0]) == false,
+					Op.Sup => 0 < string.Compare(lastValueStringIfIed, targetValueStringIfIed[0], StringComparison.Ordinal),
+					Op.Inf => string.Compare(lastValueStringIfIed, targetValueStringIfIed[0], StringComparison.Ordinal) < 0,
+					Op.SupEquals => 0 <= string.Compare(lastValueStringIfIed, targetValueStringIfIed[0], StringComparison.Ordinal),
+					Op.InfEquals => string.Compare(lastValueStringIfIed, targetValueStringIfIed[0], StringComparison.Ordinal) <= 0,
+					_ => conditionResult
+				};
 			}
 
-			return false;
+			return CalculateHeight(property, label);
 		}
 
-		private float	GetHeightAllOpsString(SerializedProperty property, GUIContent label)
+		private float GetHeightAllOpsScalar(SerializedProperty property, GUIContent label)
 		{
-			object	newValue = this.conditionField.GetValue(property.serializedObject.targetObject);
+			var newValue = conditionField.GetValue(property.serializedObject.targetObject);
 
-			if (this.lastValue != newValue)
+			if (newValue.Equals(lastValue) == false)
 			{
-				this.lastValue = newValue;
-
-				if (this.lastValue != null &&
-					// Unity Object is not referenced as real null, it is fake. Don't trust them.
-					(typeof(Object).IsAssignableFrom(this.lastValue.GetType()) == false ||
-					 ((this.lastValue as Object).ToString() != "null")))
-				{
-					this.lastValueStringified = this.lastValue.ToString();
-				}
-				else
-					this.lastValueStringified = string.Empty;
-
-				if (this.@operator == Op.Equals)
-					this.conditionResult = this.lastValueStringified.Equals(this.targetValueStringified[0]);
-				else if (this.@operator == Op.Diff)
-					this.conditionResult = this.lastValueStringified.Equals(this.targetValueStringified[0]) == false;
-				else if (this.@operator == Op.Sup)
-					this.conditionResult = this.lastValueStringified.CompareTo(this.targetValueStringified[0]) > 0;
-				else if (this.@operator == Op.Inf)
-					this.conditionResult = this.lastValueStringified.CompareTo(this.targetValueStringified[0]) < 0;
-				else if (this.@operator == Op.SupEquals)
-					this.conditionResult = this.lastValueStringified.CompareTo(this.targetValueStringified[0]) >= 0;
-				else if (this.@operator == Op.InfEquals)
-					this.conditionResult = this.lastValueStringified.CompareTo(this.targetValueStringified[0]) <= 0;
-			}
-
-			return this.CalculateHeight(property, label);
-		}
-
-		private float	GetHeightAllOpsScalar(SerializedProperty property, GUIContent label)
-		{
-			object	newValue = this.conditionField.GetValue(property.serializedObject.targetObject);
-
-			if (newValue.Equals(this.lastValue) == false)
-			{
-				this.lastValue = newValue;
+				lastValue = newValue;
 
 				try
 				{
-					Decimal	value = Convert.ToDecimal(newValue);
+					var	value = Convert.ToDecimal(newValue);
 
-					if (this.@operator == Op.Equals)
-						this.conditionResult = value == this.targetValueDecimaled[0];
-					else if (this.@operator == Op.Diff)
-						this.conditionResult = value != this.targetValueDecimaled[0];
-					else if (this.@operator == Op.Sup)
-						this.conditionResult = value > this.targetValueDecimaled[0];
-					else if (this.@operator == Op.Inf)
-						this.conditionResult = value < this.targetValueDecimaled[0];
-					else if (this.@operator == Op.SupEquals)
-						this.conditionResult = value >= this.targetValueDecimaled[0];
-					else if (this.@operator == Op.InfEquals)
-						this.conditionResult = value <= this.targetValueDecimaled[0];
+					conditionResult = @operator switch
+					{
+						Op.Equals => value == targetValueDecimalIed[0],
+						Op.Diff => conditionResult = value != targetValueDecimalIed[0],
+						Op.Sup => conditionResult = targetValueDecimalIed[0] < value,
+						Op.Inf => conditionResult = value < targetValueDecimalIed[0],
+						Op.SupEquals => conditionResult = targetValueDecimalIed[0] <= value,
+						Op.InfEquals => conditionResult = value <= targetValueDecimalIed[0],
+						_ => conditionResult
+					}; 
 				}
 				catch
 				{
+					// ignored
 				}
 			}
 
-			return this.CalculateHeight(property, label);
+			return CalculateHeight(property, label);
 		}
 
-		private float	GetHeightMultiOpsString(SerializedProperty property, GUIContent label)
+		private float GetHeightMultiOpsString(SerializedProperty property, GUIContent label)
 		{
-			object	newValue = this.conditionField.GetValue(property.serializedObject.targetObject);
+			var	newValue = conditionField.GetValue(property.serializedObject.targetObject);
 
-			if (this.lastValue != newValue)
+			if (lastValue != newValue)
 			{
-				this.lastValue = newValue;
+				lastValue = newValue;
 
-				if (this.lastValue != null &&
+				if (lastValue != null &&
 					// Unity Object is not referenced as real null, it is fake. Don't trust them.
-					(typeof(Object).IsAssignableFrom(this.lastValue.GetType()) == false ||
-					 ((this.lastValue as Object).ToString() != "null")))
+					(typeof(Object).IsAssignableFrom(lastValue.GetType()) == false ||
+					 ((lastValue as Object)?.ToString() != "null")))
 				{
-					this.lastValueStringified = this.lastValue.ToString();
+					lastValueStringIfIed = lastValue.ToString();
 				}
 				else
-					this.lastValueStringified = string.Empty;
+					this.lastValueStringIfIed = string.Empty;
 
 				if (this.multiOperator == MultiOp.Equals)
 				{
 					this.conditionResult = !this.normalBooleanValue;
 
-					for (int i = 0; i < this.targetValueStringified.Length; i++)
+					for (int i = 0; i < this.targetValueStringIfIed.Length; i++)
 					{
-						if (this.lastValueStringified.Equals(this.targetValueStringified[i]) == true)
+						if (this.lastValueStringIfIed.Equals(this.targetValueStringIfIed[i]) == true)
 						{
 							this.conditionResult = this.normalBooleanValue;
 							break;
@@ -310,9 +267,9 @@ namespace NGToolsEditor
 
 					this.conditionResult = this.normalBooleanValue;
 
-					for (; i < this.targetValueStringified.Length; i++)
+					for (; i < this.targetValueStringIfIed.Length; i++)
 					{
-						if (this.lastValueStringified.Equals(this.targetValueStringified[i]) == true)
+						if (this.lastValueStringIfIed.Equals(this.targetValueStringIfIed[i]) == true)
 						{
 							this.conditionResult = !this.normalBooleanValue;
 							break;
@@ -326,23 +283,23 @@ namespace NGToolsEditor
 
 		private float	GetHeightMultiOpsScalar(SerializedProperty property, GUIContent label)
 		{
-			object newValue = this.conditionField.GetValue(property.serializedObject.targetObject);
+			var newValue = conditionField.GetValue(property.serializedObject.targetObject);
 
-			if (newValue.Equals(this.lastValue) == false)
+			if (newValue.Equals(lastValue) == false)
 			{
-				this.lastValue = newValue;
+				lastValue = newValue;
 
 				try
 				{
-					Decimal value = Convert.ToDecimal(newValue);
+					decimal value = Convert.ToDecimal(newValue);
 
 					if (this.multiOperator == MultiOp.Equals)
 					{
 						this.conditionResult = !this.normalBooleanValue;
 
-						for (int i = 0; i < this.targetValueDecimaled.Length; i++)
+						for (int i = 0; i < this.targetValueDecimalIed.Length; i++)
 						{
-							if (value == this.targetValueDecimaled[i])
+							if (value == this.targetValueDecimalIed[i])
 							{
 								this.conditionResult = this.normalBooleanValue;
 								break;
@@ -355,9 +312,9 @@ namespace NGToolsEditor
 
 						this.conditionResult = this.normalBooleanValue;
 
-						for (; i < this.targetValueDecimaled.Length; i++)
+						for (; i < this.targetValueDecimalIed.Length; i++)
 						{
-							if (value == this.targetValueDecimaled[i])
+							if (value == this.targetValueDecimalIed[i])
 							{
 								this.conditionResult = !this.normalBooleanValue;
 								break;
@@ -367,26 +324,21 @@ namespace NGToolsEditor
 				}
 				catch
 				{
+					// ignored
 				}
 			}
 
-			return this.CalculateHeight(property, label);
+			return CalculateHeight(property, label);
 		}
 
-		private float	CalculateHeight(SerializedProperty property, GUIContent label)
+		private float CalculateHeight(SerializedProperty property, GUIContent label)
 		{
-			if (this.conditionResult == this.normalBooleanValue)
-			{
-				if (this.invalidHeight == true)
-				{
-					this.invalidHeight = false;
-					this.cachedHeight = EditorGUI.GetPropertyHeight(property, label, property.isExpanded);
-				}
-
-				return this.cachedHeight;
-			}
-
-			return ConditionalRenderer.EmptyHeight;
+			if (conditionResult != normalBooleanValue) return EmptyHeight;
+			if (!invalidHeight) return cachedHeight;
+			
+			invalidHeight = false;
+			cachedHeight = EditorGUI.GetPropertyHeight(property, label, property.isExpanded);
+			return cachedHeight;
 		}
 	}
 }

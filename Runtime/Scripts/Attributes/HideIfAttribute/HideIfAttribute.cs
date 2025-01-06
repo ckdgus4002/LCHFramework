@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace NGTools
+namespace LCHFramework.Attributes
 {
 	public enum MultiOp
 	{
@@ -30,17 +30,25 @@ namespace NGTools
 
 	public class HideIfAttribute : PropertyAttribute
 	{
-		public readonly string		fieldName;
-		public readonly Op			@operator;
-		public readonly MultiOp		multiOperator;
-		public readonly object[]	values;
+		public readonly string fieldName;
+		public readonly Op @operator;
+		public readonly MultiOp	multiOperator;
+		public readonly object[] values;
 
+		public HideIfAttribute(string fieldName, object value)
+		{
+			this.fieldName = fieldName;
+			this.@operator = Op.Equals;
+			this.multiOperator = MultiOp.None;
+			this.values = new[] { value };
+		}
+		
 		public HideIfAttribute(string fieldName, Op @operator, object value)
 		{
 			this.fieldName = fieldName;
 			this.@operator = @operator;
 			this.multiOperator = MultiOp.None;
-			this.values = new object[] { value };
+			this.values = new[] { value };
 		}
 
 		public HideIfAttribute(string fieldName, MultiOp multiOperator, params object[] values)
