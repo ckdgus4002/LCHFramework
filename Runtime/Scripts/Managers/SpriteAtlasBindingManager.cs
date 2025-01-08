@@ -14,6 +14,7 @@ namespace LCHFramework.Managers
         [RuntimeInitializeOnLoadMethod]
         private static void InitializeOnLoadMethod()
         {
+            SpriteAtlasManager.atlasRequested -= AtlasRequested;
             SpriteAtlasManager.atlasRequested += AtlasRequested;
         }
 
