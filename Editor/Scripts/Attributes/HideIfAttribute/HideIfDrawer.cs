@@ -80,7 +80,7 @@ namespace LCHFramework.Attributes
 			{
 				var restore = GUI.contentColor;
 				GUI.contentColor = Color.black;
-				EditorGUI.LabelField(position, label.text, this.errorAttribute);
+				EditorGUI.LabelField(position, label.text, errorAttribute);
 				GUI.contentColor = restore;
 			}
 			else if (conditionField == null || conditionResult == normalBooleanValue)
@@ -178,8 +178,7 @@ namespace LCHFramework.Attributes
 			{
 				lastValue = newValue;
 				lastValueStringIfIed = lastValue != null
-				                       && (typeof(Object).IsAssignableFrom(lastValue.GetType()) == false // Unity Object is not referenced as real null, it is fake. Don't trust them.
-				                       || (lastValue as Object)?.ToString() != "null") 
+				                       && (!typeof(Object).IsAssignableFrom(lastValue.GetType()) || (lastValue as Object)?.ToString() != "null") // Unity Object is not referenced as real null, it is fake. Don't trust them.
 					? lastValue.ToString()
 					: string.Empty;
 
@@ -238,47 +237,20 @@ namespace LCHFramework.Attributes
 			{
 				lastValue = newValue;
 
-				if (lastValue != null &&
-					// Unity Object is not referenced as real null, it is fake. Don't trust them.
-					(typeof(Object).IsAssignableFrom(lastValue.GetType()) == false ||
-					 ((lastValue as Object)?.ToString() != "null")))
+				lastValueStringIfIed = lastValue != null 
+				                       && (!typeof(Object).IsAssignableFrom(lastValue.GetType()) || (lastValue as Object)?.ToString() != "null")  // Unity Object is not referenced as real null, it is fake. Don't trust them. 
+						? lastValue.ToString() 
+						:  string.Empty;
+
+				conditionResult = multiOperator switch
 				{
-					lastValueStringIfIed = lastValue.ToString();
-				}
-				else
-					this.lastValueStringIfIed = string.Empty;
-
-				if (this.multiOperator == MultiOp.Equals)
-				{
-					this.conditionResult = !this.normalBooleanValue;
-
-					for (int i = 0; i < this.targetValueStringIfIed.Length; i++)
-					{
-						if (this.lastValueStringIfIed.Equals(this.targetValueStringIfIed[i]) == true)
-						{
-							this.conditionResult = this.normalBooleanValue;
-							break;
-						}
-					}
-				}
-				else if (this.multiOperator == MultiOp.Diff)
-				{
-					int	i = 0;
-
-					this.conditionResult = this.normalBooleanValue;
-
-					for (; i < this.targetValueStringIfIed.Length; i++)
-					{
-						if (this.lastValueStringIfIed.Equals(this.targetValueStringIfIed[i]) == true)
-						{
-							this.conditionResult = !this.normalBooleanValue;
-							break;
-						}
-					}
-				}
+					MultiOp.Equals => targetValueStringIfIed.Any(t => lastValueStringIfIed.Equals(t)) ? normalBooleanValue : !normalBooleanValue,
+					MultiOp.Diff => targetValueStringIfIed.Any(t => lastValueStringIfIed.Equals(t)) ? !normalBooleanValue : normalBooleanValue,
+					_ => conditionResult
+				};
 			}
 
-			return this.CalculateHeight(property, label);
+			return CalculateHeight(property, label);
 		}
 
 		private float	GetHeightMultiOpsScalar(SerializedProperty property, GUIContent label)
@@ -291,36 +263,14 @@ namespace LCHFramework.Attributes
 
 				try
 				{
-					decimal value = Convert.ToDecimal(newValue);
+					var value = Convert.ToDecimal(newValue);
 
-					if (this.multiOperator == MultiOp.Equals)
+					conditionResult = multiOperator switch
 					{
-						this.conditionResult = !this.normalBooleanValue;
-
-						for (int i = 0; i < this.targetValueDecimalIed.Length; i++)
-						{
-							if (value == this.targetValueDecimalIed[i])
-							{
-								this.conditionResult = this.normalBooleanValue;
-								break;
-							}
-						}
-					}
-					else if (this.multiOperator == MultiOp.Diff)
-					{
-						int i = 0;
-
-						this.conditionResult = this.normalBooleanValue;
-
-						for (; i < this.targetValueDecimalIed.Length; i++)
-						{
-							if (value == this.targetValueDecimalIed[i])
-							{
-								this.conditionResult = !this.normalBooleanValue;
-								break;
-							}
-						}
-					}
+						MultiOp.Equals => targetValueDecimalIed.Any(t => value == t) ? normalBooleanValue : !normalBooleanValue,
+						MultiOp.Diff => targetValueDecimalIed.Any(t => value == t) ? !normalBooleanValue : normalBooleanValue,
+						_ => conditionResult
+					};
 				}
 				catch
 				{
