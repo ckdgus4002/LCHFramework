@@ -13,7 +13,7 @@ using Debug = UnityEngine.Debug;
 
 namespace LCHFramework.Components
 {
-    public class Rotator_Rotator : LCHMonoBehaviour, IDragHandler, IEndDragHandler
+    public class Rotator : LCHMonoBehaviour, IDragHandler, IEndDragHandler
     {
         public Transform target;
         public Image rotateButton;
