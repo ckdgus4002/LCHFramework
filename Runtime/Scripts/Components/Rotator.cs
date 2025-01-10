@@ -286,7 +286,7 @@ namespace LCHFramework.Components
                         {
                             var rotate = Quaternion.Slerp(Quaternion.Euler(Velocity), Quaternion.identity, (1 - smoothRatio) * (Time.deltaTime/0.0167f)).eulerAngles;
                             RotateTarget(Velocity = rotate);
-                            for (var i = 0; i < Mathf.Max(1, Application.targetFrameRate / 60f); i++) yield return null;
+                            for (var i = 0; i < Mathf.Max(1, UnityEngine.Application.targetFrameRate / 60f); i++) yield return null;
                         }
                     } while (canSmooth);
                 }

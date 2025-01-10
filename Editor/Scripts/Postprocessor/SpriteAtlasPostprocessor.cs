@@ -48,7 +48,7 @@ namespace LCHFramework.Editor
             if (spriteAtlasImporterOrNull == null) spriteAtlas.SetTextureSettings(textureSettings);
             else spriteAtlasImporterOrNull.textureSettings = textureSettings;
             
-            foreach (var platformGroup in LCHFramework.PlatformGroups)
+            foreach (var platformGroup in Application.PlatformGroups)
             {
                 var platformSettings = spriteAtlas.GetPlatformSettings($"{platformGroup}");
                 platformSettings.overridden = false;

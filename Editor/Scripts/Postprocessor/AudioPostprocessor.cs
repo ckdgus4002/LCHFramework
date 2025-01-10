@@ -40,7 +40,7 @@ namespace LCHFramework.Editor
             defaultSampleSettings.sampleRateSetting = AudioSampleRateSetting.PreserveSampleRate;
             audioImporter.defaultSampleSettings = defaultSampleSettings;
             
-            foreach (var platformGroup in LCHFramework.PlatformGroups) audioImporter.ClearSampleSettingOverride($"{platformGroup}");
+            foreach (var platformGroup in Application.PlatformGroups) audioImporter.ClearSampleSettingOverride($"{platformGroup}");
             
             Debug.Log($"OnPostprocessAudio: {assetPath}");
         }

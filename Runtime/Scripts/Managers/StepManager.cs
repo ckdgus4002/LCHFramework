@@ -85,7 +85,7 @@ namespace LCHFramework.Managers
         [Button]
         public void PassCurrentStep()
         {
-            if (Application.isEditor && !Application.isPlaying) 
+            if (Application.IsEditor && !UnityEngine.Application.isPlaying) 
                 Debug.LogError("Can't execute when edit mode in editor. because cache variables is cached.");
             else if (RightStepOrNull == null)
                 Debug.LogError("Step is end.");
