@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using LCHFramework.Extensions;
@@ -12,12 +13,13 @@ namespace LCHFramework.Managers
         [SerializeField] private AudioSource audioSourcePrefabOrNull;
         
         
+        public AudioSourceControllerType type;
         private readonly List<AudioSource> audioSources = new();
+                
         
+        public bool IsPlaying() => IsPlaying(IsPlayingAudioSources);
         
-        public string Type => gameObject.name;
-
-        public bool IsPlaying => !IsPlayingAudioSources.IsEmpty();
+        public bool IsPlaying(IEnumerable<AudioSource> isPlayingAudioSources) => !audioSources.IsEmpty();
 
         public IEnumerable<AudioSource> IsPlayingAudioSources => audioSources.Where(t => t.isPlaying);
         
@@ -35,57 +37,77 @@ namespace LCHFramework.Managers
         
         public AudioPlayResult Play(AudioClip audioClip, float volume, bool loop, AudioPlayType audioPlayType)
         {
-            if (audioPlayType == AudioPlayType.SkippableAudio && IsPlaying) return AudioPlayResult.fail;
-
-            if (audioPlayType == AudioPlayType.FadeableAudio && IsPlaying)
-            {
-                
-            }
+            var isPlayingAudioSources = IsPlayingAudioSources.ToArray();
+            var isPlaying = IsPlaying(isPlayingAudioSources);
             
-            switch (audioPlayType)
+            if (audioPlayType == AudioPlayType.FadeableAudio && isPlaying)
             {
-                case AudioPlayType.NestableAudio:
-                case AudioPlayType.FadeableAudio:
-                case AudioPlayType.StoppableAudio:
-                case AudioPlayType.SkippableAudio:
+                var audioSource = AudioSourcePool.Get();
+                isPlayingAudioSources.ForEach(t => StartCoroutine(FadeAudioSourceVolumeCor(t, 0, () =>
                 {
-                    if (audioPlayType == AudioPlayType.FadeableAudio && IsPlaying)
-                    {
-                        var isPlayingAudioSources = IsPlayingAudioSources;
-                    }
-                    else if (audioPlayType == AudioPlayType.StoppableAudio && IsPlaying)
-                    {
-                        var isPlayingAudioSources = IsPlayingAudioSources;
-                    }
-                    else if (audioPlayType == AudioPlayType.SkippableAudio && IsPlaying)
-                    {
-                        var isPlayingAudioSources = IsPlayingAudioSources;
-                    }
-                    var source = AudioSourcePool.Get();
-                    source.name = audioClip.name;
-                    
-                    source.pitch = AudioManager.TimeScale;
-                    source.clip = audioClip;
-                    var calculatedVolume = AudioManager.MasterVolume.Value * AudioManager.LocalVolumes[Type].Value * volume; 
-                    source.volume = calculatedVolume;
-                    source.loop = loop;
-                    source.Play();
-                    Invoke(nameof(ReleaseAudioSource), audioClip.length);
-                    
-                    return new AudioPlayResult { audioSourceOrNull = source };
-                }
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(audioPlayType), audioPlayType, null);
+                    isPlayingAudioSources.ForEach(StopAudioSource);
+                    ReleaseAudioSources(isPlayingAudioSources);
+                    PlayAudioSource(audioSource, audioClip, volume, loop, audioPlayType);
+                })));
+                return new AudioPlayResult { audioSource = audioSource, isSuccess = true, audioClipLength = audioClip.length };
             }
+            else if (audioPlayType == AudioPlayType.StoppableAudio && isPlaying)
+            {
+                isPlayingAudioSources.ForEach(StopAudioSource);
+                ReleaseAudioSources(isPlayingAudioSources);
+            }
+            else if (audioPlayType == AudioPlayType.SkippableAudio && isPlaying) 
+                return AudioPlayResult.fail;
+            
+            return PlayAudioSource(audioClip, volume, loop, audioPlayType);
         }
 
-        public void SetTimeScale(float value) => audioSources.ForEach(t => t.pitch = value);
+        private IEnumerator FadeAudioSourceVolumeCor(AudioSource audioSource, float volume, Action callback = null)
+        {
+            var startVolume = audioSource.volume;
+            var startTime = Time.time;
+            var endTime = startTime + AudioManager.FadeDuration;
+            while (Time.time < endTime)
+            {
+                audioSource.volume = Mathf.Lerp(startVolume, volume, (Time.time - startTime) / (endTime - startTime));
+                yield return null;
+            }
+            audioSource.volume = volume;
+            callback?.Invoke();
+        }
+
+        private AudioPlayResult PlayAudioSource(AudioClip audioClip, float volume, bool loop, AudioPlayType audioPlayType)
+            => PlayAudioSource(AudioSourcePool.Get(), audioClip, volume, loop, audioPlayType);
+
+        private AudioPlayResult PlayAudioSource(AudioSource audioSource, AudioClip audioClip, float volume, bool loop, AudioPlayType audioPlayType)
+        {
+            audioSource.name = audioClip.name;
+            SetAudioSourceTimeScale(audioSource, AudioManager.TimeScale);
+            audioSource.clip = audioClip;
+            audioSource.loop = loop;
+            audioSource.Play();
+            var calculatedVolume = AudioManager.MasterVolume.Value * AudioManager.LocalVolumes[type].Value * volume;
+            if (audioPlayType == AudioPlayType.FadeableAudio) StartCoroutine(FadeAudioSourceVolumeCor(audioSource, calculatedVolume));
+            else audioSource.volume = calculatedVolume;
+            
+            return new AudioPlayResult { audioSource = audioSource, isSuccess = true, audioClipLength = audioClip.length };
+        }
+
+        public void SetAudioSourcesTimeScale(float timeScale) => audioSources.ForEach(t => SetAudioSourceTimeScale(t, timeScale));
+
+        private void SetAudioSourceTimeScale(AudioSource audioSource, float timeScale) => audioSource.pitch = timeScale;
         
-        public void UnPauseAll() => audioSources.ForEach(t => t.UnPause());
+        public void UnPauseAudioSources() => audioSources.ForEach(t => t.UnPause());
         
-        public void PauseAll() => audioSources.ForEach(t => t.Pause());
-        
-        public void StopAll() => audioSources.ForEach(t => t.Stop());
+        public void PauseAllAudioSources() => audioSources.ForEach(t => t.Pause());
+
+        public void StopAllAudioSources() => audioSources.ForEach(StopAudioSource);
+
+        private void StopAudioSource(AudioSource audioSource)
+        {
+            audioSource.Stop();
+            ReleaseAudioSource(audioSource);
+        }
         
         public void ReleaseAudioSources(IEnumerable<AudioSource> values) => values.ForEach(ReleaseAudioSource);
 

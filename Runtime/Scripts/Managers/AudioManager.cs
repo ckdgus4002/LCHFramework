@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
 using LCHFramework.Data;
 using LCHFramework.Extensions;
 using UnityEngine;
@@ -29,7 +28,7 @@ namespace LCHFramework.Managers
     {
         public static AudioPlayResult fail = new();
 
-        public AudioSource audioSourceOrNull;
+        public AudioSource audioSource;
         public bool isSuccess;
         public float audioClipLength;
         
@@ -41,6 +40,7 @@ namespace LCHFramework.Managers
         public const AudioPlayType DefaultAudioPlayType = AudioPlayType.NestableAudio;
         public const float DefaultVolume = 1f;
         public const bool DefaultLoop = false;
+        public const float FadeDuration = 1f;
         
         public static readonly AudioSourceControllerType DefaultAudioSourceControllerType = AudioSourceControllerType.Sfx;
         public static readonly ReactiveProperty<float> MasterVolume = new() { Value = DefaultVolume };
@@ -52,7 +52,7 @@ namespace LCHFramework.Managers
             get => _timeScale;
             set
             {
-                Instance.controllers.Values.ForEach(t => t.SetTimeScale(value));
+                Instance.controllers.Values.ForEach(t => t.SetAudioSourcesTimeScale(value));
                 _timeScale = value;
             }
         }
@@ -89,10 +89,11 @@ namespace LCHFramework.Managers
 
             if (controllers.Keys.Any(t => t.value == type.value)) return;
             
-            var go = new GameObject($"{type}");
+            var go = new GameObject($"{type.value}");
             go.transform.SetParent(transform);
             LocalVolumes.Add(type, new ReactiveProperty<float> { Value = DefaultVolume });
-            controllers.Add(type, go.AddComponent<AudioSourceController>());
+            var audioSourceController = go.AddComponent<AudioSourceController>();
+            controllers.Add(audioSourceController.type = type, audioSourceController);
         }
         
         public AudioPlayResult Play(AudioClip audioClip, AudioPlayType audioPlayType = DefaultAudioPlayType, float volume = DefaultVolume, bool loop = DefaultLoop)
@@ -102,7 +103,7 @@ namespace LCHFramework.Managers
             => _Play(audioClip, controllers[audioSourceControllerType], audioPlayType, volume, loop);
         
         public AudioPlayResult Play(AudioClip audioClip, string audioClipFilePath, AudioPlayType audioPlayType = DefaultAudioPlayType, float volume = DefaultVolume, bool loop = DefaultLoop)
-            => _Play(audioClip, controllers.Values.FirstOrDefault(t => audioClipFilePath.Contains(t.Type, StringComparison.OrdinalIgnoreCase)), audioPlayType, volume, loop);
+            => _Play(audioClip, controllers.Values.FirstOrDefault(t => audioClipFilePath.Contains(t.type.value, StringComparison.OrdinalIgnoreCase)), audioPlayType, volume, loop);
 
         private AudioPlayResult _Play(AudioClip audioClip, AudioSourceController audioSourceController, AudioPlayType audioPlayType, float volume, bool loop)
         {
@@ -110,11 +111,11 @@ namespace LCHFramework.Managers
             return audioSourceController.Play(audioClip, volume, loop, audioPlayType);
         }
 
-        public void UnPauseAll() => controllers.Values.ForEach(t => t.UnPauseAll());
+        public void UnPauseAll() => controllers.Values.ForEach(t => t.UnPauseAudioSources());
         
-        public void PauseAll() => controllers.Values.ForEach(t => t.PauseAll());
+        public void PauseAll() => controllers.Values.ForEach(t => t.PauseAllAudioSources());
         
-        public void StopAll() => controllers.Values.ForEach(t => t.StopAll());
+        public void StopAll() => controllers.Values.ForEach(t => t.StopAllAudioSources());
 
         public void ReleaseAudioSources() => controllers.Values.ForEach(t => t.ReleaseAudioSources(t.IsPlayingAudioSources));
     }
