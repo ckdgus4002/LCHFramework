@@ -17,7 +17,7 @@ namespace LCHFramework.Editor
             // pbxProject.SetBuildProperty(pbxProject.GetUnityMainTargetGuid(), "ENABLE_BITCODE", "NO");
             pbxProject.WriteToFile(pbxProjectPath);
 
-            Debug.Log("PBXProject is writed");
+            Debug.Log("PBXProject is wrote.");
         }
     }
 }

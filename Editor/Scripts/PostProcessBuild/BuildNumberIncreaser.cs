@@ -30,7 +30,7 @@ namespace LCHFramework.Editor
             
             PlayerSettingsUtility.SetBuildNumber($"{Convert.ToInt32(PlayerSettingsUtility.GetBuildNumber()) + 1}");
             
-            Debug.Log("BuildNumber is increased");
+            Debug.Log("Build number is increased.");
         }
     }
 }

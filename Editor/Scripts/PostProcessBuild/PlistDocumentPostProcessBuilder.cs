@@ -19,7 +19,7 @@ namespace LCHFramework.Editor
             // plistDocument.root.values.Remove("UIApplicationExitsOnSuspend", out _); // 지원 만료되는 기능입니다. 키를 제거하여 Appstore에서 수신되는 issue 메일을 방지합니다. 
             plistDocument.WriteToFile(plistDocumentPath);
             
-            Debug.Log("PlistDocument is writed");
+            Debug.Log("PlistDocument is wrote.");
         }
     }
 }
