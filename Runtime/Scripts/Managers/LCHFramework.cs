@@ -17,7 +17,7 @@ namespace LCHFramework
         public const string MenuItemRootPath = "Tools" + "/" + nameof(LCHFramework);
         public const string CreateAssetMenuRootPath = nameof(LCHFramework);
 #endif
-        public static string BuildNumberInfoFilePath = $"{UnityEngine.Application.persistentDataPath}//buildNumberInfo.txt";
+        public static string BuildNumberInfoFilePath => (Application.IsEditor && !UnityEngine.Application.isPlaying ? "StreamingAssets" : UnityEngine.Application.persistentDataPath) + "/" + "buildNumberInfo.txt";
         
         
         
