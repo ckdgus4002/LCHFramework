@@ -3,8 +3,11 @@
 namespace LCHFramework.Components
 {
     [RequireComponent(typeof(Animator))]
-    public class LookAtCameraIK : LCHMonoBehaviour
+    public class LookAtTransformIK : LCHMonoBehaviour
     {
+        [SerializeField] private Transform target;
+        
+        
         private Animator Animator => _animator == null ? _animator = GetComponent<Animator>() : _animator;
         private Animator _animator;
         
@@ -12,7 +15,7 @@ namespace LCHFramework.Components
         
         private void OnAnimatorIK(int layerIndex)
         {
-            Animator.SetLookAtPosition(Camera.main.transform.position);
+            Animator.SetLookAtPosition(target.position);
             Animator.SetLookAtWeight(1);
         }
     }
