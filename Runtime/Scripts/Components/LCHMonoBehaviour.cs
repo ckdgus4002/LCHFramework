@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using LCHFramework.Extensions;
 using LCHFramework.Utilities;
+using UniRx;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -59,7 +60,8 @@ namespace LCHFramework.Components
         [NonSerialized] public string defaultName;
         
         
-        protected readonly List<CancellationTokenSource> _ctses = new();
+        protected readonly List<CancellationTokenSource> ctses = new();
+        protected readonly CompositeDisposable disposables = new();
         
         
         public bool TRSIsInitialized { get; private set; }
@@ -78,6 +80,8 @@ namespace LCHFramework.Components
         public virtual bool DoStopAllCoroutinesWhenDisable => true;
         
         public virtual bool DoClearTokenSourcesWhenDisable => true;
+
+        public virtual bool DoDisposeDisposablesWhenDisable => true;
         
         public float HalfWidth => Width * .5f;
         
@@ -121,7 +125,8 @@ namespace LCHFramework.Components
         {
             DisableCount++;
             if (DoStopAllCoroutinesWhenDisable) StopAllCoroutines();
-            if (DoClearTokenSourcesWhenDisable) CancellationTokenSourceUtility.ClearTokenSources(_ctses);
+            if (DoClearTokenSourcesWhenDisable) CancellationTokenSourceUtility.ClearTokenSources(ctses);
+            if (DoDisposeDisposablesWhenDisable) disposables.Dispose();
         }
         
         

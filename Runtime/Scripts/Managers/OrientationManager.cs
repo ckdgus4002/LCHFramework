@@ -1,17 +1,9 @@
 using LCHFramework.Data;
+using UniRx;
 using UnityEngine;
 
 namespace LCHFramework.Managers
 {
-    public enum Orientation
-    {
-        Unknown,
-        Portrait,
-        PortraitUpsideDown,
-        LandscapeLeft,
-        LandscapeRight,
-    }
-    
     public class OrientationManager : MonoSingleton<OrientationManager>
     {
         protected override bool IsDontDestroyOnLoad => true;

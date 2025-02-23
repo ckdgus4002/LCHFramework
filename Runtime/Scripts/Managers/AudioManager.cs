@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using LCHFramework.Data;
 using LCHFramework.Extensions;
+using UniRx;
 using UnityEngine;
 
 namespace LCHFramework.Managers
@@ -32,7 +32,7 @@ namespace LCHFramework.Managers
         public bool isSuccess;
         public float audioClipLength;
         
-        public bool isFail => !isSuccess;
+        public bool IsFail => !isSuccess;
     }
     
     public class AudioManager : MonoSingleton<AudioManager>

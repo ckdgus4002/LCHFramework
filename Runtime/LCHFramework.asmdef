@@ -2,7 +2,8 @@
     "name": "LCHFramework",
     "rootNamespace": "LCHFramework",
     "references": [
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "UniRx"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

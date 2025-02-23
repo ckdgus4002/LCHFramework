@@ -5,9 +5,8 @@ using System.Linq;
 using LCHFramework.Data;
 using LCHFramework.Extensions;
 using LCHFramework.Managers;
-using LCHFramework.Utilities;
+using UniRx;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace LCHFramework
 {
@@ -106,18 +105,11 @@ namespace LCHFramework
         protected virtual void Update()
         {
             var screenSize = new Vector2(Screen.width, Screen.height);
-            if (ScreenUtility.IsSizeChanged(PrevScreenSize))
-                foreach (var rootGameObject in SceneManager.GetActiveScene().GetRootGameObjects())
-                    foreach (var item in rootGameObject.GetComponentsInChildren<IScreenSizeChanged>())
-                        item.OnScreenSizeChanged(PrevScreenSize, screenSize);
+            if (screenSize != PrevScreenSize) MessageBroker.Default.Publish(new ScreenSizeChangedMessage());
             PrevScreenSize = screenSize;
-
-
+            
             var mainCameraAspect = Camera.main.aspect;
-            if (CameraUtility.IsAspectChanged(Camera.main, PrevMainCameraAspect))
-                foreach (var rootGameObject in SceneManager.GetActiveScene().GetRootGameObjects())
-                    foreach (var item in rootGameObject.GetComponentsInChildren<IMainCameraAspectChanged>())
-                        item.OnMainCameraAspectChanged(PrevMainCameraAspect, mainCameraAspect);
+            if (!Mathf.Approximately(mainCameraAspect, PrevMainCameraAspect)) MessageBroker.Default.Publish(new MainCameraAspectChangedMessage());
             PrevMainCameraAspect = mainCameraAspect;
         }
     }
