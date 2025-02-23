@@ -36,6 +36,8 @@ namespace LCHFramework.Extensions
             result = enumerable.LastOrDefault(predicate);
             return !EqualityComparer<T>.Default.Equals(result, default);
         }
+
+        public static bool IsExists<T>(this IEnumerable<T> enumerable) => !IsEmpty(enumerable);
         
         public static bool IsEmpty<T>(this IEnumerable<T> enumerable)
             => enumerable == null || enumerable.All(item => EqualityComparer<T>.Default.Equals(item, default));

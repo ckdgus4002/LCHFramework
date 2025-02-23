@@ -1,21 +1,39 @@
 using System.Linq;
 using LCHFramework.Attributes;
-using LCHFramework.Data;
 using LCHFramework.Extensions;
 using UnityEngine;
 using Debug = LCHFramework.Utilities.Debug;
 
 namespace LCHFramework.Managers
 {
+    public interface IPassCurrentStep
+    {
+        public void PassCurrentStep();
+    }
+    
+    public delegate void OnCurrentStepIndexChangedDelegate(int prev, int current);
+    
+    public interface ICurrentStepIndexChanged
+    {
+        public int PrevStepIndex { get; }
+
+        public int CurrentStepIndex { get; }
+        
+        public OnCurrentStepIndexChangedDelegate OnCurrentStepIndexChanged { get; set; }
+    }
+    
     public class StepManager : StepManager<StepManager, Step>
     {
     }
     
-    public class StepManager<T1, T2> : MonoSingleton<T1>, IStepManager<T2>, ICurrentStepIndexChanged, IPassCurrentStep where T1 : MonoSingleton<T1> where T2 : Step
+    public class StepManager<T1, T2> : MonoSingleton<T1>, ICurrentStepIndexChanged, IPassCurrentStep
+        where T1 : MonoSingleton<T1>
+        where T2 : Step
     {
+        public T2[] steps;
         [SerializeField] private bool loop;
         [SerializeField] private bool playOnStart;
-        [SerializeField] [HideIf(nameof(playOnStart), false)] private int playOnStartDelayFrame = 1;
+        [SerializeField] [HideIf(nameof(playOnStart), false)] private int playOnStartDelayFrame;
         [SerializeField] [HideIf(nameof(playOnStart), false)] private T2 playOnStartStep;
         
         
@@ -29,17 +47,11 @@ namespace LCHFramework.Managers
         public T2 RightStepOrNull { get; private set; }
         
         
-        protected override bool IsDontDestroyOnLoad => true;
-        
-        public int CurrentStepIndex => CurrentStep.Index;
-        
-        public int PrevStepIndex => PrevStepOrNull == null ? -1 : PrevStepOrNull.Index;
-        
         public T2 CurrentStep
         {
             get
             {
-                if (_currentStep == null) CurrentStep = Steps[0];
+                if (_currentStep == null) CurrentStep = steps[0];
                 
                 return _currentStep;    
             }
@@ -49,10 +61,10 @@ namespace LCHFramework.Managers
                 
                 PrevStepOrNull = _currentStep;
                 _currentStep = value;
-                LeftStepOrNull = 0 < _currentStep.Index ? Steps[_currentStep.Index - 1] : loop ? Steps[^1] : null;
-                RightStepOrNull = _currentStep.Index < Steps.Length - 1 ? Steps[_currentStep.Index + 1] : loop ? Steps[0] : null;
+                LeftStepOrNull = 0 < _currentStep.Index ? steps[_currentStep.Index - 1] : loop ? steps[^1] : null;
+                RightStepOrNull = _currentStep.Index < steps.Length - 1 ? steps[_currentStep.Index + 1] : loop ? steps[0] : null;
                 
-                foreach (var t in Steps.Where(t => t.IsShown)) t.Hide();
+                foreach (var t in steps.Where(t => t.IsShown)) t.Hide();
                 _currentStep.Show();
                 
                 Debug.Log($"CurrentStep is Changed. {PrevStepOrNull.Index} -> {_currentStep.Index}");
@@ -61,14 +73,29 @@ namespace LCHFramework.Managers
         }
         private T2 _currentStep;
         
-        public T2 FirstStep => Steps[0];
+        public T2 StartStep => steps[0];
         
-        public T2 LastStep => Steps[^1];
+        public T2 LastStep => steps[^1];
         
-        public T2[] Steps => _steps.IsEmpty() ? _steps = GetComponentsInChildren<T2>(true) : _steps;
-        private T2[] _steps;
+        public int PrevStepIndex => PrevStepOrNull == null ? -1 : PrevStepOrNull.Index;
 
+        public int CurrentStepIndex => CurrentStep.Index;
+        
+        
+        
+        protected virtual void Reset()
+        {
+            CollectSteps();
+            InitializePlayOnStart();
+        }
 
+        protected override void Awake()
+        {
+            base.Awake();
+            
+            if (steps.IsEmpty()) CollectSteps();
+        }
+        
         protected override async void Start()
         {
             base.Start();
@@ -76,12 +103,26 @@ namespace LCHFramework.Managers
             if (playOnStart)
             {
                 for (var i = 0; i < playOnStartDelayFrame; i++) await Awaitable.NextFrameAsync();
-                CurrentStep = playOnStartStep;
+                Play();
             }
         }
         
         
         
+        [Button]
+        private void CollectSteps()
+        {
+            if (steps.IsEmpty()) steps = GetComponentsInChildren<T2>(true);
+        }
+
+        [Button]
+        private void InitializePlayOnStart()
+        {
+            playOnStart = true;
+            playOnStartDelayFrame = 1;
+            playOnStartStep = !steps.IsExists() ? null : StartStep;
+        }
+
         [Button]
         public void PassCurrentStep()
         {
@@ -92,5 +133,7 @@ namespace LCHFramework.Managers
             else
                 CurrentStep = RightStepOrNull;
         }
+        
+        public void Play() => CurrentStep = playOnStartStep;
     }   
 }
