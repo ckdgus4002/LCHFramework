@@ -8,7 +8,7 @@
     "url": "git+https://github.com/ckdgus4002/LCHFramework.git"
   },
   "dependencies": {
-    "com.unity.ugui": "2.0.0"
+    "com.unity.ugui": "2.0.0",
     "com.neuecc.unirx": "7.1.0"
   },
   "author": {
