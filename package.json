@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "com.unity.ugui": "2.0.0"
+    "com.neuecc.unirx": "7.1.0"
   },
   "author": {
     "name": "Lee Changhyun",
