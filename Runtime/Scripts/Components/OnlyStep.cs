@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using LCHFramework.Attributes;
-using LCHFramework.Data;
-using LCHFramework.Extensions;
 using LCHFramework.Managers;
 using UnityEngine;
 using UnityEngine.Events;
@@ -37,7 +33,7 @@ namespace LCHFramework.Components
         
         
         private void OnCurrentStepIndexChanged(int prevStepIndex, int currentStepIndex)
-            => OnCurrentStepIndexChanged(() => CurrentStepIndexChanged.PrevStepIndex, () => CurrentStepIndexChanged.CurrentStepIndex);
+            => OnCurrentStepIndexChanged(() => prevStepIndex, () => currentStepIndex);
         
         private void OnCurrentStepIndexChanged(Func<int> prevStepIndex, Func<int> currentStepIndex)
         {

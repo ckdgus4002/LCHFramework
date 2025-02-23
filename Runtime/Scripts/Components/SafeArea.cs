@@ -1,3 +1,4 @@
+using LCHFramework.Data;
 using LCHFramework.Managers;
 using LCHFramework.Utilities;
 using UnityEngine;

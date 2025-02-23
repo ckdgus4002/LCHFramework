@@ -25,7 +25,7 @@ namespace LCHFramework.Managers
         {
             base.Show();
             
-            CancellationTokenSourceUtility.ClearTokenSources(_ctses);
+            CancellationTokenSourceUtility.ClearTokenSources(ctses);
             
             delay = _defaultDelay;
             

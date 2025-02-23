@@ -1,5 +1,4 @@
 using LCHFramework.Components;
-using LCHFramework.Data;
 
 namespace LCHFramework.Managers
 {
