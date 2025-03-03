@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace LCHFramework.Components
 {
-    public class LookAtTransform : MonoBehaviour
+    public class LookAtTransform : LCHMonoBehaviour
     {
         [SerializeField] private Transform target;
         [SerializeField] private Vector3 offset;
