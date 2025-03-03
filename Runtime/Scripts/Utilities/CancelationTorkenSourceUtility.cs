@@ -18,7 +18,7 @@ namespace LCHFramework.Utilities
         
         public static void ClearTokenSource(ref CancellationTokenSource cancellationTokenSource)
         {
-            cancellationTokenSource.Cancel();
+            if (cancellationTokenSource.Token.CanBeCanceled) cancellationTokenSource.Cancel();
             cancellationTokenSource.Dispose();
             cancellationTokenSource = null;
         }
