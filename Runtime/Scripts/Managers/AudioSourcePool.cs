@@ -127,7 +127,7 @@ namespace LCHFramework.Managers
                 yield return new WaitForSeconds(delay);
                 ObjectPool.Release(audioSource);
             }
-        }l
+        }
 
         public void DisposeAudioSourcePool() => ObjectPool.Dispose();
     }
