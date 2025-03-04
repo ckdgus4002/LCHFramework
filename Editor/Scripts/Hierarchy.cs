@@ -90,11 +90,11 @@ namespace LCHFramework.Editor
 				var component = components[i + offset];
 				var rect = new Rect(selectionRect.width - deltaX * i + globalOffsetX, selectionRect.y + y, iconSize, iconSize);
 				var texture2d = AssetPreview.GetMiniThumbnail(component);
-				if (texture2d == null) continue;
-				
-				GUI.color = gameObjectOrNull.activeInHierarchy && (component is not Behaviour behaviour || behaviour.enabled) ? Color.white : new Color(1, 1, 1, 0.4f);
-				//GUI.Box(guiRect, GUIContent.none);
-				GUI.DrawTexture(rect, texture2d);
+				if (component == null || texture2d != null)
+				{
+					GUI.color = gameObjectOrNull.activeInHierarchy && (component is not Behaviour behaviour || behaviour.enabled) ? Color.white : new Color(1, 1, 1, 0.4f);
+					GUI.DrawTexture(rect, component == null ? EditorGUIUtility.FindTexture("console.erroricon.sml") : texture2d);	
+				}
 			}
 			GUI.color = prevColor;
 

@@ -6,6 +6,12 @@ namespace LCHFramework.Utilities
 {
     public static class CancellationTokenSourceUtility
     {
+        public static void RestartTokenSources(ref CancellationTokenSource cancellationTokenSource)
+        {
+            ClearTokenSource(ref cancellationTokenSource);
+            cancellationTokenSource = new CancellationTokenSource();
+        }
+        
         public static void ClearTokenSources(List<CancellationTokenSource> cancellationTokenSources)
         {
             while (!cancellationTokenSources.IsEmpty())
@@ -18,6 +24,8 @@ namespace LCHFramework.Utilities
         
         public static void ClearTokenSource(ref CancellationTokenSource cancellationTokenSource)
         {
+            if (cancellationTokenSource == null) return;
+            
             if (cancellationTokenSource.Token.CanBeCanceled) cancellationTokenSource.Cancel();
             cancellationTokenSource.Dispose();
             cancellationTokenSource = null;

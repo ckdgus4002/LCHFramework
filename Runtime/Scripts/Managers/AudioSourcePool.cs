@@ -124,7 +124,14 @@ namespace LCHFramework.Managers
             StartCoroutine(Coroutine());
             IEnumerator Coroutine()
             {
-                yield return new WaitForSeconds(delay);
+                var elapsed = 0f;
+                while (true)
+                {
+                    if (delay <= elapsed) break;
+                    
+                    yield return null;
+                    elapsed += Time.deltaTime * SoundManager.TimeScale;
+                }
                 ObjectPool.Release(audioSource);
             }
         }
