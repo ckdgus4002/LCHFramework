@@ -130,7 +130,7 @@ namespace LCHFramework.Managers
                     if (delay <= elapsed) break;
                     
                     yield return null;
-                    elapsed += Time.deltaTime * SoundManager.TimeScale;
+                    elapsed += Time.unscaledDeltaTime * SoundManager.TimeScale;
                 }
                 ObjectPool.Release(audioSource);
             }
