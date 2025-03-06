@@ -10,7 +10,7 @@ namespace LCHFramework
 {
     public class Application
     {
-        public static string BuildNumber => IsEditor ? PlayerSettingsUtility.GetBuildNumber()
+        public static string BuildNumber => isEditor ? PlayerSettingsUtility.GetBuildNumber()
             : File.Exists(LCHFramework.BuildNumberInfoFilePath) ? File.ReadAllText(LCHFramework.BuildNumberInfoFilePath)
             : string.Empty;
         
@@ -26,7 +26,7 @@ namespace LCHFramework
             }
         }
         
-        public static bool IsEditor
+        public static bool isEditor
         {
             get
             {

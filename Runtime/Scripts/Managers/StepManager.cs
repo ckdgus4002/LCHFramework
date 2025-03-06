@@ -6,9 +6,6 @@ using LCHFramework.Extensions;
 using UniRx;
 using UnityEngine;
 using Debug = LCHFramework.Utilities.Debug;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace LCHFramework.Managers
 {
@@ -40,10 +37,10 @@ namespace LCHFramework.Managers
         where T1 : MonoSingleton<T1>
         where T2 : Step
     {
-        [SerializeField] private T2 startStep;
+        public T2 startStep;
         [SerializeField] private bool loop;
-        [SerializeField] private bool playOnStart;
-        [SerializeField] [HideIf(nameof(playOnStart), false)] private int playOnStartDelayFrame;
+        [SerializeField] private bool playOnStart = true;
+        [SerializeField] [HideIf(nameof(playOnStart), false)] private int playOnStartDelayFrame = 1;
         
         
         public bool IsPlayed { get; private set; }
@@ -64,19 +61,24 @@ namespace LCHFramework.Managers
             }
             set
             {
-                if (value == null) { Debug.LogError("CurrentStep dont set null"); return; }
-                if (_currentStep == value) return;
+                if (value == null) 
+                    Debug.LogError("CurrentStep dont set. Because value is null");
+                else if (_currentStep == value)
+                    Debug.LogError("CurrentStep dont set. Because value is same value.");
+                else
+                {
+                    IsPlayed = true;
+                    PrevStepOrNull = _currentStep;
+                    _currentStep = value;
+                    LeftStepOrNull = 0 < _currentStep.Index ? Steps[_currentStep.Index - 1] : loop ? Steps[^1] : null;
+                    RightStepOrNull = _currentStep.Index < Steps.Count - 1 ? Steps[_currentStep.Index + 1] : loop ? startStep : null;
                 
-                PrevStepOrNull = _currentStep;
-                _currentStep = value;
-                LeftStepOrNull = 0 < _currentStep.Index ? Steps[_currentStep.Index - 1] : loop ? Steps[^1] : null;
-                RightStepOrNull = _currentStep.Index < Steps.Count - 1 ? Steps[_currentStep.Index + 1] : loop ? startStep : null;
+                    Steps.Where(t => t.IsShown).ForEach(t => t.Hide());
+                    _currentStep.Show();
                 
-                Steps.Where(t => t.IsShown).ForEach(t => t.Hide());
-                _currentStep.Show();
-                
-                Debug.Log($"CurrentStep is Changed. {PrevStepIndex} -> {_currentStep.Index}");
-                MessageBroker.Default.Publish(new StartStepMessage { endStepOrNull = PrevStepOrNull, startStep = _currentStep });
+                    Debug.Log($"CurrentStep is changed. {PrevStepIndex} -> {_currentStep.Index}");
+                    MessageBroker.Default.Publish(new StartStepMessage { endStepOrNull = PrevStepOrNull, startStep = _currentStep });    
+                }
             }
         }
         private T2 _currentStep;
@@ -87,11 +89,6 @@ namespace LCHFramework.Managers
         private List<T2> _steps;
         
         
-        
-        protected virtual void Reset()
-        {
-            InitializePlayOnStart();
-        }
         
         protected override async void Start()
         {
@@ -112,20 +109,10 @@ namespace LCHFramework.Managers
         
         
         
-        [Button(nameof(InitializePlayOnStart))]
-        private void InitializePlayOnStart()
-        {
-            playOnStart = true;
-            playOnStartDelayFrame = 1;
-    #if UNITY_EDITOR
-            EditorUtility.SetDirty(this);
-    #endif
-        }
-        
         [Button(nameof(PassCurrentStep))]
         public void PassCurrentStep()
         {
-            if (Application.IsEditor && !UnityEngine.Application.isPlaying) 
+            if (Application.isEditor && !UnityEngine.Application.isPlaying) 
                 Debug.LogError("Can't execute when edit mode in editor. because cache variables is cached.");
             else if (IsPlayed && CurrentStep == LastStep && RightStepOrNull == null)
                 Debug.LogError("Step is end.");
@@ -135,11 +122,10 @@ namespace LCHFramework.Managers
                 Play();
         }
         
-        public void Play(bool force = false)
+        protected void Play()
         {
-            if (!force && IsPlayed) return;
+            if (IsPlayed) return;
             
-            IsPlayed = true;
             CurrentStep = startStep;
         }
     }
