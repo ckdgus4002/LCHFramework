@@ -38,8 +38,8 @@ namespace LCHFramework.Editor
 		[InitializeOnLoadMethod]
 		public static void InitializeOnLoad()
 		{
-			if (!EditorApplication.hierarchyWindowItemOnGUI.Contains((EditorApplication.HierarchyWindowItemCallback)HierarchyWindowItemOnGUI))
-				EditorApplication.hierarchyWindowItemOnGUI += HierarchyWindowItemOnGUI;
+			EditorApplication.hierarchyWindowItemOnGUI -= HierarchyWindowItemOnGUI;
+			EditorApplication.hierarchyWindowItemOnGUI += HierarchyWindowItemOnGUI;
 		}
 
 		private static Transform _offsetTransform;
