@@ -125,9 +125,9 @@ namespace LCHFramework.Managers
             IEnumerator Coroutine()
             {
                 var elapsed = 0f;
-                while (true)
+                while (elapsed <= delay)
                 {
-                    if (delay <= elapsed) break;
+                    if (!audioSource.isPlaying) continue;
                     
                     yield return null;
                     elapsed += Time.unscaledDeltaTime * SoundManager.TimeScale;
