@@ -23,10 +23,10 @@ namespace LCHFramework.Managers
     {
     }
     
-    public class StartStepMessage
+    public class CurrentStepChangedMessage
     {
-        public Step endStepOrNull;
-        public Step startStep;
+        public Step prevStepOrNull;
+        public Step currentStep;
     }
     
     public class StepManager : StepManager<StepManager, Step>
@@ -49,8 +49,6 @@ namespace LCHFramework.Managers
         public T2 RightStepOrNull { get; private set; }
         
         
-        public int PrevStepIndex => PrevStepOrNull == null ? -1 : PrevStepOrNull.Index;
-        
         public T2 CurrentStep
         {
             get
@@ -72,8 +70,8 @@ namespace LCHFramework.Managers
                 Steps.Where(t => t.IsShown).ForEach(t => t.Hide());
                 _currentStep.Show();
                 
-                Debug.Log($"CurrentStep is changed. {PrevStepIndex} -> {_currentStep.Index}");
-                MessageBroker.Default.Publish(new StartStepMessage { endStepOrNull = PrevStepOrNull, startStep = _currentStep });
+                Debug.Log($"CurrentStep is changed. {(PrevStepOrNull == null ? "" : $"{PrevStepOrNull.name} -> ")}{_currentStep.name}");
+                MessageBroker.Default.Publish(new CurrentStepChangedMessage { prevStepOrNull = PrevStepOrNull, currentStep = _currentStep });
             }
         }
         private T2 _currentStep;

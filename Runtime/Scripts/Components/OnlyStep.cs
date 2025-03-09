@@ -1,33 +1,30 @@
 using System;
 using System.Linq;
 using LCHFramework.Managers;
+using UniRx;
 using UnityEngine;
 using UnityEngine.Events;
-using Object = UnityEngine.Object;
 
 namespace LCHFramework.Components
 {
     public class OnlyStep : LCHMonoBehaviour
     {
-        [SerializeField] private Object _currentStepIndexChangedOrNull;
         [SerializeField] private Step[] steps;
         [SerializeField] private UnityEvent<int, int> onShow;
         [SerializeField] private UnityEvent<int, int> onHide;
         
         
-        private ICurrentStepIndexChanged CurrentStepIndexChanged => (ICurrentStepIndexChanged)(_currentStepIndexChangedOrNull == null ? _currentStepIndexChangedOrNull = (Object)FindAnyInterfaceByType<ICurrentStepIndexChanged>() : _currentStepIndexChangedOrNull);
-
-
-        private void OnValidate()
-        {
-            _currentStepIndexChangedOrNull = (_currentStepIndexChangedOrNull is GameObject result && result.TryGetComponent<ICurrentStepIndexChanged>(out _)) || _currentStepIndexChangedOrNull is ICurrentStepIndexChanged ? _currentStepIndexChangedOrNull : null;
-        }
-
+        
         protected override void Start()
         {
             base.Start();
-            
-            CurrentStepIndexChanged.OnCurrentStepIndexChanged += OnCurrentStepIndexChanged;
+
+            MessageBroker.Default.Receive<CurrentStepChangedMessage>().Subscribe(message =>
+            {
+                var prevStepIndex = message.prevStepOrNull == null ? -1 : message.prevStepOrNull.Index;
+                OnCurrentStepIndexChanged(prevStepIndex, message.currentStep.Index);
+                
+            }).AddTo(gameObject);
         }
         
         

@@ -1,4 +1,5 @@
 using LCHFramework.Utilities;
+using UniRx;
 using UnityEngine;
 
 namespace LCHFramework.Managers
@@ -31,7 +32,7 @@ namespace LCHFramework.Managers
             
             await Awaitable.WaitForSecondsAsync(delay);
 
-            PassCurrentStep.PassCurrentStep();
+            MessageBroker.Default.Publish(new PassCurrentStepMessage());
         }
     }
 }
