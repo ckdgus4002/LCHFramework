@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Reflection;
 using LCHFramework.Attributes;
 using UnityEditor;
@@ -16,23 +17,23 @@ namespace LCHFramework.Editor.Attributes
 
         private void DrawButtonsInspector(Object[] objects)
         {
-            foreach (var methodInfo in objects[0].GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
-            {
+            var targetType = objects[0].GetType();
+            foreach (var methodInfo in TypeCache.GetMethodsWithAttribute<ButtonAttribute>()
+                         .Where(r => r.DeclaringType.IsAssignableFrom(targetType) || (targetType.BaseType.IsGenericType && targetType.BaseType.GetGenericTypeDefinition() == r.DeclaringType))
+                         .OrderBy(r => r.MetadataToken))
                 foreach (var attribute in methodInfo.GetCustomAttributes(typeof(ButtonAttribute), true))
                 {
-                    var button = (ButtonAttribute)attribute;
-                    button.labelName = string.IsNullOrWhiteSpace(button.labelName) ? methodInfo.Name : button.labelName;
-                    button.methodInfo = methodInfo;
-                    DrawButtonInspector(button, objects);
+                    var buttonAttribute = (ButtonAttribute)attribute;
+                    buttonAttribute.labelName = string.IsNullOrEmpty(buttonAttribute.labelName) ? methodInfo.Name : buttonAttribute.labelName;
+                    buttonAttribute.methodInfo = methodInfo;
+                    DrawButtonInspector(buttonAttribute, objects[0]);
                 }
-            }
         }
 
-        private void DrawButtonInspector(ButtonAttribute button, Object[] objects)
+        private void DrawButtonInspector(ButtonAttribute button, Object @object)
         {
-            if (!GUILayout.Button(button.labelName)) return;
-            
-            foreach (var o in objects) button.methodInfo.Invoke(o, null);
+            if (!GUILayout.Button(button.labelName))
+                button.methodInfo.Invoke(@object, null);
         }
     }
 }
