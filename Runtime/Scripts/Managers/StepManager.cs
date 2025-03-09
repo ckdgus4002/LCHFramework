@@ -61,24 +61,19 @@ namespace LCHFramework.Managers
             }
             set
             {
-                if (value == null) 
-                    Debug.LogError("CurrentStep dont set. Because value is null");
-                else if (_currentStep == value)
-                    Debug.LogError("CurrentStep dont set. Because value is same value.");
-                else
-                {
-                    IsPlayed = true;
-                    PrevStepOrNull = _currentStep;
-                    _currentStep = value;
-                    LeftStepOrNull = 0 < _currentStep.Index ? Steps[_currentStep.Index - 1] : loop ? Steps[^1] : null;
-                    RightStepOrNull = _currentStep.Index < Steps.Count - 1 ? Steps[_currentStep.Index + 1] : loop ? startStep : null;
+                if (_currentStep == (value ??= startStep)) return;
                 
-                    Steps.Where(t => t.IsShown).ForEach(t => t.Hide());
-                    _currentStep.Show();
+                IsPlayed = true;
+                PrevStepOrNull = _currentStep;
+                _currentStep = value;
+                LeftStepOrNull = 0 < _currentStep.Index ? Steps[_currentStep.Index - 1] : loop ? Steps[^1] : null;
+                RightStepOrNull = _currentStep.Index < Steps.Count - 1 ? Steps[_currentStep.Index + 1] : loop ? startStep : null;
                 
-                    Debug.Log($"CurrentStep is changed. {PrevStepIndex} -> {_currentStep.Index}");
-                    MessageBroker.Default.Publish(new StartStepMessage { endStepOrNull = PrevStepOrNull, startStep = _currentStep });    
-                }
+                Steps.Where(t => t.IsShown).ForEach(t => t.Hide());
+                _currentStep.Show();
+                
+                Debug.Log($"CurrentStep is changed. {PrevStepIndex} -> {_currentStep.Index}");
+                MessageBroker.Default.Publish(new StartStepMessage { endStepOrNull = PrevStepOrNull, startStep = _currentStep });
             }
         }
         private T2 _currentStep;
@@ -122,12 +117,6 @@ namespace LCHFramework.Managers
                 Play();
         }
         
-        protected void Play()
-        {
-            if (IsPlayed) return;
-            
-            CurrentStep = startStep;
-        }
+        protected void Play() => CurrentStep = startStep;
     }
-
 }
