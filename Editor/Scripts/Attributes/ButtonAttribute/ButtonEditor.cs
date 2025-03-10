@@ -1,17 +1,18 @@
 using System.Linq;
-using System.Reflection;
 using LCHFramework.Attributes;
 using UnityEditor;
 using UnityEngine;
 
 namespace LCHFramework.Editor.Attributes
 {
-    [CanEditMultipleObjects, CustomEditor(typeof(MonoBehaviour), true)]
+    [CanEditMultipleObjects]
+    [CustomEditor(typeof(MonoBehaviour), true)]
     public class ButtonEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
-            DrawDefaultInspector();
+            base.OnInspectorGUI();
+            
             DrawButtonsInspector(targets);
         }
 
@@ -26,14 +27,15 @@ namespace LCHFramework.Editor.Attributes
                     var buttonAttribute = (ButtonAttribute)attribute;
                     buttonAttribute.labelName = string.IsNullOrEmpty(buttonAttribute.labelName) ? methodInfo.Name : buttonAttribute.labelName;
                     buttonAttribute.methodInfo = methodInfo;
-                    DrawButtonInspector(buttonAttribute, objects[0]);
+                    DrawButtonInspector(buttonAttribute, objects);
                 }
         }
 
-        private void DrawButtonInspector(ButtonAttribute button, Object @object)
+        private void DrawButtonInspector(ButtonAttribute buttonAttribute, object[] objects)
         {
-            if (!GUILayout.Button(button.labelName))
-                button.methodInfo.Invoke(@object, null);
+            if (!GUILayout.Button(buttonAttribute.labelName)) return;
+
+            foreach (var t in objects) buttonAttribute.methodInfo.Invoke(t, null);
         }
     }
 }
