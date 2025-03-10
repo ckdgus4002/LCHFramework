@@ -83,10 +83,15 @@ namespace LCHFramework.Managers
         
         
         
-        protected override async void Start()
+        protected override void Start()
         {
             base.Start();
             
+            _ = StartAsync();
+        }
+        
+        protected virtual async Awaitable StartAsync()
+        {
             MessageBroker.Default.Receive<PassCurrentStepMessage>().Subscribe(t => PassCurrentStep()).AddTo(gameObject);
             
             MessageBroker.Default.Receive<SetCurrentStepMessage>().Subscribe(message => CurrentStep = Steps.FirstOrDefault(step => step.GetType() == message.type)).AddTo(gameObject);
