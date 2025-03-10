@@ -1,6 +1,5 @@
 using LCHFramework.Components.UI;
 using UnityEditor;
-using UnityEngine;
 
 namespace LCHFramework.Editor.Inspector
 {
@@ -10,11 +9,7 @@ namespace LCHFramework.Editor.Inspector
     {
         public override void OnInspectorGUI()
         {
-            var raycast = serializedObject.FindProperty("m_RaycastTarget");
-
-            GUILayout.Space(5);
-            EditorGUILayout.PropertyField(raycast);
-
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_RaycastTarget"));
             serializedObject.ApplyModifiedProperties();
         }
     }

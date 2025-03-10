@@ -1,4 +1,4 @@
-using LCHFramework.Extensions;
+using LCHFramework.Attributes;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -8,13 +8,13 @@ namespace LCHFramework.Components.UI
     public class SizeTracker : LayoutSelfController
     {
         public RectTransform widthTarget;
-        public float leftPadding;
-        public  float rightPadding;
+        [HideIf(nameof(widthTarget), null)] public float leftPadding;
+        [HideIf(nameof(widthTarget), null)] public float rightPadding;
         public RectTransform heightTarget;
-        public  float topPadding;
-        public  float bottomPadding;
-
-
+        [HideIf(nameof(heightTarget), null)] public float topPadding;
+        [HideIf(nameof(heightTarget), null)] public float bottomPadding;
+        
+        
         private float _prevWidth = float.MinValue;
         private float _prevHeight = float.MinValue;
         
