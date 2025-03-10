@@ -115,6 +115,6 @@ namespace LCHFramework.Managers
                 Play();
         }
         
-        private void Play() => CurrentStep = startStep;
+        protected void Play() => CurrentStep = startStep;
     }
 }

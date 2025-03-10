@@ -12,7 +12,6 @@ namespace LCHFramework.Editor.Attributes
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            
             DrawButtonsInspector(targets);
         }
 
