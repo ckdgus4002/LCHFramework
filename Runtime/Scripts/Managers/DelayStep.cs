@@ -1,3 +1,5 @@
+using System.Threading;
+using LCHFramework.Packages.LCHFramework.Runtime.Scripts.Extensions;
 using LCHFramework.Utilities;
 using UniRx;
 using UnityEngine;
@@ -10,6 +12,7 @@ namespace LCHFramework.Managers
         
         
         private float _defaultDelay;
+        private CancellationTokenSource _showCts;
         
         
         
@@ -26,11 +29,10 @@ namespace LCHFramework.Managers
         {
             base.Show();
             
-            CancellationTokenSourceUtility.ClearTokenSources(ctses);
-            
+            CancellationTokenSourceUtility.ClearTokenSource(ref _showCts);
             delay = _defaultDelay;
-            
-            await Awaitable.WaitForSecondsAsync(delay);
+            await Awaitable.WaitForSecondsAsync(delay, (_showCts = new CancellationTokenSource()).Token).Forget();
+            if (_showCts == null || _showCts.IsCancellationRequested) return;
 
             MessageBroker.Default.Publish(new PassCurrentStepMessage());
         }

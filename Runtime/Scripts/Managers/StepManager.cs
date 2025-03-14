@@ -9,21 +9,22 @@ using Debug = LCHFramework.Utilities.Debug;
 
 namespace LCHFramework.Managers
 {
-    public class SetCurrentStepIndexMessage
-    {
-        public int index;
-    }
-    
     public class SetCurrentStepMessage
     {
-        public Type type;
+        public SetCurrentStepMessage(Func<Step, bool> func) => Func = func;
+        
+        public SetCurrentStepMessage(Type type) => Func = step => step.GetType() == type;
+        
+        public SetCurrentStepMessage(int index) => Func = step => step.Index == index;
+        
+        public Func<Step, bool> Func;
     }
     
-    public class PassCurrentStepMessage
+    public struct PassCurrentStepMessage
     {
     }
     
-    public class CurrentStepChangedMessage
+    public struct OnCurrentStepChangedMessage
     {
         public Step prevStepOrNull;
         public Step currentStep;
@@ -33,14 +34,17 @@ namespace LCHFramework.Managers
     {
     }
     
+    [DefaultExecutionOrder(1)]
     public class StepManager<T1, T2> : MonoSingleton<T1>
         where T1 : MonoSingleton<T1>
         where T2 : Step
     {
         public T2 startStep;
-        [SerializeField] private bool loop;
+        public bool loop;
         [SerializeField] private bool playOnStart = true;
-        [SerializeField] [HideIf(nameof(playOnStart), false)] private int playOnStartDelayFrame = 1;
+        
+        
+        private readonly CompositeDisposable disposables = new();
         
         
         public bool IsPlayed { get; private set; }
@@ -53,7 +57,7 @@ namespace LCHFramework.Managers
         {
             get
             {
-                if (_currentStep == null) Play();
+                if (_currentStep == null) CurrentStep = startStep;
                 
                 return _currentStep;
             }
@@ -65,19 +69,21 @@ namespace LCHFramework.Managers
                 PrevStepOrNull = _currentStep;
                 _currentStep = value;
                 LeftStepOrNull = 0 < _currentStep.Index ? Steps[_currentStep.Index - 1] : loop ? Steps[^1] : null;
-                RightStepOrNull = _currentStep.Index < Steps.Count - 1 ? Steps[_currentStep.Index + 1] : loop ? startStep : null;
+                RightStepOrNull = _currentStep.Index < Steps.Count - 1 ? Steps[_currentStep.Index + 1] : loop ? FirstStep : null;
                 
                 Steps.Where(t => t.IsShown).ForEach(t => t.Hide());
                 _currentStep.Show();
                 
                 Debug.Log($"CurrentStep is changed. {(PrevStepOrNull == null ? "" : $"{PrevStepOrNull.name} -> ")}{_currentStep.name}");
-                MessageBroker.Default.Publish(new CurrentStepChangedMessage { prevStepOrNull = PrevStepOrNull, currentStep = _currentStep });
+                MessageBroker.Default.Publish(new OnCurrentStepChangedMessage { prevStepOrNull = PrevStepOrNull, currentStep = _currentStep });
             }
         }
         private T2 _currentStep;
         
+        public T2 FirstStep => Steps[0];
+        
         public T2 LastStep => Steps[^1];
-
+        
         private List<T2> Steps => _steps.IsEmpty() ? _steps = GetComponentsInChildren<T2>(true).ToList() : _steps;
         private List<T2> _steps;
         
@@ -87,22 +93,24 @@ namespace LCHFramework.Managers
         {
             base.Start();
             
-            _ = StartAsync();
+            disposables.Add(MessageBroker.Default.Receive<SetCurrentStepMessage>().Subscribe(message =>
+            {
+                CurrentStep = Steps.FirstOrDefault(step => message.Func.Invoke(step));
+            }));
+            
+            disposables.Add(MessageBroker.Default.Receive<PassCurrentStepMessage>().Subscribe(_ =>
+            {
+                PassCurrentStep();
+            }));
+            
+            if (playOnStart) CurrentStep = startStep;
         }
         
-        protected virtual async Awaitable StartAsync()
+        protected override void OnDestroy()
         {
-            MessageBroker.Default.Receive<PassCurrentStepMessage>().Subscribe(t => PassCurrentStep()).AddTo(gameObject);
+            base.OnDestroy();
             
-            MessageBroker.Default.Receive<SetCurrentStepMessage>().Subscribe(message => CurrentStep = Steps.FirstOrDefault(step => step.GetType() == message.type)).AddTo(gameObject);
-            
-            MessageBroker.Default.Receive<SetCurrentStepIndexMessage>().Subscribe(message => CurrentStep = Steps[message.index]).AddTo(gameObject);
-            
-            if (playOnStart)
-            {
-                for (var i = 0; i < playOnStartDelayFrame; i++) await Awaitable.NextFrameAsync();
-                Play();
-            }
+            disposables.Clear();
         }
         
         
@@ -117,9 +125,7 @@ namespace LCHFramework.Managers
             else if (IsPlayed)
                 CurrentStep = RightStepOrNull;
             else
-                Play();
+                CurrentStep = startStep;
         }
-        
-        protected void Play() => CurrentStep = startStep;
     }
 }

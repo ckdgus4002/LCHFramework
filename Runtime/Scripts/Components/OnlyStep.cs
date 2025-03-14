@@ -19,7 +19,7 @@ namespace LCHFramework.Components
         {
             base.Start();
 
-            MessageBroker.Default.Receive<CurrentStepChangedMessage>().Subscribe(message =>
+            MessageBroker.Default.Receive<OnCurrentStepChangedMessage>().Subscribe(message =>
             {
                 var prevStepIndex = message.prevStepOrNull == null ? -1 : message.prevStepOrNull.Index;
                 OnCurrentStepIndexChanged(prevStepIndex, message.currentStep.Index);

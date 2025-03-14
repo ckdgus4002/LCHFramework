@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using LCHFramework.Extensions;
-using LCHFramework.Utilities;
+using LCHFramework.Managers;
+using UniRx;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -59,9 +59,6 @@ namespace LCHFramework.Components
         [NonSerialized] public string defaultName;
         
         
-        protected readonly List<CancellationTokenSource> ctses = new();
-        protected readonly List<IDisposable> disposables = new();
-        
         
         public bool TRSIsInitialized { get; private set; }
         public int EnableCount { get; private set; }
@@ -74,12 +71,6 @@ namespace LCHFramework.Components
         
         public virtual bool IsShown => gameObject.activeSelf;
         
-        public virtual bool DoStopAllCoroutinesWhenDisable => true;
-        
-        public virtual bool DoClearTokenSourcesWhenDisable => true;
-        
-        public virtual bool DoDisposeDisposablesWhenDisable => true;
-        
         public float HalfWidth => Width * .5f;
         
         public float HalfHeight => Height * .5f;
@@ -87,15 +78,13 @@ namespace LCHFramework.Components
         public virtual float Width => transform is RectTransform ? RectTransformOrNull.rect.size.x
                         : TryGetComponent<Renderer>(out var renderer) ? renderer.bounds.size.x
                         : TryGetComponent<Collider>(out var colliderComponent) ? colliderComponent.bounds.size.x
-                        : throw new ArgumentOutOfRangeException(null, "Width", null)
-                        ;
+                        : throw new ArgumentOutOfRangeException(null, "Width", null);
         
         public virtual float Height => transform is RectTransform ? RectTransformOrNull.rect.size.y
             : TryGetComponent<Renderer>(out var renderer) ? renderer.bounds.size.y
             : TryGetComponent<Collider>(out var collider) ? collider.bounds.size.y
-            : throw new ArgumentOutOfRangeException(null, "Height", null)
-            ;
-
+            : throw new ArgumentOutOfRangeException(null, "Height", null);
+        
         public Canvas RootCanvasOrNull => !this.TryGetComponentInParent<Canvas>(out var result) ? null : result.rootCanvas;
         
         public RectTransform RectTransformOrNull => _rectTransform == null ? _rectTransform = (RectTransform)transform : _rectTransform;
@@ -107,23 +96,20 @@ namespace LCHFramework.Components
         {
             if (transform is not RectTransform) InitializeTRS();
         }
-
+        
         protected virtual void OnEnable()
         {
             EnableCount++;
         }
-
+        
         protected virtual void Start()
         {
             if (transform is RectTransform) InitializeTRS();
         }
-
+        
         protected virtual void OnDisable()
         {
             DisableCount++;
-            if (DoStopAllCoroutinesWhenDisable) StopAllCoroutines();
-            if (DoClearTokenSourcesWhenDisable) CancellationTokenSourceUtility.ClearTokenSources(ctses);
-            if (DoDisposeDisposablesWhenDisable) { disposables.ForEach(t => t.Dispose()); disposables.Clear(); }
         }
         
         
