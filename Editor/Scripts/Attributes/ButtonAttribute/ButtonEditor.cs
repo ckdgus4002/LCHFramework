@@ -3,8 +3,6 @@ using System.Reflection;
 using LCHFramework.Attributes;
 using UnityEditor;
 using UnityEngine;
-using EditorTypeUtility = LCHFramework.Editor.Utilities.TypeUtility;
-using TypeUtility = LCHFramework.Utilities.TypeUtility;
 
 namespace LCHFramework.Editor.Attributes
 {
@@ -21,13 +19,16 @@ namespace LCHFramework.Editor.Attributes
         private void DrawButtonsInspector(Object[] objects)
         {
             var targetType = objects[0].GetType();
-            foreach (var methodInfo in EditorTypeUtility.GetMethodInfos(targetType))
+            // foreach (var methodInfo in targetType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(t => t.GetCustomAttributes<ButtonAttribute>(true).Any()))
+            foreach (var methodInfo in Utilities.TypeUtility<ButtonAttribute>.GetMethodInfos(targetType))
             {
                 var buttonAttribute = methodInfo.GetCustomAttribute<ButtonAttribute>(true);
                 buttonAttribute.labelName = string.IsNullOrEmpty(buttonAttribute.labelName) ? methodInfo.Name : buttonAttribute.labelName;
-                buttonAttribute.methodInfo = TypeUtility.GetMethodInfo(targetType, methodInfo.Name, methodInfo.GetParameters().Select(r => r.ParameterType).ToArray()) ?? methodInfo;
-                if (GUILayout.Button(buttonAttribute.labelName))
-                    foreach (var t in objects) buttonAttribute.methodInfo.Invoke(t, null);        
+                // buttonAttribute.methodInfo = methodInfo;
+                buttonAttribute.methodInfo = global::LCHFramework.Utilities.TypeUtility.GetMethodInfo(targetType, methodInfo.Name, methodInfo.GetParameters().Select(r => r.ParameterType).ToArray()) ?? methodInfo;
+                if (!GUILayout.Button(buttonAttribute.labelName)) continue;
+            
+                foreach (var t in objects) buttonAttribute.methodInfo.Invoke(t, null);    
             }
         }
     }
