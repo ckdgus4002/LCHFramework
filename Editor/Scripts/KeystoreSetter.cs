@@ -17,8 +17,6 @@ namespace LCHFramework.Editor
         [MenuItem(LCHFramework.MenuItemRootPath + "/Set Keystore")]
         private static void OnMenuItemClick() => Set(true);
         
-        
-        
         private static bool _isSet;
         private static void Set(bool force = false)
         {

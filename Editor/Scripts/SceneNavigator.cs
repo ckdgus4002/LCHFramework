@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using LCHFramework.Utilities;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
@@ -10,11 +9,10 @@ namespace LCHFramework.Editor
 {
     public static class SceneNavigator
     {
-        public const string MenuItemRootPath = LCHFramework.MenuItemRootPath + "/" + nameof(SceneNavigator);
-
-        private const string GoToPreviousSceneMenuItemPath = MenuItemRootPath + "/" + "Go To Previous Scene";
-        private const string GoToNextSceneMenuItemPath = MenuItemRootPath + "/" + "Go To Next Scene";
-        private const string GoToFirstSceneMenuItemPath = MenuItemRootPath + "/" + "Go To First Scene";
+        private const string MenuItemRootPath = LCHFramework.MenuItemRootPath + "/Scene Navigator";
+        private const string GoToPreviousSceneMenuItemPath = MenuItemRootPath + "/Go To Previous Scene";
+        private const string GoToNextSceneMenuItemPath = MenuItemRootPath + "/Go To Next Scene";
+        private const string GoToFirstSceneMenuItemPath = MenuItemRootPath + "/Go To First Scene";
         
         private static List<string> _scenePaths = new() { SceneManager.GetActiveScene().path };
         private static int _currentSceneIndex;

@@ -7,9 +7,10 @@ namespace LCHFramework.Editor
 {
 	public class Hierarchy
 	{
-		private const string EnabledMenuItemPath = LCHFramework.MenuItemRootPath + "/" + nameof(Hierarchy) + "/" + nameof(Enabled);
-		private const string ShowActiveToggleMenuItemPath = LCHFramework.MenuItemRootPath + "/" + nameof(Hierarchy) + "/" + "Show Active Toggle";
-		private const string SqueezeWhenOverflowMenuItemPath = LCHFramework.MenuItemRootPath + "/" + nameof(Hierarchy) + "/" + "Squeeze When Overflow";
+		private const string MenuItemRootPath = LCHFramework.MenuItemRootPath + "/" + nameof(Hierarchy);
+		private const string EnabledMenuItemPath = MenuItemRootPath + "/" + nameof(Enabled);
+		private const string ShowActiveToggleMenuItemPath = MenuItemRootPath + "/Show Active Toggle";
+		private const string SqueezeWhenOverflowMenuItemPath = MenuItemRootPath + "/Squeeze When Overflow";
 		
 		private static readonly string EnabledPrefsKey = $"{nameof(Hierarchy)}{nameof(Enabled)}";
 		private static readonly string ShowActiveTogglePrefsKey = $"{nameof(Hierarchy)}{nameof(ShowActiveToggle)}";
