@@ -9,22 +9,18 @@ using Debug = LCHFramework.Utilities.Debug;
 
 namespace LCHFramework.Managers
 {
-    public class SetCurrentStepMessage
+    public struct SetCurrentStepMessage
     {
-        public SetCurrentStepMessage(Func<Step, bool> func) => Func = func;
+        public SetCurrentStepMessage(Func<Step, bool> predicate) => Predicate = predicate;
         
-        public SetCurrentStepMessage(Type type) => Func = step => step.GetType() == type;
-        
-        public SetCurrentStepMessage(int index) => Func = step => step.Index == index;
-        
-        public Func<Step, bool> Func;
+        public Func<Step, bool> Predicate { get; }
     }
     
     public struct PassCurrentStepMessage
     {
     }
     
-    public struct OnCurrentStepChangedMessage
+    public struct CurrentStepChangedMessage
     {
         public Step prevStepOrNull;
         public Step currentStep;
@@ -75,7 +71,7 @@ namespace LCHFramework.Managers
                 _currentStep.Show();
                 
                 Debug.Log($"CurrentStep is changed. {(PrevStepOrNull == null ? "" : $"{PrevStepOrNull.name} -> ")}{_currentStep.name}");
-                MessageBroker.Default.Publish(new OnCurrentStepChangedMessage { prevStepOrNull = PrevStepOrNull, currentStep = _currentStep });
+                MessageBroker.Default.Publish(new CurrentStepChangedMessage { prevStepOrNull = PrevStepOrNull, currentStep = _currentStep });
             }
         }
         private T2 _currentStep;
@@ -84,7 +80,7 @@ namespace LCHFramework.Managers
         
         public T2 LastStep => Steps[^1];
         
-        private List<T2> Steps => _steps.IsEmpty() ? _steps = GetComponentsInChildren<T2>(true).ToList() : _steps;
+        public List<T2> Steps => _steps.IsEmpty() ? _steps = GetComponentsInChildren<T2>(true).ToList() : _steps;
         private List<T2> _steps;
         
         
@@ -95,7 +91,7 @@ namespace LCHFramework.Managers
             
             disposables.Add(MessageBroker.Default.Receive<SetCurrentStepMessage>().Subscribe(message =>
             {
-                CurrentStep = Steps.FirstOrDefault(step => message.Func.Invoke(step));
+                CurrentStep = Steps.FirstOrDefault(step => message.Predicate != null && message.Predicate.Invoke(step));
             }));
             
             disposables.Add(MessageBroker.Default.Receive<PassCurrentStepMessage>().Subscribe(_ =>

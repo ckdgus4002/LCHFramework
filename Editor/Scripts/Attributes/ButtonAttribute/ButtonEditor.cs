@@ -20,6 +20,8 @@ namespace LCHFramework.Editor.Attributes
 
         private void DrawButtonsInspector(Object[] objects)
         {
+            if (objects[0] == null) return;
+            
             var targetType = objects[0].GetType();
             // foreach (var methodInfo in targetType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(t => t.GetCustomAttributes<ButtonAttribute>(true).Any()))
             foreach (var methodInfo in TypeUtility<ButtonAttribute>.GetMethodInfos(targetType))
