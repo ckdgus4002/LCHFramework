@@ -9,6 +9,7 @@ namespace LCHFramework.Attributes
     {
         public ButtonAttribute()
         {
+            labelName = string.Empty;
         }
 
         public ButtonAttribute(string labelName)

@@ -8,11 +8,11 @@ namespace LCHFramework.Components.UI
     public class SizeTracker : LayoutSelfController
     {
         public RectTransform widthTarget;
-        [HideIf(nameof(widthTarget), null)] public float leftPadding;
-        [HideIf(nameof(widthTarget), null)] public float rightPadding;
+        [ShowIf(nameof(widthTarget))] public float leftPadding;
+        [ShowIf(nameof(widthTarget))] public float rightPadding;
         public RectTransform heightTarget;
-        [HideIf(nameof(heightTarget), null)] public float topPadding;
-        [HideIf(nameof(heightTarget), null)] public float bottomPadding;
+        [ShowIf(nameof(heightTarget))] public float topPadding;
+        [ShowIf(nameof(heightTarget))] public float bottomPadding;
         
         
         private float _prevWidth = float.MinValue;
