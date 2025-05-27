@@ -25,7 +25,7 @@ namespace LCHFramework.Attributes
 		public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
 		{
 			var result = GetIfAttributeResult((IIfAttribute)attribute, property);
-			if (!result) return -2f;
+			if (!result) return -EditorGUIUtility.standardVerticalSpacing;
 
 			if (!invalidHeight) return cachedHeight;
 			

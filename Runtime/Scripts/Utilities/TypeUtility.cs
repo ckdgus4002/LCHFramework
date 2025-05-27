@@ -7,6 +7,8 @@ namespace LCHFramework.Utilities
 {
     public class TypeUtility
     {
+        public const BindingFlags MaxBindingFlags = (BindingFlags)62;
+        
         private static readonly Dictionary<Type, Dictionary<int, MethodInfo>> _methodInfos = new();
         public static MethodInfo GetMethodInfo(Type type, string methodName, params Type[] argumentTypes)
         {
@@ -18,13 +20,12 @@ namespace LCHFramework.Utilities
             if (!_methodInfos.ContainsKey(type))
                 _methodInfos[type] = new Dictionary<int, MethodInfo>();
             
-            const BindingFlags maxBindingFlags = (BindingFlags)62;
             for (var curType = type; curType != null; curType = curType.BaseType)
-                if (curType.GetMethod(methodName, maxBindingFlags, null, argumentTypes, null) is { } methodInfo)
+                if (curType.GetMethod(methodName, MaxBindingFlags, null, argumentTypes, null) is { } methodInfo)
                     return _methodInfos[type][methodHash] = methodInfo;
 
             foreach (var interfaceType in type.GetInterfaces())
-                if (interfaceType.GetMethod(methodName, maxBindingFlags, null, argumentTypes, null) is { } methodInfo)
+                if (interfaceType.GetMethod(methodName, MaxBindingFlags, null, argumentTypes, null) is { } methodInfo)
                     return _methodInfos[type][methodHash] = methodInfo;
 
             return _methodInfos[type][methodHash] = null;

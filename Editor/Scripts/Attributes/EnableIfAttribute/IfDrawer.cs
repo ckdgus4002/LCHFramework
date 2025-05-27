@@ -1,15 +1,15 @@
 using System;
-using System.Reflection;
 using LCHFramework.Data;
+using LCHFramework.Utilities;
 using UnityEditor;
-using UnityEngine;
-using UnityEngine.LightTransport;
 using Object = UnityEngine.Object;
 
 namespace LCHFramework.Attributes
 {
     public class IfDrawer : PropertyDrawer
     {
+	    private const bool DefaultResult = true;
+	    
 	    private object lastValue;
 	    private string lastValueStringIfIed;
 	    private string targetValueStringIfIed;
@@ -21,10 +21,11 @@ namespace LCHFramework.Attributes
         {
 	        if (ifAttribute.Force != null) return (bool)ifAttribute.Force;
 	        
-			ifAttribute.FieldInfo ??= fieldInfo.DeclaringType!.GetField(ifAttribute.FieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-			if (ifAttribute.FieldInfo == null) return true;
+			ifAttribute.FieldInfo ??= fieldInfo.DeclaringType!.GetField(ifAttribute.TargetName, TypeUtility.MaxBindingFlags);
+			ifAttribute.MethodInfo ??= fieldInfo.DeclaringType!.GetMethod(ifAttribute.TargetName, TypeUtility.MaxBindingFlags);
+			if (ifAttribute.FieldInfo == null && ifAttribute.MethodInfo == null) return DefaultResult;
 
-			var result = true;
+			bool result;
 			var comparisonValueIsNumber = ifAttribute.ComparisonValue is int || ifAttribute.ComparisonValue is float || ifAttribute.ComparisonValue is Enum || ifAttribute.ComparisonValue is double
 			                              || ifAttribute.ComparisonValue is decimal || ifAttribute.ComparisonValue is short || ifAttribute.ComparisonValue is long || ifAttribute.ComparisonValue is ushort
 			                              || ifAttribute.ComparisonValue is uint || ifAttribute.ComparisonValue is ulong || ifAttribute.ComparisonValue is byte || ifAttribute.ComparisonValue is sbyte;
@@ -50,7 +51,7 @@ namespace LCHFramework.Attributes
 			}
 
 			// Force the next update.
-			var	newValue = ifAttribute.FieldInfo.GetValue(property.serializedObject.targetObject);
+			var newValue = GetNewValue(ifAttribute, property);
 
 			if (lastValue == newValue)
 				lastValue = true;
@@ -58,9 +59,33 @@ namespace LCHFramework.Attributes
 			return result;
 		}
 
+        private bool GetHeightAllOpsScalar(IIfAttribute ifAttribute, SerializedProperty property)
+        {
+	        if (ifAttribute.FieldInfo == null && ifAttribute.MethodInfo == null) return DefaultResult;
+	        
+	        var newValue = GetNewValue(ifAttribute, property);
+	        if (!newValue.Equals(lastValue))
+	        {
+		        lastValue = newValue;
+	        }
+	        var	value = Convert.ToDecimal(newValue);
+	        
+	        return ifAttribute.ComparisonOperator switch
+	        {
+		        ComparisonOperator.Equals => value == targetValueDecimalIed,
+		        ComparisonOperator.NotEquals => value != targetValueDecimalIed,
+		        ComparisonOperator.LessThan => value < targetValueDecimalIed,
+		        ComparisonOperator.LessThanEquals => value <= targetValueDecimalIed,
+		        ComparisonOperator.GreaterThan => targetValueDecimalIed < value,
+		        _ => targetValueDecimalIed <= value,
+	        };
+        }
+        
 		private bool GetHeightAllOpsString(IIfAttribute ifAttribute, SerializedProperty property)
 		{
-			var	newValue = ifAttribute.FieldInfo.GetValue(property.serializedObject.targetObject);
+			if (ifAttribute.FieldInfo == null && ifAttribute.MethodInfo == null) return DefaultResult;
+	        
+			var newValue = GetNewValue(ifAttribute, property);
 			if (lastValue != newValue)
 			{
 				lastValue = newValue;
@@ -80,21 +105,9 @@ namespace LCHFramework.Attributes
 			};
 		}
 
-		private bool GetHeightAllOpsScalar(IIfAttribute ifAttribute, SerializedProperty property)
-		{
-			var newValue = ifAttribute.FieldInfo.GetValue(property.serializedObject.targetObject);
-			if (!newValue.Equals(lastValue)) lastValue = newValue;
-			
-			var	value = Convert.ToDecimal(newValue);
-			return ifAttribute.ComparisonOperator switch
-			{
-				ComparisonOperator.Equals => value == targetValueDecimalIed,
-				ComparisonOperator.NotEquals => value != targetValueDecimalIed,
-				ComparisonOperator.LessThan => value < targetValueDecimalIed,
-				ComparisonOperator.LessThanEquals => value <= targetValueDecimalIed,
-				ComparisonOperator.GreaterThan => targetValueDecimalIed < value,
-				_ => targetValueDecimalIed <= value,
-			};
-		}
+		private object GetNewValue(IIfAttribute ifAttribute, SerializedProperty property)
+			=> ifAttribute.FieldInfo != null
+			? ifAttribute.FieldInfo.GetValue(property.serializedObject.targetObject)
+			: ifAttribute.MethodInfo.Invoke(property.serializedObject.targetObject, null);
     }
 }

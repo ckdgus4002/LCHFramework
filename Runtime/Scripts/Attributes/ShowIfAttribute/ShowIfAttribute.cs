@@ -8,9 +8,9 @@ namespace LCHFramework.Attributes
 	[AttributeUsage(AttributeTargets.Field)]
 	public class ShowIfAttribute : PropertyAttribute, IIfAttribute
 	{
-		public ShowIfAttribute(string fieldName = "", ComparisonOperator comparisonOperator = ComparisonOperator.Equals, object comparisonValue = null)
+		public ShowIfAttribute(string targetName, ComparisonOperator comparisonOperator = ComparisonOperator.Equals, object comparisonValue = null)
 		{
-			FieldName = fieldName;
+			TargetName = targetName;
 			ComparisonOperator = comparisonOperator;
 			ComparisonValue = comparisonValue;
 			Force = null;
@@ -18,7 +18,7 @@ namespace LCHFramework.Attributes
 		
 		public ShowIfAttribute(bool force)
 		{
-			FieldName = "";
+			TargetName = "";
 			ComparisonOperator = ComparisonOperator.Equals;
 			ComparisonValue = null;
 			Force = force;
@@ -26,10 +26,11 @@ namespace LCHFramework.Attributes
 		
 		
 		
-		public string FieldName { get; }
+		public string TargetName { get; }
 		public ComparisonOperator ComparisonOperator { get; }
 		public object ComparisonValue { get; }
 		public bool? Force { get; }
 		public FieldInfo FieldInfo { get; set;  }
+		public MethodInfo MethodInfo { get; set; }
 	}
 }
