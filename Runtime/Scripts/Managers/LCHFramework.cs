@@ -90,7 +90,7 @@ namespace LCHFramework
 
 
 
-        public Vector2 targetScreenResolution = new(2160, 2160);
+        public Vector2 targetScreenResolution = new(1080, 1080);
         
         
         public Vector2 PrevScreenSize { get; private set; }
