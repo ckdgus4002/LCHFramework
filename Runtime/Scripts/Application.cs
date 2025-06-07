@@ -1,9 +1,11 @@
 #if !UNITY_EDITOR
 using System.IO;
-#else
+#if UNITY_ANDROID
+using UnityEngine;
+#endif
+#endif
 using LCHFramework.Utilities.Editor;
 using UnityEditor;
-#endif
 
 namespace LCHFramework
 {
@@ -46,9 +48,23 @@ namespace LCHFramework
 #endif
             }
         }
-
-
-
+        
+#if !UNITY_EDITOR && UNITY_ANDROID
+        public static AndroidJavaObject CurrentActivity
+        {
+            get
+            {
+                _unityPlayerClass ??= new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+                _currentActivity ??= _unityPlayerClass.GetStatic<AndroidJavaObject>("currentActivity");
+                return _currentActivity;
+            }
+        }
+        private static AndroidJavaObject _unityPlayerClass;
+        private static AndroidJavaObject _currentActivity;
+#endif
+        
+        
+        
         public static void Quit()
         {
 #if UNITY_EDITOR
