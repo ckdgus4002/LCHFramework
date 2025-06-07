@@ -19,7 +19,7 @@ namespace LCHFramework.Extensions
         {
             return new Rect(rect.x, y, rect.width, rect.height);
         }
-	
+    
         public static Rect SetWidth(this Rect rect, float width)
         {
             return new Rect(rect.x, rect.y, width, rect.height);
