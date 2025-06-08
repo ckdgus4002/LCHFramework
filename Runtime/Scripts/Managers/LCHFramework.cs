@@ -14,11 +14,19 @@ namespace LCHFramework
     {
 #if UNITY_EDITOR
         public const string MenuItemRootPath = "Tools" + "/" + nameof(LCHFramework);
-        public const string CreateAssetMenuRootPath = nameof(LCHFramework);
 #endif
-        public static string BuildNumberInfoFilePath => (Application.isEditor && !UnityEngine.Application.isPlaying ? "StreamingAssets" : UnityEngine.Application.persistentDataPath) + "/" + "buildNumberInfo.txt";
         
         
+        
+        public static event Action onApplicationQuit;
+        
+        
+        
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void RuntimeInitializeOnLoadMethod()
+        {
+            if (InstanceIsNull) new GameObject(nameof(LCHFramework)).AddComponent<LCHFramework>();
+        }
         
         public static Coroutine Delay(float seconds, Action callback) => Delay(Instance, seconds, callback);
         
@@ -87,10 +95,11 @@ namespace LCHFramework
                 } while (loop);
             }
         }
-
-
-
-        public Vector2 targetScreenResolution = new(1080, 1080);
+        
+        
+        
+        public Vector2 targetScreenResolution = new(1920, 1920);
+        
         
         
         public Vector2 PrevScreenSize { get; private set; }
@@ -102,15 +111,25 @@ namespace LCHFramework
         
         
         
-        protected virtual void Update()
+        private void Update()
         {
-            var screenSize = new Vector2(Screen.width, Screen.height);
-            if (screenSize != PrevScreenSize) MessageBroker.Default.Publish(new ScreenSizeChangedMessage());
-            PrevScreenSize = screenSize;
-            
-            var mainCameraAspect = Camera.main.aspect;
-            if (!Mathf.Approximately(mainCameraAspect, PrevMainCameraAspect)) MessageBroker.Default.Publish(new MainCameraAspectChangedMessage());
-            PrevMainCameraAspect = mainCameraAspect;
+            {
+                var screenSize = new Vector2(Screen.width, Screen.height);
+                if (screenSize != PrevScreenSize) MessageBroker.Default.Publish(new ScreenSizeChangedMessage());
+                PrevScreenSize = screenSize;   
+            }
+
+            if (Camera.main is not null)
+            {
+                var mainCameraAspect = Camera.main.aspect;
+                if (!Mathf.Approximately(mainCameraAspect, PrevMainCameraAspect)) MessageBroker.Default.Publish(new MainCameraAspectChangedMessage());
+                PrevMainCameraAspect = mainCameraAspect;    
+            }
+        }
+
+        private void OnApplicationQuit()
+        {
+            onApplicationQuit?.Invoke();
         }
     }
 }
