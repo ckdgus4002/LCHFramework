@@ -9,9 +9,9 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using Debug = UnityEngine.Debug;
+using Debug = LCHFramework.Utilities.Debug;
 
-namespace LCHFramework.Components
+namespace LCHFramework.Components.UI
 {
     public class Rotator : LCHMonoBehaviour, IDragHandler, IEndDragHandler
     {
@@ -19,7 +19,7 @@ namespace LCHFramework.Components
         public Image rotateButton;
         
         [Header("Values")]
-        [SerializeField] private Vector3 speed = new Vector3(-200f, -200f, 1);
+        [SerializeField] private Vector3 speed = new(-200f, -200f, 1);
         [SerializeField] private Vector3Bool horizontalSwipeAxis = Vector3Bool.OnlyY;
         [SerializeField] private Vector3Bool verticalSwipeAxis = Vector3Bool.OnlyZ;
         [SerializeField] private Vector3Bool rotateAxis = Vector3Bool.OnlyZ;
@@ -62,7 +62,7 @@ namespace LCHFramework.Components
                 _gesture.value = value;
             }
         }
-        private readonly Gesture _gesture = new Gesture();
+        private readonly Gesture _gesture = new();
 
         private Gesture.Type GetGestureType(int touchCount, Vector2 pointerPositionDelta, bool onlySameAxis)
             => (!onlySameAxis || GestureTypeUtils.IsHorizontalSwipe(GestureType)) && touchCount == 1 && Mathf.Abs(pointerPositionDelta.y) <= Mathf.Abs(pointerPositionDelta.x) && 0 < pointerPositionDelta.x ? Gesture.Type.LeftToRightSwipe
@@ -77,32 +77,6 @@ namespace LCHFramework.Components
         
         private bool UseSmooth => float.Epsilon <= smoothRatio;
 
-        private bool EnableDebugging
-        {
-            get
-            {
-#if Develop
-                return enableDebugging;
-#else
-                return false;
-#endif
-            }
-        }
-        [SerializeField] private bool enableDebugging;
-
-        private Camera Camera
-        {
-            get
-            {
-                if (_camera == null) _camera = Canvas.worldCamera;
-                
-                if (_camera == null) _camera = Camera.main;
-
-                return _camera;
-            }
-        }
-        private Camera _camera;
-        
         private Canvas Canvas => _canvas == null ? _canvas = GetComponentInChildren<Canvas>() : _canvas;
         private Canvas _canvas;
 
@@ -140,14 +114,6 @@ namespace LCHFramework.Components
         //     else if (Input.touches.All(touch => touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled))
         //         OnEndDrag();
         // }
-
-        private string _guiLabel;
-        private void OnGUI()
-        {
-            if (!EnableDebugging) return;
-            
-            GUI.Label(new Rect(Vector2.zero , new Vector2(Screen.width, Screen.height)), _guiLabel, new GUIStyle { fontSize = 50, alignment = TextAnchor.MiddleCenter });
-        }
         
         
         
@@ -218,8 +184,8 @@ namespace LCHFramework.Components
             {
                 for (var i = 0; i < positions.Length; i++)
                 {
-                    var prevPosition = transform.InverseTransformPoint(Camera.ScreenToWorldPoint(positions[i] - positionsDelta[i]));
-                    var currPosition = transform.InverseTransformPoint(Camera.ScreenToWorldPoint(positions[i]));
+                    var prevPosition = transform.InverseTransformPoint(Camera.main.ScreenToWorldPoint(positions[i] - positionsDelta[i]));
+                    var currPosition = transform.InverseTransformPoint(Camera.main.ScreenToWorldPoint(positions[i]));
                     var prevRotation = Quaternion.LookRotation(new Vector3(prevPosition.x, 0, prevPosition.y));
                     var currRotation = Quaternion.LookRotation(new Vector3(currPosition.x, 0, currPosition.y));
                     result += currRotation.eulerAngles - prevRotation.eulerAngles;
@@ -230,7 +196,7 @@ namespace LCHFramework.Components
 
         private bool InViewPort(params Vector3[] screenPositions) => screenPositions.All(item =>
         {
-            var viewportPosition = Camera.ScreenToViewportPoint(item);
+            var viewportPosition = Camera.main.ScreenToViewportPoint(item);
             return 0 <= viewportPosition.x && viewportPosition.x <= 1
                 && 0 <= viewportPosition.y && viewportPosition.y <= 1;
         });
@@ -297,7 +263,7 @@ namespace LCHFramework.Components
                     target.DORotate(snappedEulerAnglesDelta, snapDuration, RotateMode.WorldAxisAdd);
                     yield return new WaitForSeconds(snapDuration);
 #else
-                    Debug.LogError("NotImplementedException");
+                    Debug.LogError("NotImplementedException. Please use DOTween.");
                     yield return new WaitForSeconds(snapDuration);
                     target.Rotate(snappedEulerAnglesDelta, Space.World);
 #endif
@@ -340,8 +306,6 @@ namespace LCHFramework.Components
             
             if (_onEndDrag != null) StopCoroutine(_onEndDrag);
             _onEndDrag = null;
-
-            _guiLabel = target == null ? string.Empty : $"{target.localEulerAngles:f2}";
         }
 
         private void RotateTarget(Vector3 eulers)
