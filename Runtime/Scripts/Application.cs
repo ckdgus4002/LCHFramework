@@ -3,6 +3,8 @@ using UnityEngine;
 #if UNITY_EDITOR
 using LCHFramework.Utilities.Editor;
 using UnityEditor;
+#elif UNITY_IOS
+using UnityEngine.iOS;
 #endif
 
 namespace LCHFramework
@@ -93,6 +95,8 @@ namespace LCHFramework
             }
         }
         private static AndroidJavaObject _androidPackageInfo;
+#elif !UNITY_EDITOR && UNITY_IOS
+        public static Version IOSVersion => _iOSVersion ??= new Version(Device.systemVersion);
 #endif
         
         
