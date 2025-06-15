@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace LCHFramework.Extensions
 {
@@ -12,5 +13,8 @@ namespace LCHFramework.Extensions
 
             return stringBuilder.ToString();
         }
+        
+        public static string ToPascal(this string str)
+            => string.IsNullOrEmpty(str) ? string.Empty : Regex.Replace(str, "(?<!^)([A-Z])", " $1");
     }
 }
