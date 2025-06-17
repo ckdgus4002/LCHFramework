@@ -1,6 +1,4 @@
-﻿using System;
-using LCHFramework.Utilities.Editor;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEditor.Callbacks;
 using Debug = LCHFramework.Utilities.Debug;
 
@@ -28,8 +26,8 @@ namespace LCHFramework.Editor
         private static void Increase(BuildTarget buildTarget, string pathToBuiltProject)
         {
             if (!Enabled) return;
-            
-            PlayerSettingsUtility.SetBuildNumber($"{Convert.ToInt32(PlayerSettingsUtility.GetBuildNumber()) + 1}");
+
+            global::LCHFramework.Application.BuildNumber += 1;
             
             Debug.Log("Build number is increased.");
         }

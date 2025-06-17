@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 #if UNITY_EDITOR
-using LCHFramework.Utilities.Editor;
 using UnityEditor;
 #elif UNITY_IOS
 using UnityEngine.iOS;
@@ -26,27 +25,82 @@ namespace LCHFramework
         public static Version version => _version ??= new Version(UnityEngine.Application.version);
         private static Version _version;
         
-        public static string BuildNumber
+        public static int BuildNumber
         {
             get
             {
-                if (_buildNumber == null)
-                {
 #if UNITY_EDITOR
-                    return PlayerSettingsUtility.GetBuildNumber();
-#elif UNITY_ANDROID
-                    return $"{(AndroidApiLevel < 28 ? AndroidPackageInfo.Get<int>("versionCode") : AndroidPackageInfo.Get<long>("longVersionCode"))}";
-#elif UNITY_IOS
-                    return GetIOSBuildNumber();
+                switch (EditorUserBuildSettings.activeBuildTarget)
+                {
+                    case BuildTarget.StandaloneOSX:
+                        return Convert.ToInt32(PlayerSettings.macOS.buildNumber);
+                    case BuildTarget.Android:
+                        return PlayerSettings.Android.bundleVersionCode;
+                    case BuildTarget.iOS:
+                        return Convert.ToInt32(PlayerSettings.iOS.buildNumber);
+                    case BuildTarget.tvOS:
+                        return Convert.ToInt32(PlayerSettings.tvOS.buildNumber);
+#if UNITY_2023_2_OR_NEWER && !UNITY_6000_0_OR_NEWER
+                    case BuildTarget.Bratwurst:
+                        return Convert.ToInt32(PlayerSettings.Bratwurst.buildNumber);
+#elif UNITY_6000_0_OR_NEWER
+                    case BuildTarget.VisionOS:
+                        return Convert.ToInt32(PlayerSettings.VisionOS.buildNumber);
+#endif
+                    default:
+                        return -1;
+                }
 #else
-                    return string.Empty;
-#endif   
+                if (_buildNumber < -1)
+                {
+#elif UNITY_ANDROID
+                    _buildNumber = (AndroidApiLevel < 28 ? AndroidPackageInfo.Get<int>("versionCode") : Convert.ToInt32(AndroidPackageInfo.Get<long>("longVersionCode"));
+#elif UNITY_IOS
+                    _buildNumber = Convert.ToInt32(GetIOSBuildNumber());
+#else
+                    _buildNumber = -1;
                 }
 
                 return _buildNumber;
+#endif
+            }
+            set
+            {
+#if UNITY_EDITOR
+                switch (EditorUserBuildSettings.activeBuildTarget)
+                {
+                    case BuildTarget.StandaloneOSX:
+                        PlayerSettings.macOS.buildNumber = $"{value}";
+                        break;
+                    case BuildTarget.Android:
+                        PlayerSettings.Android.bundleVersionCode = value;
+                        break;
+                    case BuildTarget.iOS:
+                        PlayerSettings.iOS.buildNumber = $"{value}";
+                        break;
+                    case BuildTarget.tvOS:
+                        PlayerSettings.tvOS.buildNumber = $"{value}";
+                        break;
+#if UNITY_2023_2_OR_NEWER && !UNITY_6000_0_OR_NEWER 
+                    case BuildTarget.Bratwurst:
+                        PlayerSettings.Bratwurst.buildNumber = $"{value}";
+                        break;
+#elif UNITY_6000_0_OR_NEWER
+                    case BuildTarget.VisionOS:
+                        PlayerSettings.VisionOS.buildNumber = $"{value}";
+                        break;
+#endif
+                }
+#else
+                if (BuildNumber < 0) return;
+
+                _buildNumber = value;
+#endif
             }
         }
-        private static string _buildNumber;
+#if !UNITY_EDITOR
+        private static int _buildNumber = -2;
+#endif
         
 #if !UNITY_EDITOR && UNITY_ANDROID
         public static int AndroidApiLevel
@@ -95,6 +149,7 @@ namespace LCHFramework
             }
         }
         private static AndroidJavaObject _androidPackageInfo;
+        
 #elif !UNITY_EDITOR && UNITY_IOS
         public static Version IOSVersion => _iOSVersion ??= new Version(Device.systemVersion);
 #endif

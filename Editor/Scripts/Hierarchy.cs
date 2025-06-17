@@ -17,7 +17,7 @@ namespace LCHFramework.Editor
         private static readonly string SqueezeWhenOverflowPrefsKey = $"{nameof(Hierarchy)}{nameof(SqueezeWhenOverflow)}";
         
         
-        private static bool Enabled { get => EditorPrefs.GetBool(EnabledPrefsKey, true); set => EditorPrefs.SetBool(EnabledPrefsKey, value); }
+        private static bool Enabled { get => EditorPrefs.GetBool(EnabledPrefsKey, false); set => EditorPrefs.SetBool(EnabledPrefsKey, value); }
         private static bool ShowActiveToggle { get => EditorPrefs.GetBool(ShowActiveTogglePrefsKey, true); set => EditorPrefs.SetBool(ShowActiveTogglePrefsKey, value); }
         private static bool SqueezeWhenOverflow { get => EditorPrefs.GetBool(SqueezeWhenOverflowPrefsKey); set => EditorPrefs.SetBool(SqueezeWhenOverflowPrefsKey, value); }
 

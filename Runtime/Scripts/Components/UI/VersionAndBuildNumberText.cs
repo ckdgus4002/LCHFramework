@@ -1,3 +1,4 @@
+using LCHFramework.Attributes;
 using TMPro;
 using UnityEngine;
 
@@ -6,8 +7,13 @@ namespace LCHFramework.Components.UI
     [RequireComponent(typeof(TMP_Text))]
     public class VersionAndBuildNumberText : LCHMonoBehaviour
     {
-        [Tooltip("zero is version. one is build number.")]
-        [SerializeField] private string foramt = "v{0} ({1})";
+        [Header("Version")]
+        [SerializeField] private string versionFormat = "v{0}";
+        
+        [Header("Build Number")]
+        [SerializeField] private bool showValidBuildNumber;
+        [SerializeField] private string buildNumberFormat = " ({0})";
+        [SerializeField] private int buildNumberLength = 10;
         
         
         private TMP_Text Text => _text == null ? GetComponent<TMP_Text>() : _text;
@@ -19,7 +25,22 @@ namespace LCHFramework.Components.UI
         {
             base.Start();
             
-            Text.text = string.Format(foramt, Application.version, Application.BuildNumber);
+            SetText();
+        }
+        
+        
+        
+        [Button]
+        protected virtual void SetText()
+        {
+            var version = Application.version;
+            var text = string.Format(versionFormat, version);
+            
+            var buildNumber = Application.BuildNumber;
+            var isValidBuildNumber = buildNumber < 0;
+            if (!showValidBuildNumber || isValidBuildNumber) text += string.Format(buildNumberFormat, buildNumber);
+            
+            Text.text = text;
         }
     }
 }
