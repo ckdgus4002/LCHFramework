@@ -47,18 +47,19 @@ namespace LCHFramework
                     case BuildTarget.VisionOS:
                         return Convert.ToInt32(PlayerSettings.VisionOS.buildNumber);
 #endif
-                    default:
-                        return -1;
                 }
+                
+                return -1;
 #else
                 if (_buildNumber < -1)
                 {
-#elif UNITY_ANDROID
+#if UNITY_ANDROID
                     _buildNumber = (AndroidApiLevel < 28 ? AndroidPackageInfo.Get<int>("versionCode") : Convert.ToInt32(AndroidPackageInfo.Get<long>("longVersionCode"));
 #elif UNITY_IOS
                     _buildNumber = Convert.ToInt32(GetIOSBuildNumber());
 #else
                     _buildNumber = -1;
+#endif
                 }
 
                 return _buildNumber;
