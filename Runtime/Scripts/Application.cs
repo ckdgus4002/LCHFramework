@@ -29,75 +29,46 @@ namespace LCHFramework
         {
             get
             {
-#if UNITY_EDITOR
-                switch (EditorUserBuildSettings.activeBuildTarget)
-                {
-                    case BuildTarget.StandaloneOSX:
-                        return Convert.ToInt32(PlayerSettings.macOS.buildNumber);
-                    case BuildTarget.Android:
-                        return PlayerSettings.Android.bundleVersionCode;
-                    case BuildTarget.iOS:
-                        return Convert.ToInt32(PlayerSettings.iOS.buildNumber);
-                    case BuildTarget.tvOS:
-                        return Convert.ToInt32(PlayerSettings.tvOS.buildNumber);
-#if UNITY_2023_2_OR_NEWER && !UNITY_6000_0_OR_NEWER
-                    case BuildTarget.Bratwurst:
-                        return Convert.ToInt32(PlayerSettings.Bratwurst.buildNumber);
-#elif UNITY_6000_0_OR_NEWER
-                    case BuildTarget.VisionOS:
-                        return Convert.ToInt32(PlayerSettings.VisionOS.buildNumber);
-#endif
-                }
-                
+#if UNITY_EDITOR && UNITY_STANDALONE_OSX
+                return Convert.ToInt32(PlayerSettings.macOS.buildNumber);
+#elif UNITY_EDITOR && UNITY_ANDROID
+                return PlayerSettings.Android.bundleVersionCode;
+#elif UNITY_EDITOR && UNITY_IOS
+                return Convert.ToInt32(PlayerSettings.iOS.buildNumber);
+#elif UNITY_EDITOR && UNITY_TVOS
+                return Convert.ToInt32(PlayerSettings.tvOS.buildNumber);
+#elif UNITY_EDITOR && UNITY_VISIONOS && UNITY_2023_2_OR_NEWER && !UNITY_6000_0_OR_NEWER
+                return Convert.ToInt32(PlayerSettings.Bratwurst.buildNumber);
+#elif UNITY_EDITOR && UNITY_VISIONOS && UNITY_6000_0_OR_NEWER
+                return Convert.ToInt32(PlayerSettings.VisionOS.buildNumber);
+#elif !UNITY_EDITOR && UNITY_ANDROID
+                return _buildNumber < -1
+                    ? _buildNumber = (AndroidApiLevel < 28 ? AndroidPackageInfo.Get<int>("versionCode") : Convert.ToInt32(AndroidPackageInfo.Get<long>("longVersionCode"));
+                    : _buildNumber;
+#elif !UNITY_EDITOR && UNITY_IOS
+                return _buildNumber < -1 ? _buildNumber = Convert.ToInt32(GetIOSBuildNumber()) : _buildNumber;
+#else
                 return -1;
-#else
-                if (_buildNumber < -1)
-                {
-#if UNITY_ANDROID
-                    _buildNumber = (AndroidApiLevel < 28 ? AndroidPackageInfo.Get<int>("versionCode") : Convert.ToInt32(AndroidPackageInfo.Get<long>("longVersionCode"));
-#elif UNITY_IOS
-                    _buildNumber = Convert.ToInt32(GetIOSBuildNumber());
-#else
-                    _buildNumber = -1;
-#endif
-                }
-
-                return _buildNumber;
 #endif
             }
+#if UNITY_EDITOR
             set
             {
-#if UNITY_EDITOR
-                switch (EditorUserBuildSettings.activeBuildTarget)
-                {
-                    case BuildTarget.StandaloneOSX:
-                        PlayerSettings.macOS.buildNumber = $"{value}";
-                        break;
-                    case BuildTarget.Android:
-                        PlayerSettings.Android.bundleVersionCode = value;
-                        break;
-                    case BuildTarget.iOS:
-                        PlayerSettings.iOS.buildNumber = $"{value}";
-                        break;
-                    case BuildTarget.tvOS:
-                        PlayerSettings.tvOS.buildNumber = $"{value}";
-                        break;
-#if UNITY_2023_2_OR_NEWER && !UNITY_6000_0_OR_NEWER 
-                    case BuildTarget.Bratwurst:
-                        PlayerSettings.Bratwurst.buildNumber = $"{value}";
-                        break;
-#elif UNITY_6000_0_OR_NEWER
-                    case BuildTarget.VisionOS:
-                        PlayerSettings.VisionOS.buildNumber = $"{value}";
-                        break;
-#endif
-                }
-#else
-                if (BuildNumber < 0) return;
-
-                _buildNumber = value;
+#if UNITY_STANDALONE_OSX
+                PlayerSettings.macOS.buildNumber = $"{value}";
+#elif UNITY_ANDROID
+                PlayerSettings.Android.bundleVersionCode = value;
+#elif UNITY_IOS
+                PlayerSettings.iOS.buildNumber = $"{value}";
+#elif UNITY_TVOS
+                PlayerSettings.tvOS.buildNumber = $"{value}";
+#elif UNITY_VISIONOS && UNITY_2023_2_OR_NEWER && !UNITY_6000_0_OR_NEWER
+                PlayerSettings.Bratwurst.buildNumber = $"{value}";
+#elif UNITY_VISIONOS && UNITY_6000_0_OR_NEWER
+                PlayerSettings.VisionOS.buildNumber = $"{value}";
 #endif
             }
+#endif
         }
 #if !UNITY_EDITOR
         private static int _buildNumber = -2;
@@ -125,9 +96,8 @@ namespace LCHFramework
             {
                 if (_currentActivity == null)
                 {
-                    var unityPlayerClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+                    using var unityPlayerClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
                     _currentActivity = unityPlayerClass.GetStatic<AndroidJavaObject>("currentActivity");
-                    unityPlayerClass.Dispose();
                 }
                 
                 return _currentActivity;
