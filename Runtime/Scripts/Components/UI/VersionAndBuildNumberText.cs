@@ -11,7 +11,7 @@ namespace LCHFramework.Components.UI
         [SerializeField] private string versionFormat = "v{0}";
         
         [Header("Build Number")]
-        [SerializeField] private bool showValidBuildNumber;
+        [SerializeField] private bool showOnlyValidBuildNumber;
         [SerializeField] private string buildNumberFormat = " ({0})";
         [SerializeField] private int buildNumberLength = 10;
         
@@ -37,8 +37,8 @@ namespace LCHFramework.Components.UI
             var text = string.Format(versionFormat, version);
             
             var buildNumber = Application.BuildNumber;
-            var isValidBuildNumber = buildNumber < 0;
-            if (!showValidBuildNumber || isValidBuildNumber) text += string.Format(buildNumberFormat, buildNumber);
+            var isValidBuildNumber = -1 < buildNumber && 0 < buildNumberLength;
+            if (!showOnlyValidBuildNumber || isValidBuildNumber) text += string.Format(buildNumberFormat, buildNumber);
             
             Text.text = text;
         }
