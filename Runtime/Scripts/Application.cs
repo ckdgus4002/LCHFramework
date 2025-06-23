@@ -3,6 +3,7 @@ using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #elif UNITY_IOS
+using System.Runtime.InteropServices;
 using UnityEngine.iOS;
 #endif
 
@@ -123,6 +124,7 @@ namespace LCHFramework
         
 #elif !UNITY_EDITOR && UNITY_IOS
         public static Version IOSVersion => _iOSVersion ??= new Version(Device.systemVersion);
+        private static Version _iOSVersion;
 #endif
         
         
@@ -150,8 +152,8 @@ namespace LCHFramework
         }
         
 #if !UNITY_EDITOR && UNITY_IOS
-    [DllImport("__Internal")]
-    private static extern string _GetIOSBuildNumber();
+        [DllImport("__Internal")]
+        private static extern string GetIOSBuildNumber();
 #endif
     }
 }
