@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 
 extern "C" {
-    const char* _GetIOSBuildNumber()
+    const char* GetIosBuildNumber()
     {
         @autoreleasepool {
             NSString* buildNumber = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
