@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using LCHFramework.Attributes;
 using TMPro;
 using UnityEngine;
@@ -21,9 +23,11 @@ namespace LCHFramework.Components.UI
         
         
         
-        protected override void Start()
+        protected override async void Start()
         {
             base.Start();
+
+            await Task.Delay(TimeSpan.FromSeconds(5));
             
             SetText();
         }

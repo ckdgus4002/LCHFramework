@@ -1,11 +1,12 @@
 #import <Foundation/Foundation.h>
+#include <string.h>
 
 extern "C" {
-    const char* GetIosBuildNumber()
+    const char* GetiOSBuildNumber()
     {
         @autoreleasepool {
             NSString* buildNumber = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
-            return [buildNumber UTF8String];
+            return strdup([buildNumber UTF8String]);
         }
     }
 }

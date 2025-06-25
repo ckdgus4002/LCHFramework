@@ -47,7 +47,7 @@ namespace LCHFramework
                     ? _buildNumber = (AndroidApiLevel < 28 ? AndroidPackageInfo.Get<int>("versionCode") : Convert.ToInt32(AndroidPackageInfo.Get<long>("longVersionCode"));
                     : _buildNumber;
 #elif !UNITY_EDITOR && UNITY_IOS
-                return _buildNumber < -1 ? _buildNumber = Convert.ToInt32(GetIosBuildNumber()) : _buildNumber;
+                return _buildNumber < -1 ? _buildNumber = Convert.ToInt32(Marshal.PtrToStringAnsi(GetiOSBuildNumber())) : _buildNumber;
 #else
                 return -1;
 #endif
@@ -153,7 +153,7 @@ namespace LCHFramework
         
 #if !UNITY_EDITOR && UNITY_IOS
         [DllImport("__Internal")]
-        private static extern string GetIosBuildNumber();
+        private static extern IntPtr GetiOSBuildNumber();
 #endif
     }
 }
