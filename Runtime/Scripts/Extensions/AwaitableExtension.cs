@@ -5,7 +5,7 @@ namespace LCHFramework.Extensions
 {
     public static class AwaitableExtension
     {
-        public static async void Forget<T>(this Awaitable<T> awaitable, bool logException = true)
+        public static async void Forget(this Awaitable awaitable, bool logException = true)
         {
             try
             {
@@ -17,15 +17,14 @@ namespace LCHFramework.Extensions
             }
         }
         
-        public static async Awaitable<T> SuppressCancellationThrow<T>(this Awaitable<T> awaitable)
+        public static async Awaitable SuppressCancellationThrow(this Awaitable awaitable)
         {
             try
             {
-                return await awaitable;
+                await awaitable;
             }
             catch (OperationCanceledException)
             {
-                return default;
             }
         }
     }
