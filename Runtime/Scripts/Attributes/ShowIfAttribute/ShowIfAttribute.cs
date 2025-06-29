@@ -13,15 +13,15 @@ namespace LCHFramework.Attributes
             TargetName = targetName;
             ComparisonOperator = comparisonOperator;
             ComparisonValue = comparisonValue;
-            Force = null;
+            Result = null;
         }
         
-        public ShowIfAttribute(bool force)
+        public ShowIfAttribute(bool result)
         {
             TargetName = "";
             ComparisonOperator = ComparisonOperator.Equals;
             ComparisonValue = null;
-            Force = force;
+            Result = result;
         }
         
         
@@ -29,7 +29,7 @@ namespace LCHFramework.Attributes
         public string TargetName { get; }
         public ComparisonOperator ComparisonOperator { get; }
         public object ComparisonValue { get; }
-        public bool? Force { get; }
+        public bool? Result { get; set; }
         public FieldInfo FieldInfo { get; set;  }
         public MethodInfo MethodInfo { get; set; }
     }

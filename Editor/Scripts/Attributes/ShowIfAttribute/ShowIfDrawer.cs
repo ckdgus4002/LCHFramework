@@ -14,12 +14,11 @@ namespace LCHFramework.Attributes
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             var result = GetIfAttributeResult((IIfAttribute)attribute, property);
-            if (result)
-            {
-                EditorGUI.BeginChangeCheck();
-                EditorGUI.PropertyField(position, property, label, property.isExpanded);
-                invalidHeight = EditorGUI.EndChangeCheck() || invalidHeight;
-            }
+            if (!result) return;
+            
+            EditorGUI.BeginChangeCheck();
+            EditorGUI.PropertyField(position, property, label, property.isExpanded);
+            invalidHeight = EditorGUI.EndChangeCheck() || invalidHeight;
         }
         
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)

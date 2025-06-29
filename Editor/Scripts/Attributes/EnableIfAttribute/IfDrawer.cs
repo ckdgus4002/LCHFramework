@@ -19,7 +19,7 @@ namespace LCHFramework.Attributes
         
         protected bool GetIfAttributeResult(IIfAttribute ifAttribute, SerializedProperty property)
         {
-            if (ifAttribute.Force != null) return (bool)ifAttribute.Force;
+            if (ifAttribute.Result != null) return (bool)ifAttribute.Result;
             
             ifAttribute.FieldInfo ??= fieldInfo.DeclaringType!.GetField(ifAttribute.TargetName, TypeUtility.MaxBindingFlags);
             ifAttribute.MethodInfo ??= fieldInfo.DeclaringType!.GetMethod(ifAttribute.TargetName, TypeUtility.MaxBindingFlags);
@@ -56,6 +56,7 @@ namespace LCHFramework.Attributes
             if (lastValue == newValue)
                 lastValue = true;
 
+            // return (bool)(ifAttribute.Result = result);
             return result;
         }
 
