@@ -14,11 +14,12 @@ namespace LCHFramework.Utilities
         
         public static void ClearTokenSources(List<CancellationTokenSource> cancellationTokenSources)
         {
-            while (!cancellationTokenSources.IsEmpty())
+            while (cancellationTokenSources is { Count: > 0 })
             {
-                var cts = cancellationTokenSources[0];
+                var index = cancellationTokenSources.Count - 1;
+                var cts = cancellationTokenSources[index];
                 ClearTokenSource(ref cts);
-                cancellationTokenSources.RemoveAt(0);
+                cancellationTokenSources.RemoveAt(index);
             }
         }
         

@@ -1,14 +1,11 @@
 using System;
-using System.Linq;
 using UnityEngine;
 
-namespace LCHFramework.Packages.LCHFramework.Runtime.Scripts.Extensions
+namespace LCHFramework.Extensions
 {
     public static class AwaitableExtension
     {
-        public static async Awaitable Forget(this Awaitable awaitable) => await Forget(awaitable, new OperationCanceledException());
-        
-        public static async Awaitable Forget(this Awaitable awaitable, params Exception[] ignoreExceptions)
+        public static async void Forget<T>(this Awaitable<T> awaitable, bool logException = true)
         {
             try
             {
@@ -16,8 +13,19 @@ namespace LCHFramework.Packages.LCHFramework.Runtime.Scripts.Extensions
             }
             catch (Exception e)
             {
-                if (ignoreExceptions.All(t => t.GetType() != e.GetType()))
-                    throw;
+                if (logException) Debug.LogException(e);
+            }
+        }
+        
+        public static async Awaitable<T> SuppressCancellationThrow<T>(this Awaitable<T> awaitable)
+        {
+            try
+            {
+                return await awaitable;
+            }
+            catch (OperationCanceledException)
+            {
+                return default;
             }
         }
     }
