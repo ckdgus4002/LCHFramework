@@ -29,7 +29,7 @@ namespace LCHFramework.Managers
         {
             base.Show();
             
-            CancellationTokenSourceUtility.RestartTokenSources(ref _showCts);
+            CancellationTokenSourceUtility.RestartTokenSource(ref _showCts);
             delay = _defaultDelay;
             await Awaitable.WaitForSecondsAsync(delay, _showCts.Token).SuppressCancellationThrow();
             if (_showCts == null || _showCts.IsCancellationRequested) return;
