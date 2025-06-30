@@ -6,7 +6,7 @@ namespace LCHFramework.Utilities
 {
     public static class CancellationTokenSourceUtility
     {
-        public static void RestartTokenSources(ref CancellationTokenSource cancellationTokenSource)
+        public static void RestartTokenSource(ref CancellationTokenSource cancellationTokenSource)
         {
             ClearTokenSource(ref cancellationTokenSource);
             cancellationTokenSource = new CancellationTokenSource();
