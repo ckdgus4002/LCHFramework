@@ -19,7 +19,7 @@ namespace LCHFramework.Extensions
             return result;
         }
         
-        public static string Path(this Transform transform)
+        public static string GetPath(this Transform transform)
         {
             var path = new StringBuilder(transform.name);
             while ((transform = transform.parent) != null) path = path.Insert(0, $"{transform.name}/");
@@ -27,7 +27,7 @@ namespace LCHFramework.Extensions
             return path.ToString();
         }
         
-        public static int Depth(this Transform transform, Transform parent = null)
+        public static int GetDepth(this Transform transform, Transform parent = null)
         {
             var result = 1;
             do
