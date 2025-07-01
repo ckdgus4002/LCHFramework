@@ -1,8 +1,7 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using LCHFramework.Utilities;
-using Debug = UnityEngine.Debug;
+using Debug = LCHFramework.Utilities.Debug;
 
 namespace LCHFramework.Extensions
 {
