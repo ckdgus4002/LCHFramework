@@ -52,7 +52,7 @@ namespace LCHFramework.Editor
                 if (components[i] == null)
                 {
                     _missingScriptNumber++;
-                    Debug.Log($"{gameObject.transform.Path()} has an empty script attached in position: {i}", gameObject);
+                    Debug.Log($"{gameObject.transform.GetPath()} has an empty script attached in position: {i}", gameObject);
                 }
             }
 
