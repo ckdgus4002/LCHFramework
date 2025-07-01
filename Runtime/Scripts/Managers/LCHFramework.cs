@@ -17,16 +17,12 @@ namespace LCHFramework
 #endif
         
         
-        
         public static event Action onApplicationQuit;
         
         
         
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void RuntimeInitializeOnLoadMethod()
-        {
-            if (InstanceIsNull) new GameObject(nameof(LCHFramework)).AddComponent<LCHFramework>();
-        }
+        private static void RuntimeInitializeOnLoadMethod() => CreateGameObjectIfInstanceIsNull();
         
         public static Coroutine Delay(float seconds, Action callback) => Delay(Instance, seconds, callback);
         

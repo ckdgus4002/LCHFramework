@@ -24,6 +24,10 @@ namespace LCHFramework.Managers
         
         
         
+        protected static void CreateGameObjectIfInstanceIsNull() { if (InstanceIsNull) new GameObject(nameof(T)).AddComponent<T>(); }
+        
+        
+        
         protected virtual Object DestroyTarget => gameObject;
         
         protected virtual bool IsDontDestroyOnLoad => false;

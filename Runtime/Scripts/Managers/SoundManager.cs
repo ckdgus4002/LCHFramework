@@ -49,10 +49,15 @@ namespace LCHFramework.Managers
             }
         }
         private static float _timeScale;
+
+
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void RuntimeInitializeOnLoadMethod() => CreateGameObjectIfInstanceIsNull();
         
         
         
-        protected Dictionary<string, AudioSourcePool> audioSourcePools = new();
+        protected readonly Dictionary<string, AudioSourcePool> audioSourcePools = new();
         
         
         protected override bool IsDontDestroyOnLoad => true;

@@ -6,6 +6,11 @@ namespace LCHFramework.Managers
 {
     public class OrientationManager : MonoSingleton<OrientationManager>
     {
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void RuntimeInitializeOnLoadMethod() => CreateGameObjectIfInstanceIsNull();
+        
+        
+        
         protected override bool IsDontDestroyOnLoad => true;
         
         public ReactiveProperty<Orientation> Orientation { get; } = new();
