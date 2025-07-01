@@ -53,19 +53,21 @@ namespace LCHFramework.Managers
                 isPlayingAudioSources.ForEach(t => StartCoroutine(FadeAudioSourceVolumeCor(t, 0, callback: () =>
                 {
                     isPlayingAudioSources.ForEach(StopAudioSource);
-                    PlayAudioSource(audioSource, audioClip, volume, loop, position, true);
+                    PlayAudioSource(audioSource, audioClip, volume, loop, position, canFadeAudioSourceVolume);
                 })));
                 return new AudioPlayResult { isFail = false, isSuccess = true, audioClipLength = audioClip.length, audioSource = audioSource };
             }
             else if (audioPlayType == AudioPlayType.StoppableAudio && isPlaying && !canFadeAudioSourceVolume)
             {
                 isPlayingAudioSources.ForEach(StopAudioSource);
-                return PlayAudioSource(audioClip, volume, loop, position, false);
-            }
-            else if (audioPlayType == AudioPlayType.SkippableAudio && isPlaying) 
-                return AudioPlayResult.fail;
-            else
                 return PlayAudioSource(audioClip, volume, loop, position, canFadeAudioSourceVolume);
+            }
+            else if (audioPlayType == AudioPlayType.SkippableAudio && !isPlaying) 
+                return PlayAudioSource(audioClip, volume, loop, position, canFadeAudioSourceVolume);
+            else if (audioPlayType == AudioPlayType.NestableAudio)
+                return PlayAudioSource(audioClip, volume, loop, position, canFadeAudioSourceVolume);
+            else
+                return AudioPlayResult.fail;
         }
 
         private AudioPlayResult PlayAudioSource(AudioClip audioClip, float volume, bool loop, Vector3 position, bool canFadeAudioSourceVolume)
