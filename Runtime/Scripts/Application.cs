@@ -44,7 +44,7 @@ namespace LCHFramework
                 return Convert.ToInt32(PlayerSettings.VisionOS.buildNumber);
 #elif !UNITY_EDITOR && UNITY_ANDROID
                 return _buildNumber < -1
-                    ? _buildNumber = AndroidApiLevel < 28 ? AndroidPackageInfo.Get<int>("versionCode") : Convert.ToInt32(AndroidPackageInfo.Get<long>("longVersionCode"));
+                    ? _buildNumber = AndroidApiLevel < 28 ? AndroidPackageInfo.Get<int>("versionCode") : Convert.ToInt32(AndroidPackageInfo.Get<long>("longVersionCode"))
                     : _buildNumber;
 #elif !UNITY_EDITOR && UNITY_IOS
                 return _buildNumber < -1 ? _buildNumber = Convert.ToInt32(Marshal.PtrToStringAnsi(GetiOSBuildNumber())) : _buildNumber;
