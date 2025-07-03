@@ -24,7 +24,7 @@ namespace LCHFramework.Managers
         
         
         
-        protected static void CreateGameObjectIfInstanceIsNull() { if (InstanceIsNull) new GameObject(nameof(T)).AddComponent<T>(); }
+        protected static void CreateGameObjectIfInstanceIsNull() { if (InstanceIsNull) new GameObject(typeof(T).Name).AddComponent<T>(); }
         
         
         
