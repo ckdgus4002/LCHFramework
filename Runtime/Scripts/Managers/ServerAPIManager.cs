@@ -39,7 +39,7 @@ namespace LCHFramework.Managers
             var jsonBody = JsonConvert.SerializeObject(body);
             var bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
 
-            using var request = UnityWebRequest.Post(url, "");
+            using var request = UnityWebRequest.PostWwwForm(url, "");
             request.uploadHandler = new UploadHandlerRaw(bodyRaw);
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
