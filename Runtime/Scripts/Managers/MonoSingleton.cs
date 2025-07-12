@@ -3,6 +3,15 @@ using UnityEngine;
 
 namespace LCHFramework.Managers
 {
+    public class MonoSingleton : MonoSingleton<MonoSingleton>
+    {
+        [SerializeField] private bool isDontDestroyOnLoad;
+        [SerializeField] private bool isDestroyPrevInstance = true;
+        
+        protected override bool IsDontDestroyOnLoad => isDontDestroyOnLoad;
+        protected override bool IsDestroyPrevInstance => isDestroyPrevInstance;
+    }
+    
     public class MonoSingleton<T> : LCHMonoBehaviour where T : MonoSingleton<T>
     {
         public static bool InstanceIsNull => Instance is null;
@@ -13,11 +22,11 @@ namespace LCHFramework.Managers
             private set
             {
                 var prevInstanceOrNull = _instance;
-                _instance = prevInstanceOrNull is not null && value is not null && !value.DestroyPrevInstance
+                _instance = prevInstanceOrNull is not null && value is not null && !value.IsDestroyPrevInstance
                     ? prevInstanceOrNull
                     : value;
                 if (prevInstanceOrNull is not null && prevInstanceOrNull != value)
-                    Destroy((value is null || value.DestroyPrevInstance ? prevInstanceOrNull : value).DestroyTarget);
+                    Destroy((value is null || value.IsDestroyPrevInstance ? prevInstanceOrNull : value).DestroyTarget);
             }
         }
         private static T _instance;
@@ -32,7 +41,7 @@ namespace LCHFramework.Managers
         
         protected virtual bool IsDontDestroyOnLoad => false;
         
-        protected virtual bool DestroyPrevInstance => true;
+        protected virtual bool IsDestroyPrevInstance => true;
         
         
         
