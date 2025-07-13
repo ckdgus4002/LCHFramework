@@ -13,7 +13,7 @@ namespace LCHFramework.Extensions
             foreach (Transform child in transform)
             {
                 result.Add(child);
-                if (recursive) result.AddRange(GetChildren(child, true));
+                if (recursive) result.AddRange(GetChildren(child, recursive));
             }
             
             return result;
@@ -46,9 +46,9 @@ namespace LCHFramework.Extensions
         }
 
         public static Transform FindInChildren(this Transform transform, string n)
-            => transform.FindInChildren(find => find == n);
+            => transform.FindInChildren(childName => n == childName);
         
-        public static Transform FindInChildren(this Transform transform, Func<string, bool> find)
+        public static Transform FindInChildren(this Transform transform, Func<string, bool> predicate)
         {
             var stack = new Stack<Transform>();
             var parent = transform;
@@ -58,7 +58,7 @@ namespace LCHFramework.Extensions
                 if (0 < stack.Count)
                 {
                     parent = stack.Pop();
-                    if (find(parent.name)) return parent;
+                    if (predicate(parent.name)) return parent;
                 }
                 else return null;
             }

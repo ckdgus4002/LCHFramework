@@ -7,13 +7,13 @@ namespace LCHFramework.Extensions
     {
         public static bool TryGetComponentInParent<T>(this GameObject gameObject, out T result) 
             => gameObject.transform.TryGetComponentInParent(out result);
-
+        
         public static T[] GetComponentsInParents<T>(this GameObject gameObject, bool includeInactive) where T : class
             => gameObject.transform.GetComponentsInParents<T>(includeInactive);
-
+        
         public static T GetComponentInSibling<T>(this GameObject gameObject, bool includeMe = false)
             => gameObject.transform.GetComponentInSibling<T>(includeMe);
-
+        
         public static List<T> GetComponentsInSibling<T>(this GameObject gameObject, bool includeMe = true)
             => gameObject.transform.GetComponentsInSibling<T>(includeMe);
         

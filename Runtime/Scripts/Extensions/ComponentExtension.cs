@@ -7,24 +7,24 @@ namespace LCHFramework.Extensions
 {
     public static class ComponentExtension
     {
-        public static bool TryGetComponentInParent<T>(this Component component, out T result) => (result = component.GetComponentInParent<T>()) != null;
+        // public static bool TryGetComponentInParent<T>(this Component component, out T result) => (result = component.GetComponentInParent<T>()) != null;
+        //
+        // public static T[] GetComponentsInParents<T>(this Component component, bool includeInactive) where T : class
+        // {
+        //     LinkedList<T> results = new();
+        //     var parent = component.transform.parent;
+        //     while (true)
+        //     {
+        //         if ((includeInactive || parent.gameObject.activeSelf) && parent.TryGetComponent<T>(out var result)) results.AddLast(result);
+        //
+        //         if (parent.parent != null) parent = parent.parent;
+        //         else break;
+        //     }
+        //
+        //     return results.ToArray();
+        // }
         
-        public static T[] GetComponentsInParents<T>(this Component component, bool includeInactive) where T : class
-        {
-            LinkedList<T> results = new();
-            var parent = component.transform.parent;
-            while (true)
-            {
-                if ((includeInactive || parent.gameObject.activeSelf) && parent.TryGetComponent<T>(out var result)) results.AddLast(result);
-
-                if (parent.parent != null) parent = parent.parent;
-                else break;
-            }
-            
-            return results.ToArray();
-        }
-        
-        public static T GetComponentInSibling<T>(this Component component, bool includeMe = false)
+        public static T GetComponentInSibling<T>(this Component component)
         {
             T result = default;
             var parent = component.transform.parent;
@@ -37,9 +37,11 @@ namespace LCHFramework.Extensions
             return result;
         }
         
-        public static List<T> GetComponentsInSibling<T>(this Component component, bool includeMe = true)
+        public static List<T> GetComponentsInSibling<T>(this Component component)
         {
-            var result = new List<T>(16);
+            var result = new List<T>();
+            component.transform.sibling
+            component.ActionInSiblings(sibling =>);
             var parent = component.transform.parent;
             for (var i = 0; i < parent.childCount; i++)
             {
@@ -59,10 +61,12 @@ namespace LCHFramework.Extensions
 
         public static void ActionInSiblings<T>(this Component component, Action<T> action)
         {
-            var parent = component.transform.parent;
-            for (var i = 0; i < parent.childCount; i++)
+            var parentOrNull = component.transform.parent;
+            if (parentOrNull == null) return;
+            
+            for (var i = 0; i < parentOrNull.childCount; i++)
             {
-                var type = parent.GetChild(i).GetComponent<T>();
+                var type = parentOrNull.GetChild(i).GetComponent<T>();
                 if (type != null) action?.Invoke(type);
             }
         }
