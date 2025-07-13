@@ -96,7 +96,7 @@ namespace LCHFramework.Managers
             using var request = UnityWebRequest.Get(url);
             AddHeaders(request, headers);
             request.timeout = timeout;
-
+            
             try
             {
                 await WithCancellationAndAbort(request.SendWebRequest(), request, cancellationToken);
@@ -108,13 +108,13 @@ namespace LCHFramework.Managers
                 else
                 {
                     Debug.LogError($"Download failed: {request.error}");
-                    return RequestResult<byte[]>.Failure(new Exception(request.error));
+                    return RequestResult<byte[]>.Fail(new Exception(request.error));
                 }
             }
             catch (OperationCanceledException ex)
             {
                 Debug.LogError("Download canceled");
-                return RequestResult<byte[]>.Failure(ex);
+                return RequestResult<byte[]>.Fail(ex);
             }
         }
 
@@ -160,13 +160,28 @@ namespace LCHFramework.Managers
                 else
                 {
                     Debug.LogError($"Request failed: {request.error}");
-                    return RequestResult<T>.Failure(new Exception(request.error));
+                    return RequestResult<T>.Fail(new Exception(request.error));
                 }
             }
             catch (OperationCanceledException ex)
             {
                 Debug.LogError("Request canceled");
-                return RequestResult<T>.Failure(ex);
+                return RequestResult<T>.Fail(ex);
+            }
+            catch (UnityException ex)
+            {
+                Debug.LogError($"Unity exception: {ex}");
+                return RequestResult<T>.Fail(ex);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Debug.LogError($"Invalid operation: {ex}");
+                return RequestResult<T>.Fail(ex);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Unexpected error: {ex}");
+                return RequestResult<T>.Fail(ex);
             }
         }
 
@@ -188,22 +203,24 @@ namespace LCHFramework.Managers
             foreach (var pair in headers)
                 request.SetRequestHeader(pair.Key, pair.Value);
         }
-
+        
+        
+        
         public struct RequestResult<T>
         {
-            public bool IsSuccess { get; }
-            public T Value { get; }
-            public Exception Exception { get; }
-
             private RequestResult(T value, bool isSuccess, Exception exception)
             {
                 Value = value;
                 IsSuccess = isSuccess;
                 Exception = exception;
             }
-
+            
             public static RequestResult<T> Success(T value) => new(value, true, null);
-            public static RequestResult<T> Failure(Exception exception) => new(default, false, exception);
+            public static RequestResult<T> Fail(Exception exception) => new(default, false, exception);
+            
+            public T Value { get; private set; }
+            public bool IsSuccess { get; private set; }
+            public Exception Exception { get; private set; }
         }
     }
 }
