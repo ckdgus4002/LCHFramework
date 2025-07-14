@@ -12,19 +12,6 @@ namespace LCHFramework.Extensions
         public static T Pick<T>(this IEnumerable<T> enumerable)
             => enumerable.ElementAt(Random.Next(enumerable.Count()));
 
-        public static T[] Copy<T>(this T[] array, int length) => Copy(array, 0, length);
-        
-        public static T[] Copy<T>(this T[] array, int startIndex, int length)
-        {
-            var clampedStartIndex = Mathf.Clamp(startIndex, 0, array.Length - 1);
-            var clampedLength = Mathf.Clamp(length, 0, array.Length);
-            var result = new T[clampedStartIndex + clampedLength <= array.Length ? clampedLength
-                : array.Length <= clampedLength ? 1
-                : array.Length - clampedStartIndex];
-            for (var i = 0; i < result.Length; i++) result[i] = array[startIndex + i];
-            return result;
-        }
-
         public static bool TryFirstOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate, out T result)
         {
             result = enumerable.FirstOrDefault(predicate);
@@ -37,52 +24,49 @@ namespace LCHFramework.Extensions
             return !EqualityComparer<T>.Default.Equals(result, default);
         }
 
-        public static bool IsExists<T>(this IEnumerable<T> enumerable) => !IsEmpty(enumerable);
+        public static bool Exists<T>(this IEnumerable<T> enumerable)
+            => !enumerable.IsEmpty();
         
         public static bool IsEmpty<T>(this IEnumerable<T> enumerable)
             => enumerable == null || enumerable.All(item => EqualityComparer<T>.Default.Equals(item, default));
 
-        public static int IndexOf<T>(this IEnumerable<T> enumerable, T value) 
+        public static bool TryIndexOf<T>(this IEnumerable<T> enumerable, T value, out int result)
+        {
+            result = enumerable.IndexOf(value);
+            return -1 < result;
+        }
+        
+        public static int IndexOf<T>(this IEnumerable<T> enumerable, T value)
             => IndexOf(enumerable, t => EqualityComparer<T>.Default.Equals(t, value));
         
         public static int IndexOf<T>(this IEnumerable<T> enumerable, Func<T, bool> func)
         {
-            var result = 0;
+            var i = 0;
             foreach (var item in enumerable)
             {
-                if (!func.Invoke(item)) result++;
-                else return result;
+                if (func.Invoke(item)) return i;
+                i++;
             }
             return -1;
         }
 
-        public static T ClampedElementAt<T>(this IEnumerable<T> enumerable, int index) 
+        public static T ClampedElementAt<T>(this IEnumerable<T> enumerable, int index)
             => enumerable.ElementAt(Mathf.Clamp(index, 0, enumerable.Count() - 1));
-
-        public static void RadioActive<T>(this IEnumerable<T> components, int index, bool value) where T : Component
-            => components.Select(t => t.gameObject).RadioActive(index, value);
         
-        public static void RadioActive(this IEnumerable<GameObject> gameObjects, int index, bool value) 
-        {
-            var i = 0;
-            foreach (var item in gameObjects)
-            {
-                item.SetActive(i == index ? value : !value);
-                ++i;
-            }
-        }
+        public static T ClampedElementAt<T>(this IEnumerable<T> enumerable, int index, int min, int max) 
+            => enumerable.ElementAt(Mathf.Clamp(index, min, max));
 
         public static void RadioActive<T>(this IEnumerable<T> components, T item, bool value) where T : Component
             => components.Select(t => t.gameObject).RadioActive(item.gameObject, value);
         
         public static void RadioActive(this IEnumerable<GameObject> gameObjects, GameObject item, bool value) 
         {
-            foreach (var t in gameObjects) t.SetActive(t == item ? value : !value);
+            foreach (var t in gameObjects.Where(t => t != null)) t.SetActive(t == item ? value : !value);
         }
         
         public static void SetActive<T>(this IEnumerable<T> components, bool value) where T : Component
         {
-            foreach (var component in components) component.SetActive(value);
+            foreach (var component in components.Where(t => t != null)) component.SetActive(value);
         }
         
         public static void SetActive(this IEnumerable<GameObject> gameObjects, bool value)
@@ -98,11 +82,7 @@ namespace LCHFramework.Extensions
         public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T, int> action)
         {
             var i = 0;
-            foreach (var t in enumerable)
-            {
-                action?.Invoke(t, i);
-                i++;
-            }
+            foreach (var t in enumerable) action?.Invoke(t, i++);
         }
     }
 }

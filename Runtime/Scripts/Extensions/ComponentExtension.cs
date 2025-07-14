@@ -1,60 +1,51 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace LCHFramework.Extensions
 {
     public static class ComponentExtension
     {
-        // public static bool TryGetComponentInParent<T>(this Component component, out T result) => (result = component.GetComponentInParent<T>()) != null;
-        //
-        // public static T[] GetComponentsInParents<T>(this Component component, bool includeInactive) where T : class
-        // {
-        //     LinkedList<T> results = new();
-        //     var parent = component.transform.parent;
-        //     while (true)
-        //     {
-        //         if ((includeInactive || parent.gameObject.activeSelf) && parent.TryGetComponent<T>(out var result)) results.AddLast(result);
-        //
-        //         if (parent.parent != null) parent = parent.parent;
-        //         else break;
-        //     }
-        //
-        //     return results.ToArray();
-        // }
+        public static bool TryGetComponentInParent<T>(this Component component, out T result)
+            => component.TryGetComponentInParent(false, out result);
+
+        public static bool TryGetComponentInParent<T>(this Component component, bool includeInactive, out T result)
+            => component.gameObject.TryGetComponentInParent(includeInactive, out result);
+
+        public static bool TryGetComponentsInParent<T>(this Component component, out T[] result)
+            => component.TryGetComponentsInParent(false, out result);
         
-        public static T GetComponentInSibling<T>(this Component component)
-        {
-            T result = default;
-            var parent = component.transform.parent;
-            for (var i = 0; i < parent.childCount; i++)
-            {
-                var sibling = parent.GetChild(i);
-                if ((includeMe || sibling != component.transform) && sibling.TryGetComponent(out result)) break;
-            }
-            
-            return result;
-        }
+        public static bool TryGetComponentsInParent<T>(this Component component, bool includeInactive, out T[] result)
+            => component.gameObject.TryGetComponentsInParent(includeInactive, out result);
+
+        public static bool TryGetComponentInSibling<T>(this Component component, out T result)
+            => component.TryGetComponentInSibling(false, out result);
         
-        public static List<T> GetComponentsInSibling<T>(this Component component)
-        {
-            var result = new List<T>();
-            component.transform.sibling
-            component.ActionInSiblings(sibling =>);
-            var parent = component.transform.parent;
-            for (var i = 0; i < parent.childCount; i++)
-            {
-                var sibling = parent.GetChild(i);
-                if ((includeMe || sibling != component.transform) && sibling.TryGetComponent(out T @try))
-                    result.Add(@try);
-            }
-            
-            return result;
-        }
+        public static bool TryGetComponentInSibling<T>(this Component component, bool includeInactive, out T result)
+            => component.gameObject.TryGetComponentInSibling(includeInactive, out result);
+
+        public static T GetComponentInSibling<T>(this Component component, bool includeInactive = false)
+            => component.gameObject.GetComponentInSibling<T>(includeInactive);
+
+        public static bool TryGetComponentsInSibling<T>(this Component component, out T[] result)
+            => component.TryGetComponentsInSibling(false, out result);
         
-        public static void SetActive(this Component component, bool value) 
-            => component.gameObject.SetActive(value);
+        public static bool TryGetComponentsInSibling<T>(this Component component, bool includeInactive, out T[] result)
+            => component.gameObject.TryGetComponentsInSibling(includeInactive, out result);
+
+        public static T[] GetComponentsInSibling<T>(this Component component, bool includeInactive = false)
+            => component.gameObject.GetComponentsInSibling<T>(includeInactive);
+
+        public static bool TryGetComponentInChildren<T>(this Component component, out T result)
+            => component.TryGetComponentInChildren(false, out result);
+        
+        public static bool TryGetComponentInChildren<T>(this Component component, bool includeInactive, out T result)
+            => component.gameObject.TryGetComponentInChildren(includeInactive, out result);
+
+        public static bool TryGetComponentsInChildren<T>(this Component component, out T[] result)
+            => component.TryGetComponentsInChildren(false, out result);
+        
+        public static bool TryGetComponentsInChildren<T>(this Component component, bool includeInactive, out T[] result)
+            => component.gameObject.TryGetComponentsInChildren(includeInactive, out result); 
         
         public static void RadioActiveInSiblings(this Component component, bool value)
             => component.ActionInSiblings<Transform>(sibling => sibling.SetActive(sibling == component.transform ? value : !value));
@@ -70,5 +61,8 @@ namespace LCHFramework.Extensions
                 if (type != null) action?.Invoke(type);
             }
         }
+        
+        public static void SetActive(this Component component, bool value) 
+            => component.gameObject.SetActive(value);
     }
 }

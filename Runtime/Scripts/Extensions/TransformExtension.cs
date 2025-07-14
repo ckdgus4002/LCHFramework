@@ -7,16 +7,38 @@ namespace LCHFramework.Extensions
 {
     public static class TransformExtension
     {
-        public static List<Transform> GetChildren(this Transform transform, bool recursive = false)
+        public static Transform[] GetChildren(this Transform transform, bool includeInactive = false, int depth = 1)
+        {
+            if (depth < 0) return Array.Empty<Transform>();
+            if (depth == 0 && !includeInactive && !transform.gameObject.activeSelf) return Array.Empty<Transform>();
+            if (depth == 0 && includeInactive || transform.gameObject.activeSelf) return new[] { transform };
+
+            var queue = new Queue<(Transform, int)>();
+            queue.Enqueue((transform, 0));
+            var result = new List<Transform>();
+            while (0 < queue.Count)
+            {
+                var (current, currentDepth) = queue.Dequeue();
+
+                if (currentDepth == depth)
+                {
+                    if (includeInactive || current.gameObject.activeSelf) result.Add(current);
+                }
+                else
+                    foreach (Transform child in current) queue.Enqueue((child, currentDepth + 1));
+            }
+            return result.ToArray();
+        }
+
+        public static Transform[] GetSiblings(this Transform transform, bool includeInactive = false)
         {
             var result = new List<Transform>();
-            foreach (Transform child in transform)
+            for (var i = 0; transform.parent != null && i < transform.parent.childCount; i++)
             {
-                result.Add(child);
-                if (recursive) result.AddRange(GetChildren(child, recursive));
+                var sibling = transform.parent.GetChild(i);
+                if (includeInactive || sibling.gameObject.activeSelf) result.Add(sibling);
             }
-            
-            return result;
+            return result.ToArray();
         }
         
         public static string GetPath(this Transform transform)
