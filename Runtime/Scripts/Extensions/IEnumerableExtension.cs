@@ -13,16 +13,10 @@ namespace LCHFramework.Extensions
             => enumerable.ElementAt(Random.Next(enumerable.Count()));
 
         public static bool TryFirstOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate, out T result)
-        {
-            result = enumerable.FirstOrDefault(predicate);
-            return !EqualityComparer<T>.Default.Equals(result, default);
-        }
+            => !EqualityComparer<T>.Default.Equals(result = enumerable.FirstOrDefault(predicate), default);
         
         public static bool TryLastOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate, out T result)
-        {
-            result = enumerable.LastOrDefault(predicate);
-            return !EqualityComparer<T>.Default.Equals(result, default);
-        }
+            => !EqualityComparer<T>.Default.Equals(result = enumerable.LastOrDefault(predicate), default);
 
         public static bool Exists<T>(this IEnumerable<T> enumerable)
             => !enumerable.IsEmpty();
@@ -31,10 +25,7 @@ namespace LCHFramework.Extensions
             => enumerable == null || enumerable.All(item => EqualityComparer<T>.Default.Equals(item, default));
 
         public static bool TryIndexOf<T>(this IEnumerable<T> enumerable, T value, out int result)
-        {
-            result = enumerable.IndexOf(value);
-            return -1 < result;
-        }
+            => -1 < (result = enumerable.IndexOf(value));
         
         public static int IndexOf<T>(this IEnumerable<T> enumerable, T value)
             => IndexOf(enumerable, t => EqualityComparer<T>.Default.Equals(t, value));

@@ -12,9 +12,11 @@ namespace LCHFramework.Components
 {
     public class LCHMonoBehaviour : MonoBehaviour
     {
-        public static bool TryFindAnyObjectOfType<T>(FindObjectsInactive findObjectsInactive, out T result) where T : Object => (result = FindAnyObjectByType<T>(findObjectsInactive)) != null;
+        public static bool TryFindAnyObjectOfType<T>(out T result) where T : Object
+            => TryFindAnyObjectOfType(FindObjectsInactive.Exclude, out result);
         
-        public static bool TryFindAnyObjectOfType<T>(out T result) where T : Object => (result = FindAnyObjectByType<T>()) != null;
+        public static bool TryFindAnyObjectOfType<T>(FindObjectsInactive findObjectsInactive, out T result) where T : Object
+            => (result = FindAnyObjectByType<T>(findObjectsInactive)) != null;
         
         public static Object FindAnyObjectByTypes(params Type[] types)
         {

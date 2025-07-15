@@ -10,28 +10,19 @@ namespace LCHFramework.Extensions
             => gameObject.TryGetComponentInParent(false, out result);
         
         public static bool TryGetComponentInParent<T>(this GameObject gameObject, bool includeInactive, out T result)
-        {
-            result = gameObject.GetComponentInParent<T>(includeInactive);
-            return !EqualityComparer<T>.Default.Equals(result, default);
-        }
+            => !EqualityComparer<T>.Default.Equals(result = gameObject.GetComponentInParent<T>(includeInactive), default);
 
         public static bool TryGetComponentsInParent<T>(this GameObject gameObject, out T[] result)
             => gameObject.TryGetComponentsInParent(false, out result);
         
         public static bool TryGetComponentsInParent<T>(this GameObject gameObject, bool includeInactive, out T[] result)
-        {
-            result = gameObject.GetComponentsInParent<T>(includeInactive);
-            return result.Any();
-        }
+            => (result = gameObject.GetComponentsInParent<T>(includeInactive)).Any();
 
         public static bool TryGetComponentInSibling<T>(this GameObject gameObject, out T result)
             => gameObject.TryGetComponentInSibling(false, out result);
         
         public static bool TryGetComponentInSibling<T>(this GameObject gameObject, bool includeInactive, out T result)
-        {
-            result = gameObject.GetComponentInSibling<T>(includeInactive);
-            return !EqualityComparer<T>.Default.Equals(result, default);
-        }
+            => !EqualityComparer<T>.Default.Equals(result = gameObject.GetComponentInSibling<T>(includeInactive), default);
         
         public static T GetComponentInSibling<T>(this GameObject gameObject, bool includeInactive = false)
         {
@@ -45,10 +36,7 @@ namespace LCHFramework.Extensions
             => gameObject.TryGetComponentsInSibling(false, out result);
         
         public static bool TryGetComponentsInSibling<T>(this GameObject gameObject, bool includeInactive, out T[] result)
-        {
-            result = gameObject.GetComponentsInSibling<T>(includeInactive);
-            return result.Any();
-        }
+            => (result = gameObject.GetComponentsInSibling<T>(includeInactive)).Any();
         
         public static T[] GetComponentsInSibling<T>(this GameObject gameObject, bool includeInactive = false)
         {
@@ -63,19 +51,13 @@ namespace LCHFramework.Extensions
             => gameObject.TryGetComponentInChildren(false, out result);
         
         public static bool TryGetComponentInChildren<T>(this GameObject gameObject, bool includeInactive, out T result)
-        {
-            result = gameObject.GetComponentInChildren<T>(includeInactive);
-            return !EqualityComparer<T>.Default.Equals(result, default);
-        }
+            => !EqualityComparer<T>.Default.Equals(result = gameObject.GetComponentInChildren<T>(includeInactive), default);
 
         public static bool TryGetComponentsInChildren<T>(this GameObject gameObject, out T[] result)
             => gameObject.TryGetComponentsInChildren(false, out result);
         
         public static bool TryGetComponentsInChildren<T>(this GameObject gameObject, bool includeInactive, out T[] result)
-        {
-            result = gameObject.GetComponentsInChildren<T>(includeInactive); 
-            return result.Any();
-        }
+            => (result = gameObject.GetComponentsInChildren<T>(includeInactive)).Any();
 
         public static T GetOrAddComponent<T>(this GameObject gameObject) where T : Component
             => !gameObject.TryGetComponent<T>(out var result) ? gameObject.AddComponent<T>() : result;
