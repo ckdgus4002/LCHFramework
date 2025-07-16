@@ -35,6 +35,9 @@ namespace LCHFramework.Extensions
         public static T[] GetComponentsInSibling<T>(this Component component, bool includeInactive = false)
             => component.gameObject.GetComponentsInSibling<T>(includeInactive);
 
+        public static bool TryGetComponents<T>(this Component component, out T[] result)
+            => component.gameObject.TryGetComponents(out result);
+        
         public static bool TryGetComponentInChildren<T>(this Component component, out T result)
             => component.TryGetComponentInChildren(false, out result);
         

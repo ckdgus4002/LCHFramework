@@ -46,7 +46,13 @@ namespace LCHFramework.Extensions
             
             return result.ToArray();
         }
-
+        
+        public static bool TryGetComponents<T>(this GameObject gameObject, out T[] result)
+            => (result = gameObject.GetComponents<T>()).Any();
+        
+        public static T GetOrAddComponent<T>(this GameObject gameObject) where T : Component
+            => !gameObject.TryGetComponent<T>(out var result) ? gameObject.AddComponent<T>() : result;
+        
         public static bool TryGetComponentInChildren<T>(this GameObject gameObject, out T result)
             => gameObject.TryGetComponentInChildren(false, out result);
         
@@ -58,14 +64,5 @@ namespace LCHFramework.Extensions
         
         public static bool TryGetComponentsInChildren<T>(this GameObject gameObject, bool includeInactive, out T[] result)
             => (result = gameObject.GetComponentsInChildren<T>(includeInactive)).Any();
-
-        public static T GetOrAddComponent<T>(this GameObject gameObject) where T : Component
-            => !gameObject.TryGetComponent<T>(out var result) ? gameObject.AddComponent<T>() : result;
-        
-        public static void SetLayerInChildren(this GameObject gameObject, string layerName)
-        {
-            gameObject.layer = LayerMask.NameToLayer(layerName);
-            foreach (Transform child in gameObject.transform) child.gameObject.SetLayerInChildren(layerName);
-        }
     }
 }
