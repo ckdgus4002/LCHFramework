@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using LCHFramework.Extensions;
-using LCHFramework.Managers;
-using UniRx;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -12,33 +10,23 @@ namespace LCHFramework.Components
 {
     public class LCHMonoBehaviour : MonoBehaviour
     {
+        public static bool TryFindAnyObjectsOfType<T>(out T[] result) where T : Object
+            => TryFindAnyObjectsOfType(FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID, out result);
+
+        public static bool TryFindAnyObjectsOfType<T>(FindObjectsInactive findObjectsInactive, FindObjectsSortMode sortMode, out T[] result) where T : Object
+            => (result = FindObjectsByType<T>(findObjectsInactive, sortMode)).Any();
+        
         public static bool TryFindAnyObjectOfType<T>(out T result) where T : Object
             => TryFindAnyObjectOfType(FindObjectsInactive.Exclude, out result);
         
         public static bool TryFindAnyObjectOfType<T>(FindObjectsInactive findObjectsInactive, out T result) where T : Object
             => (result = FindAnyObjectByType<T>(findObjectsInactive)) != null;
         
-        public static Object FindAnyObjectByTypes(params Type[] types)
-        {
-            var otherTypes = types.Length < 2 ? Array.Empty<Type>() : types[1..];
-            foreach (var t in FindObjectsByType(types[0], FindObjectsSortMode.None))
-            {
-                var component = (Component)t;
-                if (otherTypes.All(type => component.GetComponent(type)))
-                    return t;
-            }
-            
-            return null;
-        }
+        public static bool TryFindFirstObjectByType<T>(out T result) where T : Object
+            => TryFindAnyObjectOfType(FindObjectsInactive.Exclude, out result);
         
-        public static T FindAnyInterfaceByType<T>() where T : class
-        {
-            foreach (var t in FindObjectsByType<Component>(FindObjectsSortMode.None))
-                if (t.TryGetComponent<T>(out var result))
-                    return result;
-
-            return default;
-        }
+        public static bool TryFindFirstObjectByType<T>(FindObjectsInactive findObjectsInactive, out T result) where T : Object
+            => (result = FindFirstObjectByType<T>(findObjectsInactive)) != null;
         
         public static Coroutine RestartCoroutine(MonoBehaviour monoBehaviour, Coroutine stopCoroutine, IEnumerator startCoroutine)
         {
@@ -79,13 +67,13 @@ namespace LCHFramework.Components
         
         public virtual float Width => transform is RectTransform ? RectTransformOrNull.rect.size.x
                         : TryGetComponent<Renderer>(out var renderer) ? renderer.bounds.size.x
-                        : TryGetComponent<Collider>(out var colliderComponent) ? colliderComponent.bounds.size.x
-                        : throw new ArgumentOutOfRangeException(null, "Width", null);
+                        : TryGetComponent<Collider>(out var collider) ? collider.bounds.size.x
+                        : throw new ArgumentOutOfRangeException(null, nameof(Width), null);
         
         public virtual float Height => transform is RectTransform ? RectTransformOrNull.rect.size.y
             : TryGetComponent<Renderer>(out var renderer) ? renderer.bounds.size.y
             : TryGetComponent<Collider>(out var collider) ? collider.bounds.size.y
-            : throw new ArgumentOutOfRangeException(null, "Height", null);
+            : throw new ArgumentOutOfRangeException(null, nameof(Height), null);
         
         public Canvas RootCanvasOrNull => !this.TryGetComponentInParent<Canvas>(out var result) ? null : result.rootCanvas;
         
@@ -96,6 +84,8 @@ namespace LCHFramework.Components
         
         protected virtual void Awake()
         {
+            defaultName = name.Replace("(Clone)", string.Empty);
+            
             if (transform is not RectTransform) InitializeTRS();
         }
         
