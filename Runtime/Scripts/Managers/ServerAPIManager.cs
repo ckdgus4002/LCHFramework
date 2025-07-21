@@ -28,7 +28,7 @@ namespace LCHFramework.Managers
 
     public static class ServerAPIManager
     {
-        public static async Task<ServerAPIResult<T>> GetAsync<T>(Uri uri, Dictionary<string, string> header = null, int timeout = 0, CancellationToken cancellationToken = default)
+        public static async Task<ServerAPIResult<T>> GetAsync<T>(Uri uri, int retryCount = 2, int timeout = 0, Dictionary<string, string> header = null, CancellationToken cancellationToken = default)
         {
             Debug.Log($"GetAsync: {uri}", Color.cyan);
 
@@ -36,10 +36,10 @@ namespace LCHFramework.Managers
             request.SetRequestHeader(header);
             request.timeout = timeout;
 
-            return await SendRequestAsync<T>(request, cancellationToken: cancellationToken);
+            return await SendRequestAsync<T>(request, false, retryCount, cancellationToken: cancellationToken);
         }
 
-        public static async Task<ServerAPIResult> PostAsync(Uri uri, object body, Dictionary<string, string> header = null, int timeout = 0, CancellationToken cancellationToken = default)
+        public static async Task<ServerAPIResult> PostAsync(Uri uri, object body, int retryCount = 2, int timeout = 0, Dictionary<string, string> header = null, CancellationToken cancellationToken = default)
         {
             Debug.Log($"PostAsync: {uri}", Color.cyan);
             
@@ -48,10 +48,10 @@ namespace LCHFramework.Managers
             request.SetRequestHeader(header);
             request.timeout = timeout;
 
-            return await SendRequestAsync(request, cancellationToken: cancellationToken);
+            return await SendRequestAsync(request, false, retryCount, cancellationToken: cancellationToken);
         }
 
-        public static async Task<ServerAPIResult> PutAsync(Uri uri, object body, Dictionary<string, string> header = null, int timeout = 0, CancellationToken cancellationToken = default)
+        public static async Task<ServerAPIResult> PutAsync(Uri uri, object body, int retryCount = 2, int timeout = 0, Dictionary<string, string> header = null, CancellationToken cancellationToken = default)
         {
             Debug.Log($"PutAsync: {uri}", Color.cyan);
             
@@ -60,10 +60,10 @@ namespace LCHFramework.Managers
             request.SetRequestHeader(header);
             request.timeout = timeout;
 
-            return await SendRequestAsync(request, cancellationToken: cancellationToken);
+            return await SendRequestAsync(request, false, retryCount, cancellationToken: cancellationToken);
         }
 
-        public static async Task<ServerAPIResult> DeleteAsync(Uri uri, Dictionary<string, string> header = null, int timeout = 0, CancellationToken cancellationToken = default)
+        public static async Task<ServerAPIResult> DeleteAsync(Uri uri, int retryCount = 2, int timeout = 0, Dictionary<string, string> header = null, CancellationToken cancellationToken = default)
         {
             Debug.Log($"DeleteAsync: {uri}", Color.cyan);
 
@@ -71,10 +71,21 @@ namespace LCHFramework.Managers
             request.SetRequestHeader(header);
             request.timeout = timeout;
 
-            return await SendRequestAsync(request, cancellationToken: cancellationToken);
+            return await SendRequestAsync(request, false, retryCount, cancellationToken: cancellationToken);
         }
 
-        public static async Task<ServerAPIResult<byte[]>> DownloadFileAsync(Uri uri, Dictionary<string, string> header = null, int timeout = 0, CancellationToken cancellationToken = default)
+        public static async Task<ServerAPIResult> UploadFileAsync(Uri uri, byte[] fileData, Action<float> progress, int retryCount = 2, int timeout = 0, Dictionary<string, string> header = null, CancellationToken cancellationToken = default)
+        {
+            Debug.Log($"UploadFileAsync: {uri}", Color.cyan);
+
+            using var request = UnityWebRequest.Post(uri, new List<IMultipartFormSection> { new MultipartFormFileSection(fileData) });
+            request.SetRequestHeader(header);
+            request.timeout = timeout;
+
+            return await SendRequestAsync(request, false, retryCount, progress, null, cancellationToken);
+        }
+        
+        public static async Task<ServerAPIResult<byte[]>> DownloadFileAsync(Uri uri, Action<float> progress, int retryCount = 2, int timeout = 0, Dictionary<string, string> header = null, CancellationToken cancellationToken = default)
         {
             Debug.Log($"DownloadFileAsync: {uri}", Color.cyan);
 
@@ -82,72 +93,67 @@ namespace LCHFramework.Managers
             request.SetRequestHeader(header);
             request.timeout = timeout;
 
-            return await SendRequestAsync<byte[]>(request, true, cancellationToken);
+            return await SendRequestAsync<byte[]>(request, true, retryCount, null, progress, cancellationToken);
         }
 
-        public static async Task<ServerAPIResult> UploadFileAsync(Uri uri, byte[] fileData, string fileName, string formFieldName = "file", Dictionary<string, string> header = null, int timeout = 0, CancellationToken cancellationToken = default)
-        {
-            Debug.Log($"UploadFileAsync: {uri}", Color.cyan);
-
-            using var request = UnityWebRequest.Post(uri, new List<IMultipartFormSection> { new MultipartFormFileSection(formFieldName, fileData, fileName, "application/octet-stream") });
-            request.SetRequestHeader(header);
-            request.timeout = timeout;
-
-            return await SendRequestAsync(request, cancellationToken: cancellationToken);
-        }
-
-        private static void SetRequestHeader(this UnityWebRequest request, Dictionary<string, string> header)
+        public static void SetRequestHeader(this UnityWebRequest request, Dictionary<string, string> header)
             => header.ForEach(t => request.SetRequestHeader(t.Key, t.Value));
         
-        private static async Task<ServerAPIResult<T>> SendRequestAsync<T>(UnityWebRequest request, bool isData = false, CancellationToken cancellationToken = default)
+        public static async Task<ServerAPIResult<T>> SendRequestAsync<T>(UnityWebRequest request, bool isData = false, int retryCount = 2, Action<float> uploadProgress = null, Action<float> downloadProgress = null, CancellationToken cancellationToken = default)
         {
-            var sendRequestAsync = await SendRequestAsync(request, isData, cancellationToken);
-            
+            var sendRequestAsync = await SendRequestAsync(request, isData, retryCount, uploadProgress, downloadProgress, cancellationToken);
             var value = sendRequestAsync.IsSuccess && !isData ? JsonConvert.DeserializeObject<T>(request.downloadHandler.text)
                 : sendRequestAsync.IsSuccess && isData ? (T)(object)request.downloadHandler.data
                 : default;
             return new ServerAPIResult<T>(value, sendRequestAsync.Exception);
         }
         
-        private static async Task<ServerAPIResult> SendRequestAsync(UnityWebRequest request, bool isData = false, CancellationToken cancellationToken = default)
+        public static async Task<ServerAPIResult> SendRequestAsync(UnityWebRequest request, bool isData = false, int retryCount = 2, Action<float> uploadProgress = null, Action<float> downloadProgress = null, CancellationToken cancellationToken = default)
         {
             try
             {
-                var operation = request.SendWebRequest();
-                await using var registration = cancellationToken.Register(request.Abort);
-                while (!operation.isDone)
+                for (var i = 0; i < retryCount; i++)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    await Task.Yield();
-                }
+                    var sendWebRequest = request.SendWebRequest();
+                    await using var registration = cancellationToken.Register(request.Abort);
+                    
+                    while (!sendWebRequest.isDone)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        uploadProgress?.Invoke(request.uploadProgress);
+                        downloadProgress?.Invoke(request.downloadProgress);
+                        await Task.Yield();
+                    }
 
-                if (request.result == UnityWebRequest.Result.Success)
-                {
-                    Debug.Log($"Response: {(!isData ? request.downloadHandler.text : string.Join("", request.downloadHandler.data))}", Color.green);
-                    return new ServerAPIResult(null);
+                    if (request.result != UnityWebRequest.Result.Success)
+                        Debug.LogError($"Request ({i + 1}/{retryCount}) {request.result}: {request.error}");
+                    else
+                    {
+                        Debug.Log($"Request Success: {(!isData ? $"text: {request.downloadHandler.text}" : $"data: {string.Join("", request.downloadHandler.data)}", Color.green)}");
+                        return new ServerAPIResult(null);
+                    }
                 }
-
-                Debug.LogError($"Request failed: {request.error}");
-                return new ServerAPIResult(new Exception(request.error));
+                
+                return new ServerAPIResult(new Exception($"Request {request.result}: {request.error}"));
             }
             catch (OperationCanceledException e)
             {
-                Debug.LogError("Request canceled");
+                Debug.LogError($"Request Canceled: {e}");
                 return new ServerAPIResult(e);
             }
             catch (UnityException e)
             {
-                Debug.LogError($"Unity exception: {e}");
+                Debug.LogError($"Request Unity exception: {e}");
                 return new ServerAPIResult(e);
             }
             catch (InvalidOperationException e)
             {
-                Debug.LogError($"Invalid operation: {e}");
+                Debug.LogError($"Request Invalid operation exception: {e}");
                 return new ServerAPIResult(e);
             }
             catch (Exception e)
             {
-                Debug.LogError($"Unexpected error: {e}");
+                Debug.LogError($"Request Unexpected exception: {e}");
                 return new ServerAPIResult(e);
             }
         }
