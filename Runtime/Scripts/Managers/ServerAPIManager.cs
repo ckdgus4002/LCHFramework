@@ -29,7 +29,7 @@ namespace LCHFramework.Managers
 
     public static class ServerAPIManager
     {
-        public static async Task<ServerAPIResult<byte[]>> DownloadFileAsync(Uri uri, Action<float> progress, IEnumerable<KeyValuePair<string, string>> header = null, int timeout = 0, int retryCount = 2, CancellationToken cancellationToken = default)
+        public static async Task<ServerAPIResult<byte[]>> DownloadFileAsync(Uri uri, Action<float> progress = null, IEnumerable<KeyValuePair<string, string>> header = null, int timeout = 0, int retryCount = 2, CancellationToken cancellationToken = default)
         {
             Debug.Log($"DownloadFileAsync: {uri}", Color.cyan);
 
@@ -40,11 +40,11 @@ namespace LCHFramework.Managers
             return await SendRequestAsync<byte[]>(request, retryCount, downloadProgress: progress, downloadHandlerType: DownloadHandlerType.Data, cancellationToken: cancellationToken);
         }
         
-        public static async Task<ServerAPIResult> UploadFileAsync(Uri uri, byte[] fileData, Action<float> progress, IEnumerable<KeyValuePair<string, string>> header = null, int timeout = 0, int retryCount = 2, CancellationToken cancellationToken = default)
+        public static async Task<ServerAPIResult> UploadFileAsync(Uri uri, List<IMultipartFormSection> multipartFormSections, Action<float> progress = null, IEnumerable<KeyValuePair<string, string>> header = null, int timeout = 0, int retryCount = 2, CancellationToken cancellationToken = default)
         {
             Debug.Log($"UploadFileAsync: {uri}", Color.cyan);
 
-            using var request = UnityWebRequest.Post(uri, new List<IMultipartFormSection> { new MultipartFormFileSection(fileData) });
+            using var request = UnityWebRequest.Post(uri, multipartFormSections);
             request.SetRequestHeader(header);
             request.timeout = timeout;
 
