@@ -34,7 +34,7 @@ namespace LCHFramework.Managers
             Debug.Log($"DownloadFileAsync: {uri}", Color.cyan);
 
             using var request = UnityWebRequest.Get(uri);
-            request.SetRequestHeader(header);
+            header?.ForEach(t => request.SetRequestHeader(t.Key, t.Value));
             request.timeout = timeout;
 
             return await SendRequestAsync<byte[]>(request, retryCount, downloadProgress: progress, downloadHandlerType: DownloadHandlerType.Data, cancellationToken: cancellationToken);
@@ -45,7 +45,7 @@ namespace LCHFramework.Managers
             Debug.Log($"UploadFileAsync: {uri}", Color.cyan);
 
             using var request = UnityWebRequest.Post(uri, multipartFormSections);
-            request.SetRequestHeader(header);
+            header?.ForEach(t => request.SetRequestHeader(t.Key, t.Value));
             request.timeout = timeout;
 
             return await SendRequestAsync(request, retryCount, uploadProgress: progress, cancellationToken: cancellationToken);
@@ -58,7 +58,7 @@ namespace LCHFramework.Managers
             Debug.Log($"GetAsync: {uri}", Color.cyan);
 
             using var request = UnityWebRequest.Get(uri);
-            request.SetRequestHeader(header);
+            header?.ForEach(t => request.SetRequestHeader(t.Key, t.Value));
             request.timeout = timeout;
 
             return await SendRequestAsync<T>(request, retryCount, cancellationToken: cancellationToken);
@@ -72,7 +72,7 @@ namespace LCHFramework.Managers
             Debug.Log($"PostAsync: {uri}", Color.cyan);
             
             using var request = UnityWebRequest.PostWwwForm(uri, JsonConvert.SerializeObject(body));
-            request.SetRequestHeader(header);
+            header?.ForEach(t => request.SetRequestHeader(t.Key, t.Value));
             request.timeout = timeout;
 
             return await SendRequestAsync(request, retryCount, cancellationToken: cancellationToken);
@@ -86,7 +86,7 @@ namespace LCHFramework.Managers
             Debug.Log($"PutAsync: {uri}", Color.cyan);
             
             using var request = UnityWebRequest.Put(uri, JsonConvert.SerializeObject(body));
-            request.SetRequestHeader(header);
+            header?.ForEach(t => request.SetRequestHeader(t.Key, t.Value));
             request.timeout = timeout;
 
             return await SendRequestAsync(request, retryCount, cancellationToken: cancellationToken);
@@ -97,16 +97,13 @@ namespace LCHFramework.Managers
             Debug.Log($"DeleteAsync: {uri}", Color.cyan);
 
             using var request = UnityWebRequest.Delete(uri);
-            request.SetRequestHeader(header);
+            header?.ForEach(t => request.SetRequestHeader(t.Key, t.Value));
             request.timeout = timeout;
 
             return await SendRequestAsync(request, retryCount, cancellationToken: cancellationToken);
         }
         
         
-        
-        public static void SetRequestHeader(this UnityWebRequest request, IEnumerable<KeyValuePair<string, string>> header)
-            => header?.ForEach(t => request.SetRequestHeader(t.Key, t.Value));
         
         public static async Task<ServerAPIResult<T>> SendRequestAsync<T>(UnityWebRequest request, int retryCount = 2, Action<float> uploadProgress = null, Action<float> downloadProgress = null, DownloadHandlerType downloadHandlerType = DownloadHandlerType.Text, CancellationToken cancellationToken = default)
         {
