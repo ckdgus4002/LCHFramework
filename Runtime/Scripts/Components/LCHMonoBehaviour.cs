@@ -16,6 +16,15 @@ namespace LCHFramework.Components
         public static bool TryFindObjectsByType<T>(FindObjectsInactive findObjectsInactive, FindObjectsSortMode sortMode, out T[] result) where T : Object
             => (result = FindObjectsByType<T>(findObjectsInactive, sortMode)).Any();
         
+        public static bool TryFindObjectsByType(Type type, out Object[] result)
+            => TryFindObjectsByType(type, FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID, out result);
+
+        public static bool TryFindObjectsByType(Type type, FindObjectsInactive findObjectsInactive, FindObjectsSortMode sortMode, out Object[] result)
+            => (result = FindObjectsByType(type, findObjectsInactive, sortMode)).Any();
+        
+        public static Object[] FindObjectsByType(Type type)
+            => FindObjectsByType(type, FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID);
+        
         public static bool TryFindAnyObjectByType<T>(out T result) where T : Object
             => TryFindAnyObjectByType(FindObjectsInactive.Exclude, out result);
         
