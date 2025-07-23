@@ -10,23 +10,29 @@ namespace LCHFramework.Components
 {
     public class LCHMonoBehaviour : MonoBehaviour
     {
-        public static bool TryFindAnyObjectsOfType<T>(out T[] result) where T : Object
-            => TryFindAnyObjectsOfType(FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID, out result);
+        public static bool TryFindObjectsByType<T>(out T[] result) where T : Object
+            => TryFindObjectsByType(FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID, out result);
 
-        public static bool TryFindAnyObjectsOfType<T>(FindObjectsInactive findObjectsInactive, FindObjectsSortMode sortMode, out T[] result) where T : Object
+        public static bool TryFindObjectsByType<T>(FindObjectsInactive findObjectsInactive, FindObjectsSortMode sortMode, out T[] result) where T : Object
             => (result = FindObjectsByType<T>(findObjectsInactive, sortMode)).Any();
         
-        public static bool TryFindAnyObjectOfType<T>(out T result) where T : Object
-            => TryFindAnyObjectOfType(FindObjectsInactive.Exclude, out result);
+        public static bool TryFindAnyObjectByType<T>(out T result) where T : Object
+            => TryFindAnyObjectByType(FindObjectsInactive.Exclude, out result);
         
-        public static bool TryFindAnyObjectOfType<T>(FindObjectsInactive findObjectsInactive, out T result) where T : Object
+        public static bool TryFindAnyObjectByType<T>(FindObjectsInactive findObjectsInactive, out T result) where T : Object
             => (result = FindAnyObjectByType<T>(findObjectsInactive)) != null;
         
         public static bool TryFindFirstObjectByType<T>(out T result) where T : Object
-            => TryFindAnyObjectOfType(FindObjectsInactive.Exclude, out result);
+            => TryFindFirstObjectByType(FindObjectsInactive.Exclude, out result);
         
         public static bool TryFindFirstObjectByType<T>(FindObjectsInactive findObjectsInactive, out T result) where T : Object
             => (result = FindFirstObjectByType<T>(findObjectsInactive)) != null;
+
+        public static bool TryFindFirstObjectByType(Type type, out Object result)
+            => TryFindFirstObjectByType(type, FindObjectsInactive.Exclude, out result);
+        
+        public static bool TryFindFirstObjectByType(Type type, FindObjectsInactive findObjectsInactive, out Object result)
+            => (result = FindFirstObjectByType(type, findObjectsInactive)) != null;
         
         public static Coroutine RestartCoroutine(MonoBehaviour monoBehaviour, Coroutine stopCoroutine, IEnumerator startCoroutine)
         {
