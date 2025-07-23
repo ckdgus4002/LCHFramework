@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using LCHFramework.Components;
+using LCHFramework.Extensions;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -7,12 +10,12 @@ namespace LCHFramework.Managers
 {
     public abstract class AbstractMonoSingleton : LCHMonoBehaviour
     {
-        protected static void EnsureInstance<T1, T2>(T1 value, T2 prevInstanceOrNull, ref T2 instance, Func<T2, Object> getPrevInstanceDestroyTarget) where T1: AbstractMonoSingleton where T2: Component
+        protected static void EnsureInstance<T1, T2>(T1 value, T2 prevInstanceOrNull, Action<T2> setInstance, Func<T2, Object> getPrevInstanceDestroyTarget) where T1: AbstractMonoSingleton where T2: Component
         {
             var valueIsNull = value is null;
-            instance = prevInstanceOrNull is not null && !valueIsNull && !value.IsDestroyPrevInstance
+            setInstance.Invoke(prevInstanceOrNull is not null && !valueIsNull && !value.IsDestroyPrevInstance
                 ? prevInstanceOrNull
-                : value as T2;
+                : value as T2);
             if (prevInstanceOrNull is not null && prevInstanceOrNull != value)
             {
                 var prevInstanceDestroyTarget = getPrevInstanceDestroyTarget.Invoke(prevInstanceOrNull);
@@ -20,19 +23,32 @@ namespace LCHFramework.Managers
             }
         }
         
+        
+        
         protected virtual Object DestroyTarget => gameObject;
         protected virtual bool IsDontDestroyOnLoad => false;
         protected virtual bool IsDestroyPrevInstance => true;
     }
     
+    /// <summary>
+    /// DestroyTarget is gameObject.
+    /// </summary>
+    [DefaultExecutionOrder(EventSystemExecutionOrder - 1)]
     public class MonoSingleton : AbstractMonoSingleton
     {
-        [SerializeField] private Component singletonType;
+        private const int EventSystemExecutionOrder = -1000;
+        
+        public static IReadOnlyDictionary<Type, Component> Instances => instances;
+        private static readonly Dictionary<Type, Component> instances = new();
+        
+        
+        
+        [SerializeField] private Component singletonComponent;
         [SerializeField] private bool isDontDestroyOnLoad;
         [SerializeField] private bool isDestroyPrevInstance = true;
         
         
-        
+        private Type SingletonType => singletonComponent.GetType();
         protected override bool IsDontDestroyOnLoad => isDontDestroyOnLoad;
         protected override bool IsDestroyPrevInstance => isDestroyPrevInstance;
         
@@ -41,12 +57,18 @@ namespace LCHFramework.Managers
         protected override void Awake()
         {
             base.Awake();
-
-            var prevInstanceOrNull = !TryFindFirstObjectByType(singletonType.GetType(), out var result) ? null : (Component)result;
-            Component instance = null;
-            EnsureInstance(this, prevInstanceOrNull, ref instance, prevInstance => prevInstance.gameObject);
             
-            if (instance == this && IsDontDestroyOnLoad) DontDestroyOnLoad(DestroyTarget);
+            FindObjectsByType(SingletonType)?.Cast<Component>().Where(t => t.GetComponent<MonoSingleton>() ==null).ForEach(t => Destroy(t.gameObject));
+            
+            var prevInstanceOrNull = instances.GetValueOrDefault(SingletonType);
+            EnsureInstance(this, prevInstanceOrNull, instance => instances[SingletonType] = instance, prevInstance => prevInstance.gameObject);
+            
+            if (instances.GetValueOrDefault(SingletonType) == singletonComponent && IsDontDestroyOnLoad) DontDestroyOnLoad(DestroyTarget);
+        }
+
+        protected virtual void OnDestroy()
+        {
+            if (instances.GetValueOrDefault(SingletonType) == singletonComponent) instances.Remove(SingletonType);
         }
     }
     
@@ -60,7 +82,7 @@ namespace LCHFramework.Managers
             private set
             {
                 var prevInstanceOrNull = _instance;
-                EnsureInstance(value, prevInstanceOrNull, ref _instance, prevInstance => prevInstance.DestroyTarget);
+                EnsureInstance(value, prevInstanceOrNull, instance => _instance = instance, prevInstance => prevInstance.DestroyTarget);
             }
         }
         private static T _instance;
