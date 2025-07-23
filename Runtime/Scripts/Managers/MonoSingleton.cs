@@ -43,6 +43,10 @@ namespace LCHFramework.Managers
         
         
         
+        public static void DestroyNotMonoSingletonOfType(Type singletonType) => FindObjectsByType(singletonType)?.Cast<Component>().Where(t => t.GetComponent<MonoSingleton>() ==null).ForEach(t => Destroy(t.gameObject));
+        
+        
+        
         [SerializeField] private Component singletonComponent;
         [SerializeField] private bool isDontDestroyOnLoad;
         [SerializeField] private bool isDestroyPrevInstance = true;
@@ -58,7 +62,7 @@ namespace LCHFramework.Managers
         {
             base.Awake();
             
-            FindObjectsByType(SingletonType)?.Cast<Component>().Where(t => t.GetComponent<MonoSingleton>() ==null).ForEach(t => Destroy(t.gameObject));
+            DestroyNotMonoSingletonOfType(SingletonType);
             
             var prevInstanceOrNull = instances.GetValueOrDefault(SingletonType);
             EnsureInstance(this, prevInstanceOrNull, instance => instances[SingletonType] = instance, prevInstance => prevInstance.gameObject);
