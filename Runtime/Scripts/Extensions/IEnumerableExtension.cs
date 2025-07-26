@@ -22,7 +22,7 @@ namespace LCHFramework.Extensions
             => !enumerable.IsEmpty();
         
         public static bool IsEmpty<T>(this IEnumerable<T> enumerable)
-            => enumerable == null || enumerable.All(item => EqualityComparer<T>.Default.Equals(item, default));
+            => enumerable == null || !enumerable.Any();
 
         public static bool TryIndexOf<T>(this IEnumerable<T> enumerable, T value, out int result)
             => -1 < (result = enumerable.IndexOf(value));

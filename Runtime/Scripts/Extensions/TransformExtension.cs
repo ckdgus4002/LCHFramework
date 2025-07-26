@@ -11,7 +11,7 @@ namespace LCHFramework.Extensions
         {
             if (depth < 0) return Array.Empty<Transform>();
             if (depth == 0 && !includeInactive && !transform.gameObject.activeSelf) return Array.Empty<Transform>();
-            if (depth == 0 && includeInactive || transform.gameObject.activeSelf) return new[] { transform };
+            if (depth == 0 && (includeInactive || transform.gameObject.activeSelf)) return new[] { transform };
 
             var queue = new Queue<(Transform, int)>();
             queue.Enqueue((transform, 0));
