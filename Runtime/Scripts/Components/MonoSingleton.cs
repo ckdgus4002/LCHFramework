@@ -30,7 +30,7 @@ namespace LCHFramework.Components
         
         protected override bool IsDestroyPrevInstance => isDestroyPrevInstance;
         
-        private Type SingletonType => _singletonType ??= singletonType.GetType();
+        public Type SingletonType => _singletonType ??= singletonType.GetType();
         private Type _singletonType;
         
         
@@ -48,7 +48,7 @@ namespace LCHFramework.Components
             }
         }
 
-        protected virtual void OnDestroy()
+        private void OnDestroy()
         {
             if (instances.GetValueOrDefault(SingletonType) == this)
             {
