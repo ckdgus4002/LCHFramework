@@ -19,11 +19,11 @@ namespace LCHFramework.Managers
         
         
         
+        protected virtual Object DestroyTarget => gameObject;
+        
         protected virtual bool IsDontDestroyOnLoad => false;
         
         protected virtual bool IsDestroyPrevInstance => true;
-        
-        protected virtual Object DestroyTarget => gameObject;
     }
     
     public class MonoSingleton<T> : AbstractMonoSingleton where T : MonoSingleton<T>
