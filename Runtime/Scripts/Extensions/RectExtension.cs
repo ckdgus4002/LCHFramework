@@ -4,12 +4,6 @@ namespace LCHFramework.Extensions
 {
     public static class RectExtension
     {
-        public static Rect AddX(this ref Rect rect, float add)
-        {
-            rect.x += add;
-            return rect;
-        }
-        
         public static Rect SetX(this Rect rect, float x)
         {
             return new Rect(x, rect.y, rect.width, rect.height);

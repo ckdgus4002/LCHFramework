@@ -6,7 +6,7 @@ namespace LCHFramework.Editor
 {
     public static class BuildNumberIncreaser
     {
-        private const string MenuItemRootPath = LCHFramework.MenuItemRootPath + "/Build Number Increaser";
+        private const string MenuItemRootPath = LCHFramework.MenuItemRootPath + "/" + "Build Number Increaser";
         private const string EnableMenuItemPath = MenuItemRootPath/* + "/" + nameof(Enabled)*/;
         
         private static readonly string EnabledPrefsKey = $"{nameof(BuildNumberIncreaser)}{nameof(Enabled)}";
