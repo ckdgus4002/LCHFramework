@@ -1,12 +1,11 @@
 using System;
 using System.Linq;
-using LCHFramework.Managers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
-namespace LCHFramework.Components.UI
+namespace LCHFramework.Managers.UI
 {
     [RequireComponent(typeof(CanvasGroup))]
     public class Loading : MonoSingleton<Loading>
@@ -30,11 +29,13 @@ namespace LCHFramework.Components.UI
         
         
         
+#if UNITY_EDITOR
         private void Reset()
         {
             messageText = GetComponentsInChildren<TMP_Text>().FirstOrDefault(t => t.name.Contains("Message", StringComparison.OrdinalIgnoreCase) && t.name.Contains("Text", StringComparison.OrdinalIgnoreCase));
             slider = GetComponentInChildren<Slider>();
         }
+#endif
 
         protected override void Awake()
         {
