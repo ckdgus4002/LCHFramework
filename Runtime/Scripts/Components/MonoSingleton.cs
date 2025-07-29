@@ -28,7 +28,7 @@ namespace LCHFramework.Components
         
         protected override bool IsDontDestroyOnLoad => isDontDestroyOnLoad;
         
-        protected override bool IsDestroyPrevInstance => isDestroyPrevInstance;
+        public override bool IsDestroyPrevInstance => isDestroyPrevInstance;
         
         public Type SingletonType => _singletonType ??= singletonType.GetType();
         private Type _singletonType;
@@ -39,15 +39,15 @@ namespace LCHFramework.Components
         {
             base.Awake();
             
-            EnsureInstance(this, instances.GetValueOrDefault(SingletonType), t => instances[SingletonType] = t);
-
+            Singleton.EnsureInstance(this, instances.GetValueOrDefault(SingletonType), t => instances[SingletonType] = t, t => Destroy(t.DestroyTarget));
+            
             if (instances.GetValueOrDefault(SingletonType) == this && IsDontDestroyOnLoad)
             {
                 SceneManager.sceneLoaded += OnSceneLoaded;
                 DontDestroyOnLoad(gameObject);
             }
         }
-
+        
         private void OnDestroy()
         {
             if (instances.GetValueOrDefault(SingletonType) == this)
@@ -63,7 +63,7 @@ namespace LCHFramework.Components
         {
             if (DestroyNotMonoSingletonType) DestroyNotMonoSingletonOfType(SingletonType);
         }
-
+        
         private void DestroyNotMonoSingletonOfType(Type type) => FindObjectsByType(type, FindObjectsInactive.Include, FindObjectsSortMode.InstanceID)
             .Cast<Component>()
             .Where(t => t.GetComponent<MonoSingleton>() ==null)
