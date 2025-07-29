@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace LCHFramework.Extensions
@@ -15,7 +16,7 @@ namespace LCHFramework.Extensions
         {
             if (f < 0)
             {
-                var isRound = Mathf.Abs(f) % dist <= dist * 0.5f;
+                var isRound = Math.Abs(f) % dist <= dist * 0.5f;
                 return isRound ? f.Ceiling(dist) : f.Truncate(dist);
             }
             else

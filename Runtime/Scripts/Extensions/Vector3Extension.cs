@@ -1,14 +1,15 @@
+using System;
 using UnityEngine;
 
 namespace LCHFramework.Extensions
 {
     public static class Vector3Extension
     {
-        public static Vector3 AbsX(this Vector3 v) { v.x = Mathf.Abs(v.x); return v; }
+        public static Vector3 AbsX(this Vector3 v) { v.x = Math.Abs(v.x); return v; }
 
-        public static Vector3 AbsY(this Vector3 v) { v.y = Mathf.Abs(v.y); return v; }
+        public static Vector3 AbsY(this Vector3 v) { v.y = Math.Abs(v.y); return v; }
 
-        public static Vector3 AbsZ(this Vector3 v) { v.z = Mathf.Abs(v.z); return v; }
+        public static Vector3 AbsZ(this Vector3 v) { v.z = Math.Abs(v.z); return v; }
 
         public static Vector3 AddX(this Vector3 v, float add) { v.x += add; return v; }
 

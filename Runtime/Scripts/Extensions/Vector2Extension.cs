@@ -1,12 +1,13 @@
+using System;
 using UnityEngine;
 
 namespace LCHFramework.Extensions
 {
     public static class Vector2Extension
     {
-        public static Vector2 AbsX(this Vector2 v) { v.x = Mathf.Abs(v.x); return v; }
+        public static Vector2 AbsX(this Vector2 v) { v.x = Math.Abs(v.x); return v; }
 
-        public static Vector2 AbsY(this Vector2 v) { v.y = Mathf.Abs(v.y); return v; }
+        public static Vector2 AbsY(this Vector2 v) { v.y = Math.Abs(v.y); return v; }
 
         public static Vector2 AddX(this Vector2 v, float add) { v.x += add; return v; }
 

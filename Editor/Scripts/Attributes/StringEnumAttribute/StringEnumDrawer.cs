@@ -13,7 +13,7 @@ namespace LCHFramework.Editor.Attributes
             var strings = ((StringEnumAttribute)attribute).Strings;
             if (property.propertyType == SerializedPropertyType.String)
             {
-                var index = EditorGUI.Popup(position, property.displayName, Mathf.Max(0, Array.IndexOf(strings, property.stringValue)), strings);
+                var index = EditorGUI.Popup(position, property.displayName, Math.Max(0, Array.IndexOf(strings, property.stringValue)), strings);
                 property.stringValue = strings[index];
             }
             else if (property.propertyType == SerializedPropertyType.Integer)

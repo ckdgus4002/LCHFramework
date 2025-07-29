@@ -8,7 +8,7 @@ namespace LCHFramework.Utilities
     {
         public static void Pooling<T>(int itemCount, ref List<T> list, Func<T> createFunc, Action<int, T> actionOnAddOrNull = null, Action<T> actionOnRemoveOrNull = null)
         {
-            for (var i = 0; i < Mathf.Max(itemCount, list.Count);)
+            for (var i = 0; i < Math.Max(itemCount, list.Count);)
             {
                 if (i < itemCount)
                 {

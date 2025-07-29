@@ -83,7 +83,7 @@ namespace LCHFramework.Editor
                 
             // Main
             var prevColor = GUI.color;
-            var deltaX = /*SqueezeWhenOverflow ? Mathf.Min(iconSize * ((float)maxIconNumber / Mathf.Max(components.Length, 1)), iconSize) : iconSize*/ iconSize;
+            var deltaX = /*SqueezeWhenOverflow ? Math.Min(iconSize * ((float)maxIconNumber / Math.Max(components.Length, 1)), iconSize) : iconSize*/ iconSize;
             const int y = (18 - iconSize) / 2;
             for (var i = 0; i + offset < components.Length && (SqueezeWhenOverflow || i < maxIconNumber); i++)
             {

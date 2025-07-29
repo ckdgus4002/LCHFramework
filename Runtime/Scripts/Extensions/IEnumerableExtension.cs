@@ -42,10 +42,10 @@ namespace LCHFramework.Extensions
         }
 
         public static T ClampedElementAt<T>(this IEnumerable<T> enumerable, int index)
-            => enumerable.ElementAt(Mathf.Clamp(index, 0, enumerable.Count() - 1));
+            => enumerable.ElementAt(Math.Clamp(index, 0, enumerable.Count() - 1));
         
         public static T ClampedElementAt<T>(this IEnumerable<T> enumerable, int index, int min, int max) 
-            => enumerable.ElementAt(Mathf.Clamp(index, min, max));
+            => enumerable.ElementAt(Math.Clamp(index, min, max));
 
         public static void RadioActive<T>(this IEnumerable<T> components, T item, bool value) where T : Component
             => components.Select(t => t.gameObject).RadioActive(item.gameObject, value);

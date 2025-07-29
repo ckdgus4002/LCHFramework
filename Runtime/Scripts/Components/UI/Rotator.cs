@@ -65,10 +65,10 @@ namespace LCHFramework.Components.UI
         private readonly Gesture _gesture = new();
 
         private Gesture.Type GetGestureType(int touchCount, Vector2 pointerPositionDelta, bool onlySameAxis)
-            => (!onlySameAxis || GestureTypeUtils.IsHorizontalSwipe(GestureType)) && touchCount == 1 && Mathf.Abs(pointerPositionDelta.y) <= Mathf.Abs(pointerPositionDelta.x) && 0 < pointerPositionDelta.x ? Gesture.Type.LeftToRightSwipe
-                : (!onlySameAxis || GestureTypeUtils.IsHorizontalSwipe(GestureType)) && touchCount == 1 && Mathf.Abs(pointerPositionDelta.y) <= Mathf.Abs(pointerPositionDelta.x) && pointerPositionDelta.x < 0 ? Gesture.Type.RightToLeftSwipe
-                : (!onlySameAxis || GestureTypeUtils.IsVerticalSwipe(GestureType)) && touchCount == 1 && Mathf.Abs(pointerPositionDelta.x) <= Mathf.Abs(pointerPositionDelta.y) && pointerPositionDelta.y < 0 ? Gesture.Type.UpToDownSwipe
-                : (!onlySameAxis || GestureTypeUtils.IsVerticalSwipe(GestureType)) && touchCount == 1 && Mathf.Abs(pointerPositionDelta.x) <= Mathf.Abs(pointerPositionDelta.y) && 0 < pointerPositionDelta.y ? Gesture.Type.DownToUpSwipe
+            => (!onlySameAxis || GestureTypeUtils.IsHorizontalSwipe(GestureType)) && touchCount == 1 && Math.Abs(pointerPositionDelta.y) <= Math.Abs(pointerPositionDelta.x) && 0 < pointerPositionDelta.x ? Gesture.Type.LeftToRightSwipe
+                : (!onlySameAxis || GestureTypeUtils.IsHorizontalSwipe(GestureType)) && touchCount == 1 && Math.Abs(pointerPositionDelta.y) <= Math.Abs(pointerPositionDelta.x) && pointerPositionDelta.x < 0 ? Gesture.Type.RightToLeftSwipe
+                : (!onlySameAxis || GestureTypeUtils.IsVerticalSwipe(GestureType)) && touchCount == 1 && Math.Abs(pointerPositionDelta.x) <= Math.Abs(pointerPositionDelta.y) && pointerPositionDelta.y < 0 ? Gesture.Type.UpToDownSwipe
+                : (!onlySameAxis || GestureTypeUtils.IsVerticalSwipe(GestureType)) && touchCount == 1 && Math.Abs(pointerPositionDelta.x) <= Math.Abs(pointerPositionDelta.y) && 0 < pointerPositionDelta.y ? Gesture.Type.DownToUpSwipe
                 : (!onlySameAxis || GestureTypeUtils.IsRotate(GestureType)) && touchCount == 2 && 0 <= pointerPositionDelta.y ? Gesture.Type.ClockwiseRotate
                 : (!onlySameAxis || GestureTypeUtils.IsRotate(GestureType)) && touchCount == 2 && pointerPositionDelta.y <= 0 ? Gesture.Type.CounterclockwiseRotate 
                 : GestureType;
@@ -252,7 +252,7 @@ namespace LCHFramework.Components.UI
                         {
                             var rotate = Quaternion.Slerp(Quaternion.Euler(Velocity), Quaternion.identity, (1 - smoothRatio) * (Time.deltaTime/0.0167f)).eulerAngles;
                             RotateTarget(Velocity = rotate);
-                            for (var i = 0; i < Mathf.Max(1, UnityEngine.Application.targetFrameRate / 60f); i++) yield return null;
+                            for (var i = 0; i < Math.Max(1, UnityEngine.Application.targetFrameRate / 60f); i++) yield return null;
                         }
                     } while (canSmooth);
                 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using LCHFramework.Utilities;
 using UnityEngine;
 
 namespace LCHFramework.Components
