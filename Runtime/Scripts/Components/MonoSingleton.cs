@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 namespace LCHFramework.Components
 {
     [DefaultExecutionOrder(EventSystemExecutionOrder - 1)]
-    public class MonoSingleton : AbstractMonoSingleton
+    public sealed class MonoSingleton : AbstractMonoSingleton
     {
         private const int EventSystemExecutionOrder = -1000;
         public const bool DestroyNotMonoSingletonType = true;
