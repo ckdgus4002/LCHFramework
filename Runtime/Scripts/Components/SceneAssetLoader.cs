@@ -12,10 +12,21 @@ namespace LCHFramework.Components
         public SceneAsset scene;
 #endif
         
-        [SerializeField] private string sceneName;
+        
+        [HideInInspector] [SerializeField] private string sceneName;
+        private AsyncOperation loadAsyncOrNull;
         
         
-        private bool IsLoaded => _loadAsync is { isDone: true, progress: > 1 - float.Epsilon };
+        private bool IsLoaded => loadAsyncOrNull is { isDone: true, progress: > 1 - float.Epsilon };
+        
+        
+        
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            sceneName = scene != null ? scene.name : string.Empty;
+        }
+#endif
         
         
         
@@ -24,20 +35,11 @@ namespace LCHFramework.Components
         
         
         
-        private void OnValidate()
+        public virtual AsyncOperation LoadAsync()
         {
-#if UNITY_EDITOR
-            sceneName = scene != null ? scene.name : string.Empty;
-#endif
-        }
-        
-        
-        private AsyncOperation _loadAsync;
-        public AsyncOperation LoadAsync()
-        {
-            if (!IsLoaded) _loadAsync = SceneManager.LoadSceneAsync(sceneName);
+            if (!IsLoaded) loadAsyncOrNull = SceneManager.LoadSceneAsync(sceneName);
 
-            return _loadAsync;
+            return loadAsyncOrNull;
         }
     }
 }
