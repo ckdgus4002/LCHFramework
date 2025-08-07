@@ -2,6 +2,9 @@
     "name": "LCHFramework",
     "rootNamespace": "LCHFramework",
     "references": [
+        "Unity.Addressables",
+        "Unity.Addressables.Editor",
+        "Unity.ResourceManager",
         "Unity.TextMeshPro",
         "UniRx"
     ],

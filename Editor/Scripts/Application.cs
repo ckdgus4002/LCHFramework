@@ -8,7 +8,6 @@ namespace LCHFramework.Editor
 {
     public class Application
     {
-#if UNITY_EDITOR
         public static IEnumerable<BuildTargetGroup> PlatformGroups
         {
             get
@@ -28,6 +27,5 @@ namespace LCHFramework.Editor
             }
         }
         private static List<BuildTargetGroup> _platformGroups;
-#endif
     }
 }

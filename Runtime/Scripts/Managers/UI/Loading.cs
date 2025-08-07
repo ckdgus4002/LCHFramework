@@ -3,7 +3,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
+using Random = System.Random;
 
 namespace LCHFramework.Managers.UI
 {
@@ -22,7 +22,7 @@ namespace LCHFramework.Managers.UI
         private CanvasGroup canvasGroup;
         
         
-        public virtual string DefaultLoadingMessage => LoadingMessages[Random.Range(0, LoadingMessages.Length)];
+        public virtual string DefaultLoadingMessage => LoadingMessages[new Random().Next(0, LoadingMessages.Length)];
 
         public virtual string[] LoadingMessages => _loadingMessages ??= new[] { "Loading..." };
         private string[] _loadingMessages;
@@ -46,10 +46,10 @@ namespace LCHFramework.Managers.UI
         
         
         
-        public async Awaitable Load(Func<float> getPercentOrNull, Func<bool> getIsDone)
-            => await Load(() => DefaultLoadingMessage, DefaultFadeInTime, DefaultFadeOutTime, getPercentOrNull, getIsDone);
+        public async Awaitable LoadAsync(Func<float> getPercentOrNull, Func<bool> getIsDone)
+            => await LoadAsync(() => DefaultLoadingMessage, DefaultFadeInTime, DefaultFadeOutTime, getPercentOrNull, getIsDone);
         
-        public async Awaitable Load(Func<string> getMessage, float fadeInTime, float fadeOutTime, Func<float> getPercentOrNull, Func<bool> getIsDone)
+        public async Awaitable LoadAsync(Func<string> getMessage, float fadeInTime, float fadeOutTime, Func<float> getPercentOrNull, Func<bool> getIsDone)
         {
             var startTime = Time.time;
             while (true)

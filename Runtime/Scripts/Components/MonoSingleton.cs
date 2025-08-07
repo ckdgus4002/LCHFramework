@@ -5,6 +5,8 @@ using LCHFramework.Extensions;
 using LCHFramework.Managers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using LoadSceneMode = UnityEngine.SceneManagement.LoadSceneMode;
+using SceneManager = UnityEngine.SceneManagement.SceneManager;
 
 namespace LCHFramework.Components
 {

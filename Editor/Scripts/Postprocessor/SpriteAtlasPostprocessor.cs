@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using LCHFramework.Editor.Utilities;
 using UnityEditor;
+using UnityEditor.AddressableAssets;
 using UnityEditor.U2D;
 using UnityEngine;
 using UnityEngine.U2D;
@@ -26,10 +27,8 @@ namespace LCHFramework.Editor
         private static void OnPostprocessSpriteAtlas(SpriteAtlas spriteAtlas, string spriteAtlasPath, SpriteAtlasImporter spriteAtlasImporterOrNull)
         {
             if (SpriteAtlasPostprocessorExceptTable.Instances.Any(t => t.IsExclude(spriteAtlasPath))) return;
-
-            const string getIncludeInBuildMethodName = "GetIncludeInBuild";
-            var getIncludeInBuildOrNull = AssemblyUtility.InvokeMethod($"{nameof(LCHFramework)}.Editor.{nameof(SpriteAtlasPostprocessor)}_{getIncludeInBuildMethodName}", getIncludeInBuildMethodName, BindingFlags.NonPublic | BindingFlags.Static, null, new object[] { spriteAtlasImporterOrNull, spriteAtlas });
-            var includeInBuild = getIncludeInBuildOrNull == null || (bool)getIncludeInBuildOrNull;
+            
+            var includeInBuild = AddressableAssetSettingsDefaultObject.Settings.FindAssetEntry(AssetDatabase.AssetPathToGUID(spriteAtlasPath)) != null;
             if (spriteAtlasImporterOrNull == null) spriteAtlas.SetIncludeInBuild(includeInBuild);
             else spriteAtlasImporterOrNull.includeInBuild = includeInBuild;
 

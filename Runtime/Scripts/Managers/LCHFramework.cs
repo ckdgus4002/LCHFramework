@@ -17,10 +17,6 @@ namespace LCHFramework
 #endif
         
         
-        public static event Action onApplicationQuit;
-        
-        
-        
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void RuntimeInitializeOnLoadMethod() => CreateGameObjectIfInstanceIsNull();
         
@@ -121,11 +117,6 @@ namespace LCHFramework
                 if (!Mathf.Approximately(mainCameraAspect, PrevMainCameraAspect)) MessageBroker.Default.Publish(new MainCameraAspectChangedMessage());
                 PrevMainCameraAspect = mainCameraAspect;    
             }
-        }
-
-        private void OnApplicationQuit()
-        {
-            onApplicationQuit?.Invoke();
         }
     }
 }
