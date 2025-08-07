@@ -1,4 +1,5 @@
 using System;
+using UniRx;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -130,14 +131,15 @@ namespace LCHFramework
         
         
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void RuntimeInitializeOnLoadMethod() => LCHFramework.onApplicationQuit += OnApplicationQuit;
-        
-        private static void OnApplicationQuit()
+        private static void RuntimeInitializeOnLoadMethod()
         {
+            Observable.OnceApplicationQuit().Subscribe(_ =>
+            {
 #if !UNITY_EDITOR && UNITY_ANDROID
             _currentActivity.Dispose();
             _androidPackageInfo.Dispose();
 #endif
+            });
         }
         
         
