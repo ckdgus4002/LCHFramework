@@ -2,7 +2,9 @@
     "name": "LCHFrameworkEditor",
     "rootNamespace": "LCHFramework.Editor",
     "references": [
-        "LCHFramework"
+        "LCHFramework",
+        "Unity.Addressables",
+        "Unity.Addressables.Editor"
     ],
     "includePlatforms": [
         "Editor"
