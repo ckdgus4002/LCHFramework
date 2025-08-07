@@ -2,8 +2,8 @@ using LCHFramework.Managers;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
-#if UNITY_EDITOR
 using LCHFramework.Components;
+#if UNITY_EDITOR
 using UnityEditor;
 #endif
 

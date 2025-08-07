@@ -62,7 +62,7 @@ namespace LCHFramework.Managers
             
             
             
-            Resources.UnloadUnusedAssets();
+            _ = Resources.UnloadUnusedAssets();
             GC.Collect();
             var loadScene = UnityEngine.AddressableAssets.Addressables.LoadSceneAsync(sceneAddress);
             
