@@ -28,7 +28,7 @@ namespace LCHFramework.Editor
         {
             if (SpriteAtlasPostprocessorExceptTable.Instances.Any(t => t.IsExclude(spriteAtlasPath))) return;
             
-            var includeInBuild = AddressableAssetSettingsDefaultObject.Settings.FindAssetEntry(AssetDatabase.AssetPathToGUID(spriteAtlasPath)) != null;
+            var includeInBuild = AddressableAssetSettingsDefaultObject.Settings?.FindAssetEntry(AssetDatabase.AssetPathToGUID(spriteAtlasPath)) == null;
             if (spriteAtlasImporterOrNull == null) spriteAtlas.SetIncludeInBuild(includeInBuild);
             else spriteAtlasImporterOrNull.includeInBuild = includeInBuild;
 
