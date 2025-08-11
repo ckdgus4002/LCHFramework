@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
+using LCHFramework.Extensions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Random = System.Random;
 
 namespace LCHFramework.Managers.UI
 {
@@ -12,6 +12,7 @@ namespace LCHFramework.Managers.UI
     {
         public const float DefaultFadeInTime = 0.5f;
         public const float DefaultFadeOutTime = 0.5f;
+        public const string DefaultLoadingMessage = "Loading...";
         
         
         
@@ -22,9 +23,8 @@ namespace LCHFramework.Managers.UI
         private CanvasGroup canvasGroup;
         
         
-        public virtual string DefaultLoadingMessage => LoadingMessages[new Random().Next(0, LoadingMessages.Length)];
 
-        public virtual string[] LoadingMessages => _loadingMessages ??= new[] { "Loading..." };
+        public virtual string[] LoadingMessages => _loadingMessages ??= new[] { DefaultLoadingMessage };
         private string[] _loadingMessages;
         
         
@@ -47,7 +47,7 @@ namespace LCHFramework.Managers.UI
         
         
         public async Awaitable LoadAsync(Func<float> getPercentOrNull, Func<bool> getIsDone)
-            => await LoadAsync(() => DefaultLoadingMessage, DefaultFadeInTime, DefaultFadeOutTime, getPercentOrNull, getIsDone);
+            => await LoadAsync(() => LoadingMessages.Pick(), DefaultFadeInTime, DefaultFadeOutTime, getPercentOrNull, getIsDone);
         
         public async Awaitable LoadAsync(Func<string> getMessage, float fadeInTime, float fadeOutTime, Func<float> getPercentOrNull, Func<bool> getIsDone)
         {

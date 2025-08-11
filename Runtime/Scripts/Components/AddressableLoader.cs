@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -24,9 +23,6 @@ namespace LCHFramework.Components
         public AsyncOperationHandle<T2> AsyncOperationHandle { get; protected set; }
         
         
-        public bool IsLoaded => AsyncOperationHandle.IsValid();
-        
-        
         
 #if UNITY_EDITOR
         private void OnValidate()
@@ -49,16 +45,6 @@ namespace LCHFramework.Components
 
         
         
-        public Task LoadAsync()
-        {
-            if (!IsLoaded)
-            {
-                AsyncOperationHandle = OnLoadAsync();
-            }
-
-            return AsyncOperationHandle.Task;
-        }
-
-        protected abstract AsyncOperationHandle<T2> OnLoadAsync();
+        public abstract Task LoadAsync();
     }
 }

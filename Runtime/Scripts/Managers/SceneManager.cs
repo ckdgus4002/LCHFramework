@@ -1,9 +1,10 @@
 using System;
 using System.Threading.Tasks;
+using LCHFramework.Managers.UI;
 using UniRx;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.ResourceManagement.ResourceProviders;
 
 namespace LCHFramework.Managers
 {
@@ -12,91 +13,91 @@ namespace LCHFramework.Managers
         None,
         LoadingUI,
     }
-
-    public struct BeforeLoadSceneCompleteMessage
+    
+    public struct LoadSceneFadeOutMessage
     {
+        public string prevSceneName;
         public string sceneName;
     }
-
-    public struct AfterLoadSceneCompleteMessage
+    
+    public struct LoadSceneFadeInMessage
     {
+        public string prevSceneName;
+        public string sceneName;
+    }
+    
+    public struct LoadSceneCompletedMessage
+    {
+        public string prevSceneName;
         public string sceneName;
     }
     
     public static class SceneManager
     {
-        private const string Loading = "Loading";
+        private const string LoadSceneErrorMessage = "문제가 발생하였습니다. 앱을 재시작해주세요.";
         private static bool isLoadingScene;
         
         
         
         public static float DefaultFadeOutDuration(LoadSceneMode mode) => mode switch
         {
-            LoadSceneMode.LoadingUI => UI.Loading.DefaultFadeInTime,
+            LoadSceneMode.LoadingUI => Loading.DefaultFadeInTime,
             _ => 0
         };
         
         public static float DefaultFadeInDuration(LoadSceneMode mode) => mode switch
         {
-            LoadSceneMode.LoadingUI => UI.Loading.DefaultFadeOutTime,
+            LoadSceneMode.LoadingUI => Loading.DefaultFadeOutTime,
             _ => 0
         };
         
         public static string DefaultMessage(LoadSceneMode mode) => mode switch
         {
-            LoadSceneMode.LoadingUI => UI.Loading.Instance.DefaultLoadingMessage,
+            LoadSceneMode.LoadingUI => Loading.DefaultLoadingMessage,
             _ => string.Empty
         };
         
-        public static Task<AsyncOperationHandle<SceneInstance>> LoadSceneAsync(string sceneAddress, LoadSceneMode mode)
-            => LoadSceneAsync(sceneAddress, mode, DefaultFadeOutDuration(mode), DefaultFadeInDuration(mode), DefaultMessage(mode));
+        public static async Task LoadSceneAsync(string sceneAddress, LoadSceneMode mode)
+            => await LoadSceneAsync(sceneAddress, mode, DefaultFadeOutDuration(mode), DefaultFadeInDuration(mode), DefaultMessage(mode));
         
-        public static async Task<AsyncOperationHandle<SceneInstance>> LoadSceneAsync(string sceneAddress, LoadSceneMode mode, float fadeOutDuration, float fadeInDuration, string message)
+        public static async Task LoadSceneAsync(string sceneAddress, LoadSceneMode mode, float fadeOutDuration, float fadeInDuration, string message)
         {
-            if (isLoadingScene) return UnityEngine.AddressableAssets.Addressables.ResourceManager.CreateCompletedOperation<SceneInstance>(default, $"{nameof(isLoadingScene)} is True!");
+            if (isLoadingScene) { Debug.Log($"{nameof(isLoadingScene)} is True!"); return; }
             
             
-            
+            SoundManager.Instance.StopAll();
             isLoadingScene = true;
-            await UnityEngine.AddressableAssets.Addressables.LoadSceneAsync(Loading).Task;
-            
+            var prevSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            MessageBroker.Default.Publish(new LoadSceneFadeOutMessage { prevSceneName = prevSceneName, sceneName = sceneAddress });
+            var loadScene = Addressables.LoadSceneAsync(sceneAddress, activateOnLoad: false);
+            var startTime = Time.time;
+            if (mode == LoadSceneMode.LoadingUI) _ = Loading.Instance.LoadAsync(
+                () => loadScene.IsValid() && loadScene.OperationException != null ? $"{LoadSceneErrorMessage} ({loadScene.OperationException})" 
+                    : loadScene.IsValid() && loadScene.Status == AsyncOperationStatus.Failed ? $"{LoadSceneErrorMessage} ({loadScene.Status})" 
+                    : message,
+                fadeOutDuration,
+                fadeInDuration,
+                () => Math.Min(Time.time - (startTime + fadeOutDuration), !loadScene.IsValid() ? 0 : loadScene.PercentComplete),
+                () => Time.time - (startTime + fadeOutDuration) < 1 && loadScene.IsValid() && loadScene.Result.Scene.isLoaded);
             
             
             _ = Resources.UnloadUnusedAssets();
             GC.Collect();
-            var loadScene = UnityEngine.AddressableAssets.Addressables.LoadSceneAsync(sceneAddress);
             
             
+            while (!loadScene.IsDone) await Awaitable.NextFrameAsync(); 
             
-            var loadSceneError = string.Empty;
-            fadeOutDuration = mode == LoadSceneMode.None ? 0 : fadeOutDuration;
-            fadeInDuration = mode == LoadSceneMode.None ? 0 : fadeInDuration;
-            bool isLoadSceneCompleted;
-            var startTime = Time.time;
-            if (mode == LoadSceneMode.LoadingUI) await UI.Loading.Instance.LoadAsync(() =>
-            {
-                if (loadScene.IsValid() && loadScene.OperationException != null) loadSceneError = $"{loadScene.OperationException}";
-                else if (loadScene.IsValid() && loadScene.Status == AsyncOperationStatus.Failed) loadSceneError = $"{loadScene.Status}";
-                
-                return !string.IsNullOrEmpty(loadSceneError) ? $"씬 로드 중 문제가 발생하였습니다. 앱을 재시작해주세요. ({loadSceneError[..Mathf.Min(4, loadSceneError.Length)]})" : message;
-
-            }, fadeOutDuration, fadeInDuration, () => loadScene.PercentComplete, () =>
-            {
-                isLoadSceneCompleted = !loadScene.IsValid() || !loadScene.Result.Scene.isLoaded || !loadScene.IsDone || Time.time - startTime < 1;
-                return !isLoadSceneCompleted;
-            });
             
+            await loadScene.Result.ActivateAsync();
             
             
             var sceneName = loadScene.Result.Scene.name;
-            MessageBroker.Default.Publish(new BeforeLoadSceneCompleteMessage { sceneName = sceneName });
-            await Task.Delay(TimeSpan.FromSeconds(fadeInDuration));
-                        
+            MessageBroker.Default.Publish(new LoadSceneFadeInMessage { prevSceneName = prevSceneName, sceneName = sceneName });
+            await Awaitable.WaitForSecondsAsync(fadeInDuration);
             
             
             isLoadingScene = false;
-            MessageBroker.Default.Publish(new AfterLoadSceneCompleteMessage { sceneName = sceneName });
-            return loadScene;
+            MessageBroker.Default.Publish(new LoadSceneCompletedMessage { prevSceneName = prevSceneName, sceneName = sceneName });
         }
     }
 }

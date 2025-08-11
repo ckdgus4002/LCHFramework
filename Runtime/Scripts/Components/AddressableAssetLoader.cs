@@ -1,6 +1,6 @@
+using System.Threading.Tasks;
 using LCHFramework.Managers;
 using UnityEngine;
-using UnityEngine.ResourceManagement.AsyncOperations;
 using Object = UnityEngine.Object;
 
 namespace LCHFramework.Components
@@ -18,16 +18,10 @@ namespace LCHFramework.Components
         
         
         
-        protected override AsyncOperationHandle<Object> OnLoadAsync()
-        {
-            return AddressablesLoadManager<Object>.LoadAssetAsync(address);
-        }
+        public override Task LoadAsync()
+            => AddressablesLoadManager<Object>.LoadAssetAsync(address).Task;
 
         private void Release()
-        {
-            if (!IsLoaded) return;
-            
-            AddressablesLoadManager<Object>.ReleaseAsset(address);
-        }
+            => AddressablesLoadManager<Object>.ReleaseAsset(address);
     }
 }

@@ -1,13 +1,15 @@
+using System.Threading.Tasks;
+using LCHFramework.Attributes;
+using LCHFramework.Data;
 using LCHFramework.Managers;
+using LCHFramework.Managers.UI;
 using UnityEngine;
-using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
-using LCHFramework.Components;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-namespace LCHFramework.Addressables.Components
+namespace LCHFramework.Components
 {
 #if UNITY_EDITOR
     public class AddressableSceneLoader : AddressableLoader<SceneAsset, SceneInstance>
@@ -16,15 +18,19 @@ namespace LCHFramework.Addressables.Components
 #endif
     {
         [SerializeField] private LoadSceneMode loadSceneMode;
+        
+        [ShowIf(nameof(loadSceneMode), ComparisonOperator.NotEquals, LoadSceneMode.None)]
         [SerializeField] private float fadeInDuration;
+        
+        [ShowIf(nameof(loadSceneMode), ComparisonOperator.NotEquals, LoadSceneMode.None)]
         [SerializeField] private float fadeOutDuration;
-        [SerializeField] private string message;
+        
+        [ShowIf(nameof(loadSceneMode), ComparisonOperator.NotEquals, LoadSceneMode.None)]
+        [SerializeField] private string message = Loading.DefaultLoadingMessage;
         
         
         
-        protected override AsyncOperationHandle<SceneInstance> OnLoadAsync()
-        {
-            return SceneManager.LoadSceneAsync(address, loadSceneMode, fadeOutDuration, fadeInDuration, message).Result;
-        }
+        public override Task LoadAsync()
+            => SceneManager.LoadSceneAsync(address, loadSceneMode, fadeOutDuration, fadeInDuration, message);
     }
 }
