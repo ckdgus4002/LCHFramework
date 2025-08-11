@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.Exceptions;
 using UnityEngine.U2D;
@@ -18,7 +19,7 @@ namespace LCHFramework.Managers
         {
             if (!LoadedAssets.ContainsKey(address))
             {
-                var m_Handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<T>(address);
+                var m_Handle = Addressables.LoadAssetAsync<T>(address);
                 m_Handle.Completed += handle =>
                 {
                     string dlError = AddressablesManager.GetDownloadError(m_Handle);
@@ -46,7 +47,7 @@ namespace LCHFramework.Managers
             {
                 if (value.Result is SpriteAtlas spriteAtlas) SpriteAtlasBindingManager.RemoveSpriteAtlas(spriteAtlas);
                 
-                UnityEngine.AddressableAssets.Addressables.Release(value);
+                Addressables.Release(value);
             }
         }
     }
@@ -60,7 +61,7 @@ namespace LCHFramework.Managers
             float minimumDuration = 1f)
         {
             var downloadIsSuccess = false;
-            var downloadSize = UnityEngine.AddressableAssets.Addressables.GetDownloadSizeAsync(label);
+            var downloadSize = Addressables.GetDownloadSizeAsync(label);
             onDownloadSize?.Invoke(downloadSize);
             var downloadSizeStartTime = Time.time;
             while (!downloadSize.IsDone || Time.time - downloadSizeStartTime < minimumDuration) await Awaitable.NextFrameAsync();
@@ -78,19 +79,19 @@ namespace LCHFramework.Managers
                     while (!download.IsDone || Time.time - downloadStartTime < minimumDuration) await Awaitable.NextFrameAsync();
                     
                     downloadIsSuccess = download.Status == AsyncOperationStatus.Succeeded;
-                    UnityEngine.AddressableAssets.Addressables.Release(download);
+                    Addressables.Release(download);
                 }
                 else
                     downloadIsSuccess = true;
             }
-            UnityEngine.AddressableAssets.Addressables.Release(downloadSize);   
+            Addressables.Release(downloadSize);   
 
             return downloadIsSuccess;
         }
         
         public static AsyncOperationHandle DownloadAsync(string label, bool autoReleaseHandle = true)
         {
-            var operationHandle = UnityEngine.AddressableAssets.Addressables.DownloadDependenciesAsync(label, autoReleaseHandle);
+            var operationHandle = Addressables.DownloadDependenciesAsync(label, autoReleaseHandle);
             operationHandle.Completed += handle =>
             {
                 var dlError = GetDownloadError(handle);
@@ -127,7 +128,7 @@ namespace LCHFramework.Managers
         public static List<string> GetAddresses<T>(string label)
         {
             var result = new List<string>();
-            foreach (var locator in UnityEngine.AddressableAssets.Addressables.ResourceLocators)
+            foreach (var locator in Addressables.ResourceLocators)
                 if (locator.Locate(label, typeof(T), out var locations))
                     result.AddRange(locations.Select(t => t.PrimaryKey));
 

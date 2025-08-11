@@ -1,4 +1,4 @@
-using LCHFramework.Addressables.Components;
+using LCHFramework.Components;
 using UniRx;
 using UnityEngine;
 

@@ -49,9 +49,9 @@ namespace LCHFramework.Managers
             }
         }
         private static float _timeScale;
-
-
-
+        
+        
+        
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void RuntimeInitializeOnLoadMethod() => CreateGameObjectIfInstanceIsNull();
         
@@ -67,7 +67,7 @@ namespace LCHFramework.Managers
         protected override void Awake()
         {
             base.Awake();
-
+            
             TimeScale = Time.timeScale;
             foreach (var t in new[] { Bgm, Narration, Sfx }) CreateAudioSourcePool(t);
         }
@@ -83,16 +83,16 @@ namespace LCHFramework.Managers
             audioSourcePools.Add(poolName, go.AddComponent<AudioSourcePool>());
             LocalVolumes.Add(poolName, new ReactiveProperty<float> { Value = DefaultVolume });
         }
-
+        
         public AudioPlayResult Play(AudioClip audioClip, string audioSourcePoolName = DefaultAudioSourcePoolName, AudioPlayType audioPlayType = DefaultAudioPlayType, float volume = DefaultVolume, bool loop = DefaultLoop, Vector3? position = null)
         {
             // ReleaseAll();
             var audioSourcePool = !audioSourcePools.TryGetValue(audioSourcePoolName, out var result) ? audioSourcePools[DefaultAudioSourcePoolName] : result;
             return audioSourcePool.Play(audioClip, volume, loop, position ?? transform.position, audioPlayType);
         }
-
+        
         public void StopAll() => audioSourcePools.ForEach(t => t.Value.StopAllAudioSources());
-
+        
         public void DisposeAllAudioSourcePool() => audioSourcePools.ForEach(t => t.Value.DisposeAudioSourcePool());
         
         private void ReleaseAll() => audioSourcePools.ForEach(t => t.Value.ReleaseAudioSources());
