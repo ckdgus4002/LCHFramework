@@ -20,9 +20,6 @@ namespace LCHFramework.Components
         [HideInInspector] [SerializeField] protected string address;
         
         
-        public AsyncOperationHandle<T2> AsyncOperationHandle { get; protected set; }
-        
-        
         
 #if UNITY_EDITOR
         private void OnValidate()

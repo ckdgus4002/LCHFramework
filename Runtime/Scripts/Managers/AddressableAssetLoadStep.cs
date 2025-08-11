@@ -1,3 +1,4 @@
+using System.Linq;
 using LCHFramework.Components;
 using UniRx;
 using UnityEngine;
@@ -7,8 +8,8 @@ namespace LCHFramework.Managers
     [RequireComponent(typeof(AddressableAssetLoader))]
     public class AddressableAssetLoadStep : Step
     {
-        private AddressableAssetLoader AssetLoader => _assetLoader == null ? _assetLoader = GetComponent<AddressableAssetLoader>() : _assetLoader;
-        private AddressableAssetLoader _assetLoader;
+        private AddressableAssetLoader[] AssetLoaders => _assetLoaders ??= GetComponents<AddressableAssetLoader>();
+        private AddressableAssetLoader[] _assetLoaders;
         
         
         
@@ -16,10 +17,11 @@ namespace LCHFramework.Managers
         {
             base.Show();
 
-            AssetLoader.AsyncOperationHandle.Completed += _ =>
-            {
-                MessageBroker.Default.Publish(new PassCurrentStepMessage());
-            };
+            Observable.EveryUpdate()
+                .Where(_ => AssetLoaders.All(t => t.IsLoaded))
+                .Take(1)
+                .Subscribe(_ => MessageBroker.Default.Publish(new PassCurrentStepMessage()))
+                .AddTo(gameObject);
         }
     }
 }

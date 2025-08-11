@@ -10,6 +10,9 @@ namespace LCHFramework.Components
         [SerializeField] protected bool releaseOnDestroy = true;
         
         
+        public bool IsLoaded { get; private set; }
+        
+        
         
         private void OnDestroy()
         {
@@ -19,7 +22,8 @@ namespace LCHFramework.Components
         
         
         public override Task LoadAsync()
-            => AddressablesLoadManager<Object>.LoadAssetAsync(address).Task;
+            => AddressablesLoadManager<Object>.LoadAssetAsync(address).Task
+                .ContinueWith(t => IsLoaded = t.IsCompletedSuccessfully);
 
         private void Release()
             => AddressablesLoadManager<Object>.ReleaseAsset(address);
