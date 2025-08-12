@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 using Object = UnityEngine.Object;
 #if UNITY_EDITOR
 using UnityEditor.AddressableAssets;
@@ -24,7 +23,9 @@ namespace LCHFramework.Components
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            address = asset != null ? AddressableAssetSettingsDefaultObject.Settings.FindAssetEntry(asset.AssetGUID).address : string.Empty;
+            address = asset == null || string.IsNullOrEmpty(asset.AssetGUID) || AddressableAssetSettingsDefaultObject.Settings == null
+                ? string.Empty
+                : AddressableAssetSettingsDefaultObject.Settings.FindAssetEntry(asset.AssetGUID).address;
         }
 #endif  
         
