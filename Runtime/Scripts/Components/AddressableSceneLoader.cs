@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using LCHFramework.Attributes;
 using LCHFramework.Data;
 using LCHFramework.Managers;
-using LCHFramework.Managers.UI;
 using UnityEngine;
 using UnityEngine.ResourceManagement.ResourceProviders;
 #if UNITY_EDITOR
@@ -20,13 +19,13 @@ namespace LCHFramework.Components
         [SerializeField] private LoadSceneMode loadSceneMode;
         
         [ShowIf(nameof(loadSceneMode), ComparisonOperator.NotEquals, LoadSceneMode.None)]
-        [SerializeField] private float fadeInDuration;
+        [SerializeField] private float fadeInDuration = 0.5f;
         
         [ShowIf(nameof(loadSceneMode), ComparisonOperator.NotEquals, LoadSceneMode.None)]
-        [SerializeField] private float fadeOutDuration;
+        [SerializeField] private float fadeOutDuration = 0.5f;
         
         [ShowIf(nameof(loadSceneMode), ComparisonOperator.NotEquals, LoadSceneMode.None)]
-        [SerializeField] private string message = Loading.DefaultLoadingMessage;
+        [SerializeField] private string message = "Loading...";
         
         
         
