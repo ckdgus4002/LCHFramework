@@ -70,7 +70,7 @@ namespace LCHFramework.Managers
                 Steps.Where(t => t.IsShown).ForEach(t => t.Hide());
                 _currentStep.Show();
                 
-                Debug.Log($"CurrentStep is changed. {(PrevStepOrNull == null ? "" : $"{PrevStepOrNull.name} -> ")}{_currentStep.name}");
+                Debug.Log($"[{transform.GetPath()}] CurrentStep is changed. {(PrevStepOrNull == null ? "" : $"{PrevStepOrNull.name} -> ")}{_currentStep.name}");
                 MessageBroker.Default.Publish(new CurrentStepChangedMessage { prevStepOrNull = PrevStepOrNull, currentStep = _currentStep });
             }
         }

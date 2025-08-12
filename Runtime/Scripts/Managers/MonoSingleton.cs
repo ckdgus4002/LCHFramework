@@ -47,6 +47,8 @@ namespace LCHFramework.Managers
         
         protected static void CreateGameObjectIfInstanceIsNull() { if (InstanceIsNull) new GameObject(typeof(T).Name).AddComponent<T>(); }
         
+        protected static void InstantiateIfInstanceIsNull(T original) { if (InstanceIsNull) Instantiate(original); }
+        
         
         
         protected override void Awake()

@@ -78,17 +78,19 @@ namespace LCHFramework.Managers
                 fadeOutDuration,
                 fadeInDuration,
                 () => Math.Min(Time.time - (startTime + fadeOutDuration), !loadScene.IsValid() ? 0 : loadScene.PercentComplete),
-                () => Time.time - (startTime + fadeOutDuration) < 1 && loadScene.IsValid() && loadScene.Result.Scene.isLoaded);
+                () => loadScene.IsValid() && loadScene.Result.Scene.isLoaded);
             
             
-            _ = Resources.UnloadUnusedAssets();
-            GC.Collect();
             
-            
-            while (!loadScene.IsDone) await Awaitable.NextFrameAsync(); 
+            while (Time.time <= startTime + fadeOutDuration + 1 || !loadScene.IsDone) await Awaitable.NextFrameAsync(); 
             
             
             await loadScene.Result.ActivateAsync();
+            
+            
+            isLoadingScene = false;
+            _ = Resources.UnloadUnusedAssets();
+            GC.Collect();
             
             
             var sceneName = loadScene.Result.Scene.name;
@@ -96,7 +98,6 @@ namespace LCHFramework.Managers
             await Awaitable.WaitForSecondsAsync(fadeInDuration);
             
             
-            isLoadingScene = false;
             MessageBroker.Default.Publish(new LoadSceneCompletedMessage { prevSceneName = prevSceneName, sceneName = sceneName });
         }
     }

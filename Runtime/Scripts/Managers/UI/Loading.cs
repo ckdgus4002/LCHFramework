@@ -23,9 +23,13 @@ namespace LCHFramework.Managers.UI
         private CanvasGroup canvasGroup;
         
         
-
+        public override bool IsShown => Wrapper.activeSelf;
+        
         public virtual string[] LoadingMessages => _loadingMessages ??= new[] { DefaultLoadingMessage };
         private string[] _loadingMessages;
+        
+        private GameObject Wrapper => _wrapper == null ? _wrapper = transform.Find(nameof(Wrapper)).gameObject : _wrapper;
+        private GameObject _wrapper;
         
         
         
@@ -42,6 +46,7 @@ namespace LCHFramework.Managers.UI
             base.Awake();
             
             canvasGroup = GetComponent<CanvasGroup>();
+            Hide();
         }
         
         
@@ -51,6 +56,8 @@ namespace LCHFramework.Managers.UI
         
         public async Awaitable LoadAsync(Func<string> getMessage, float fadeInTime, float fadeOutTime, Func<float> getPercentOrNull, Func<bool> getIsDone)
         {
+            Wrapper.SetActive(true);
+            
             var startTime = Time.time;
             while (true)
             {
@@ -68,10 +75,14 @@ namespace LCHFramework.Managers.UI
             var endTime = Time.time;
             while (true)
             {
-                canvasGroup.alpha = (Time.time - endTime) / fadeOutTime;
+                canvasGroup.alpha = 1 - (Time.time - endTime) / fadeOutTime;
                 if (Time.time - endTime <= fadeOutTime) await Awaitable.NextFrameAsync();
                 else break;
             }
+            
+            Hide();
         }
+        
+        private void Hide() => Wrapper.SetActive(false);
     }
 }

@@ -43,7 +43,7 @@ namespace LCHFramework.Extensions
         
         public static string GetPath(this Transform transform)
         {
-            var path = new StringBuilder(transform.name);
+            var path = new StringBuilder($"{transform.gameObject.scene.name}/{transform.name}");
             while ((transform = transform.parent) != null) path = path.Insert(0, $"{transform.name}/");
 
             return path.ToString();
