@@ -99,7 +99,7 @@ namespace LCHFramework
         public float PrevMainCameraAspect { get; private set; }
         
         
-        protected override bool IsDontDestroyOnLoad => true;
+        protected override bool IsDontDestroyOnLoad => transform.parent == null;
         
         
         

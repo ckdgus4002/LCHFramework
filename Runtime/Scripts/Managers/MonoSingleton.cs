@@ -67,7 +67,7 @@ namespace LCHFramework.Managers
             
             Instance = (object)this as T;
             
-            if (Instance == this && IsDontDestroyOnLoad && transform.parent == null)
+            if (Instance == this && IsDontDestroyOnLoad)
             {
                 DontDestroyOnLoad(gameObject);
             }

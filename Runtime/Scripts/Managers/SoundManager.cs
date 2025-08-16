@@ -60,7 +60,7 @@ namespace LCHFramework.Managers
         protected readonly Dictionary<string, AudioSourcePool> audioSourcePools = new();
         
         
-        protected override bool IsDontDestroyOnLoad => true;
+        protected override bool IsDontDestroyOnLoad => transform.parent == null;
         
         
         

@@ -11,7 +11,7 @@ namespace LCHFramework.Managers
         
         
         
-        protected override bool IsDontDestroyOnLoad => true;
+        protected override bool IsDontDestroyOnLoad => transform.parent == null;
         
         public ReactiveProperty<Orientation> Orientation { get; } = new();
         

@@ -18,6 +18,7 @@ namespace LCHFramework.Components
         
         
         
+        [SerializeField] private bool IsDestroyNotMonoSingletonOfType;
         [SerializeField] private Component singletonType;
         [SerializeField] private bool isDontDestroyOnLoad;
         [SerializeField] private bool isDestroyPrevInstance = true;
@@ -33,13 +34,22 @@ namespace LCHFramework.Components
         
         
         
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            IsDestroyNotMonoSingletonOfType = true;
+            
+            isDontDestroyOnLoad = isDontDestroyOnLoad && transform.parent == null;
+        }
+#endif
+        
         protected override void Awake()
         {
             base.Awake();
             
             Singleton.EnsureInstance(this, instances.GetValueOrDefault(SingletonType), t => instances[SingletonType] = t, t => Destroy(t.DestroyTarget));
             
-            if (instances.GetValueOrDefault(SingletonType) == this && IsDontDestroyOnLoad && transform.parent == null)
+            if (instances.GetValueOrDefault(SingletonType) == this && IsDontDestroyOnLoad)
             {
                 SceneManager.sceneLoaded += OnSceneLoaded;
                 DontDestroyOnLoad(gameObject);
@@ -57,11 +67,10 @@ namespace LCHFramework.Components
         
         
         
-        private void OnSceneLoaded(Scene scene, LoadSceneMode mode) => DestroyNotMonoSingletonOfType(SingletonType);
-        
-        public void DestroyNotMonoSingletonOfType(Type type)
-        {
-            FindObjectsByType(type, FindObjectsInactive.Include, FindObjectsSortMode.InstanceID)
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode) { if (IsDestroyNotMonoSingletonOfType) DestroyNotMonoSingletonByType(); }
+
+        public void DestroyNotMonoSingletonByType()
+            => FindObjectsByType(SingletonType, FindObjectsInactive.Include, FindObjectsSortMode.InstanceID)
                 .Cast<Component>()
                 .Where(t => t.GetComponent<MonoSingleton>() == null)
                 .ForEach(t =>
@@ -69,6 +78,5 @@ namespace LCHFramework.Components
                     Debug.Log($"Destroy Not Mono Singleton Type: {t.transform.GetPath()}");
                     Destroy(t.gameObject);
                 });
-        }
     }
 }
