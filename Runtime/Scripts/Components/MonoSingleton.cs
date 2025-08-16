@@ -14,10 +14,6 @@ namespace LCHFramework.Components
     public sealed class MonoSingleton : AbstractMonoSingleton
     {
         private const int EventSystemExecutionOrder = -1000;
-        public const bool DestroyNotMonoSingletonType = true;
-        
-        
-        
         private static readonly Dictionary<Type, MonoSingleton> instances = new();
         
         
@@ -43,7 +39,7 @@ namespace LCHFramework.Components
             
             Singleton.EnsureInstance(this, instances.GetValueOrDefault(SingletonType), t => instances[SingletonType] = t, t => Destroy(t.DestroyTarget));
             
-            if (instances.GetValueOrDefault(SingletonType) == this && IsDontDestroyOnLoad)
+            if (instances.GetValueOrDefault(SingletonType) == this && IsDontDestroyOnLoad && transform.parent == null)
             {
                 SceneManager.sceneLoaded += OnSceneLoaded;
                 DontDestroyOnLoad(gameObject);
@@ -61,18 +57,18 @@ namespace LCHFramework.Components
         
         
         
-        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-        {
-            if (DestroyNotMonoSingletonType) DestroyNotMonoSingletonOfType(SingletonType);
-        }
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode) => DestroyNotMonoSingletonOfType(SingletonType);
         
-        private void DestroyNotMonoSingletonOfType(Type type) => FindObjectsByType(type, FindObjectsInactive.Include, FindObjectsSortMode.InstanceID)
-            .Cast<Component>()
-            .Where(t => t.GetComponent<MonoSingleton>() ==null)
-            .ForEach(t => 
-            {
-                Debug.Log($"Destroy Not Mono Singleton Type: {t.transform.GetPath()}");
-                Destroy(t.gameObject);
-            });
+        public void DestroyNotMonoSingletonOfType(Type type)
+        {
+            FindObjectsByType(type, FindObjectsInactive.Include, FindObjectsSortMode.InstanceID)
+                .Cast<Component>()
+                .Where(t => t.GetComponent<MonoSingleton>() == null)
+                .ForEach(t =>
+                {
+                    Debug.Log($"Destroy Not Mono Singleton Type: {t.transform.GetPath()}");
+                    Destroy(t.gameObject);
+                });
+        }
     }
 }

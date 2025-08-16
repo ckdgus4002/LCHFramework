@@ -45,9 +45,19 @@ namespace LCHFramework.Managers
         
         
         
-        protected static void CreateGameObjectIfInstanceIsNull() { if (InstanceIsNull) new GameObject(typeof(T).Name).AddComponent<T>(); }
+        protected static void InstantiateIfInstanceIsNull()
+            => InstantiateIfInstanceIsNull(Resources.Load<T>(typeof(T).Name));
         
-        protected static void InstantiateIfInstanceIsNull(T original) { if (InstanceIsNull) Instantiate(original); }
+        protected static void InstantiateIfInstanceIsNull(T originalOrNull)
+        {
+            if (InstanceIsNull)
+            {
+                if (originalOrNull == null) CreateGameObjectIfInstanceIsNull();
+                else Instantiate(originalOrNull);
+            }
+        }
+        
+        protected static void CreateGameObjectIfInstanceIsNull() { if (InstanceIsNull) new GameObject(typeof(T).Name).AddComponent<T>(); }
         
         
         
@@ -57,7 +67,7 @@ namespace LCHFramework.Managers
             
             Instance = (object)this as T;
             
-            if (Instance == this && IsDontDestroyOnLoad)
+            if (Instance == this && IsDontDestroyOnLoad && transform.parent == null)
             {
                 DontDestroyOnLoad(gameObject);
             }
