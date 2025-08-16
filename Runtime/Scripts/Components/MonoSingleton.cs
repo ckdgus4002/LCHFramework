@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LCHFramework.Extensions;
 using LCHFramework.Managers;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using LoadSceneMode = UnityEngine.SceneManagement.LoadSceneMode;
@@ -18,7 +19,6 @@ namespace LCHFramework.Components
         
         
         
-        [SerializeField] private bool IsDestroyNotMonoSingletonOfType;
         [SerializeField] private Component singletonType;
         [SerializeField] private bool isDontDestroyOnLoad;
         [SerializeField] private bool isDestroyPrevInstance = true;
@@ -35,12 +35,7 @@ namespace LCHFramework.Components
         
         
 #if UNITY_EDITOR
-        private void OnValidate()
-        {
-            IsDestroyNotMonoSingletonOfType = true;
-            
-            isDontDestroyOnLoad = isDontDestroyOnLoad && transform.parent == null;
-        }
+        private void OnValidate() => isDontDestroyOnLoad = isDontDestroyOnLoad && transform.parent == null;
 #endif
         
         protected override void Awake()
@@ -49,10 +44,11 @@ namespace LCHFramework.Components
             
             Singleton.EnsureInstance(this, instances.GetValueOrDefault(SingletonType), t => instances[SingletonType] = t, t => Destroy(t.DestroyTarget));
             
-            if (instances.GetValueOrDefault(SingletonType) == this && IsDontDestroyOnLoad)
+            if (instances.GetValueOrDefault(SingletonType) == this)
             {
                 SceneManager.sceneLoaded += OnSceneLoaded;
-                DontDestroyOnLoad(gameObject);
+                DestroyNotMonoSingletonByType();
+                if (IsDontDestroyOnLoad) DontDestroyOnLoad(gameObject);
             }
         }
         
@@ -67,7 +63,7 @@ namespace LCHFramework.Components
         
         
         
-        private void OnSceneLoaded(Scene scene, LoadSceneMode mode) { if (IsDestroyNotMonoSingletonOfType) DestroyNotMonoSingletonByType(); }
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode) => DestroyNotMonoSingletonByType();
 
         public void DestroyNotMonoSingletonByType()
             => FindObjectsByType(SingletonType, FindObjectsInactive.Include, FindObjectsSortMode.InstanceID)
@@ -78,5 +74,16 @@ namespace LCHFramework.Components
                     Debug.Log($"Destroy Not Mono Singleton Type: {t.transform.GetPath()}");
                     Destroy(t.gameObject);
                 });
+    }
+    
+    [CustomEditor(typeof(MonoSingleton), true)]
+    public class MonoSingletonEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            EditorGUILayout.Toggle("Is Destroy Not Mono Singleton Of Type", true);
+            
+            base.OnInspectorGUI();
+        }
     }
 }
