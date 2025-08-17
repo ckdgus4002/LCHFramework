@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using LCHFramework.Extensions;
 using LCHFramework.Managers;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using LoadSceneMode = UnityEngine.SceneManagement.LoadSceneMode;
 using SceneManager = UnityEngine.SceneManagement.SceneManager;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace LCHFramework.Components
 {
@@ -75,7 +77,8 @@ namespace LCHFramework.Components
                     Destroy(t.gameObject);
                 });
     }
-    
+
+#if UNITY_EDITOR
     [CustomEditor(typeof(MonoSingleton), true)]
     public class MonoSingletonEditor : Editor
     {
@@ -86,4 +89,5 @@ namespace LCHFramework.Components
             base.OnInspectorGUI();
         }
     }
+#endif
 }
