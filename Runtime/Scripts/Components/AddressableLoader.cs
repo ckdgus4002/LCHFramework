@@ -8,12 +8,12 @@ using UnityEditor.AddressableAssets;
 
 namespace LCHFramework.Components
 {
-    public abstract class AddressableLoader<T1, T2> : LCHMonoBehaviour where T1 : Object
+    public abstract class AddressableLoader<T> : MonoBehaviour where T : Object
     {
         [SerializeField] private bool loadOnStart = true;
 
 #if UNITY_EDITOR
-        [SerializeField] private AssetReferenceT<T1> asset;
+        [SerializeField] private AssetReferenceT<T> asset;
 #endif  
         
         [HideInInspector] [SerializeField] protected string address;
@@ -23,16 +23,12 @@ namespace LCHFramework.Components
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            address = asset == null || string.IsNullOrEmpty(asset.AssetGUID) || AddressableAssetSettingsDefaultObject.Settings == null
-                ? string.Empty
-                : AddressableAssetSettingsDefaultObject.Settings.FindAssetEntry(asset.AssetGUID).address;
+            address = asset == null ? string.Empty : AddressableAssetSettingsDefaultObject.Settings?.FindAssetEntry(asset.AssetGUID)?.address;
         }
 #endif  
         
-        protected override void Start()
+        private void Start()
         {
-            base.Start();
-
             if (loadOnStart) _ = LoadAsync();
         }
         

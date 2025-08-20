@@ -3,7 +3,6 @@ using LCHFramework.Attributes;
 using LCHFramework.Data;
 using LCHFramework.Managers;
 using UnityEngine;
-using UnityEngine.ResourceManagement.ResourceProviders;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -11,9 +10,9 @@ using UnityEditor;
 namespace LCHFramework.Components
 {
 #if UNITY_EDITOR
-    public class AddressableSceneLoader : AddressableLoader<SceneAsset, SceneInstance>
+    public class AddressableSceneLoader : AddressableLoader<SceneAsset>
 #else
-    public class AddressableSceneLoader : AddressableLoader<Object, SceneInstance>
+    public class AddressableSceneLoader : AddressableLoader<Object>
 #endif
     {
         [SerializeField] private LoadSceneMode loadSceneMode;
