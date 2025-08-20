@@ -2,14 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using LCHFramework.Components;
 using LCHFramework.Extensions;
 using UnityEngine;
 using UnityEngine.Pool;
 
 namespace LCHFramework.Managers
 {
-    public class AudioSourcePool : LCHMonoBehaviour
+    public class AudioSourcePool : MonoBehaviour
     {
         private readonly List<AudioSource> audioSources = new();
         

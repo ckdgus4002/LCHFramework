@@ -1,6 +1,8 @@
+using UnityEngine;
+
 namespace LCHFramework.Components
 {
-    public class ColliderSizeController : LCHMonoBehaviour
+    public class ColliderSizeController : MonoBehaviour
     {
     }
 }

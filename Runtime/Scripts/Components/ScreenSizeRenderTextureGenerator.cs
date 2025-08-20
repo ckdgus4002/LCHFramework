@@ -16,18 +16,8 @@ namespace LCHFramework.Components
         
         
         
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            
-            _disposables.Add(MessageBroker.Default.Receive<ScreenSizeChangedMessage>().Subscribe(_ => Generate()));
-        }
+        private void OnEnable() => _disposables.Add(MessageBroker.Default.Receive<ScreenSizeChangedMessage>().Subscribe(_ => Generate()));
 
-        protected override void OnDisable()
-        {
-            base.OnDisable();
-            
-            _disposables.Clear();
-        }
+        private void OnDisable() => _disposables.Clear();
     }
 }

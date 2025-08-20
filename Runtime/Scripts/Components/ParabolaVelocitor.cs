@@ -1,10 +1,9 @@
-﻿using LCHFramework.Components;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace LCHFramework
 {
     [RequireComponent(typeof(Rigidbody))]
-    public class ParabolaVelocitor : LCHMonoBehaviour
+    public class ParabolaVelocitor : MonoBehaviour
     {
         public void SetVelocity(Vector3 velocity)
         {

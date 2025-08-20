@@ -5,7 +5,7 @@ using Object = UnityEngine.Object;
 
 namespace LCHFramework.Components
 {
-    public class AddressableAssetLoader : AddressableLoader<Object, Object>
+    public class AddressableAssetLoader : AddressableLoader<Object>
     {
         [SerializeField] protected bool releaseOnDestroy = true;
         

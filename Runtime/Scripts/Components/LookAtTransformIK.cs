@@ -3,7 +3,7 @@
 namespace LCHFramework.Components
 {
     [RequireComponent(typeof(Animator))]
-    public class LookAtTransformIK : LCHMonoBehaviour
+    public class LookAtTransformIK : MonoBehaviour
     {
         [SerializeField] private Transform target;
         

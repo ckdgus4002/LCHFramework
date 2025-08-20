@@ -6,7 +6,7 @@ using UnityEngine;
 namespace LCHFramework.Components
 {
     [ExecuteAlways]
-    public class SafeArea : LCHMonoBehaviour
+    public class SafeArea : MonoBehaviour
     {
         protected virtual void Update()
         {

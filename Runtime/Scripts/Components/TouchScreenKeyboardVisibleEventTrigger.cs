@@ -3,7 +3,7 @@ using UnityEngine.Events;
 
 namespace LCHFramework.Components
 {
-    public class TouchScreenKeyboardVisibleEventTrigger : LCHMonoBehaviour
+    public class TouchScreenKeyboardVisibleEventTrigger : MonoBehaviour
     {
         [SerializeField] private UnityEvent onVisible;
         [SerializeField] private UnityEvent onInvisible;
