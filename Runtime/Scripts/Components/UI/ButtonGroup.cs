@@ -2,12 +2,13 @@ using System.Collections.Generic;
 using System.Linq;
 using LCHFramework.Extensions;
 using LCHFramework.Utilities;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace LCHFramework.Components.UI
 {
-    public class ButtonGroup : LCHMonoBehaviour
+    public class ButtonGroup : MonoBehaviour
     {
         public ButtonClickWhenIsOnType buttonClickWhenIsOn;
         

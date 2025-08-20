@@ -7,7 +7,7 @@ using UnityEngine;
 namespace LCHFramework.Components.UI
 {
     [RequireComponent(typeof(TMP_Text))]
-    public class VersionAndBuildNumberText : LCHMonoBehaviour
+    public class VersionAndBuildNumberText : MonoBehaviour
     {
         [Header("Version")]
         [SerializeField] private string versionFormat = "v{0}";
@@ -23,10 +23,8 @@ namespace LCHFramework.Components.UI
         
         
         
-        protected override async void Start()
+        private async void Start()
         {
-            base.Start();
-
             await Task.Delay(TimeSpan.FromSeconds(5));
             
             SetText();

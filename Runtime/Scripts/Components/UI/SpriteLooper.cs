@@ -4,7 +4,7 @@ using UnityEngine.UI;
 namespace LCHFramework.Components.UI
 {
     [RequireComponent(typeof(Image))]
-    public class SpriteLooper : LCHMonoBehaviour
+    public class SpriteLooper : MonoBehaviour
     {
         [SerializeField] private float speed = 1;
         [SerializeField] private Sprite[] sprites;
@@ -17,10 +17,8 @@ namespace LCHFramework.Components.UI
         private Image _image;
 
 
-        protected override void OnEnable()
+        private void OnEnable()
         {
-            base.OnEnable();
-
             _startTime = Time.time;
         }
         
