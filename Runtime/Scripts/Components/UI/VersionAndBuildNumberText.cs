@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using LCHFramework.Attributes;
 using TMPro;
 using UnityEngine;
@@ -23,12 +22,7 @@ namespace LCHFramework.Components.UI
         
         
         
-        private async void Start()
-        {
-            await Task.Delay(TimeSpan.FromSeconds(5));
-            
-            SetText();
-        }
+        private void Start() => SetText();
         
         
         
@@ -40,7 +34,7 @@ namespace LCHFramework.Components.UI
             
             var buildNumber = Application.BuildNumber;
             var isValidBuildNumber = -1 < buildNumber && 0 < buildNumberLength;
-            if (!showOnlyValidBuildNumber || isValidBuildNumber) text += string.Format(buildNumberFormat, buildNumber);
+            if (!showOnlyValidBuildNumber || isValidBuildNumber) text += string.Format(buildNumberFormat, buildNumber % Math.Pow(10, buildNumberLength));
             
             Text.text = text;
         }

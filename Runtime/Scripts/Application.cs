@@ -1,12 +1,12 @@
+#if !UNITY_EDITOR && UNITY_IOS
+using System.Runtime.InteropServices;
+using UnityEngine.iOS;
+#elif UNITY_EDITOR
+using UnityEditor;
+#endif
 using System;
 using UniRx;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#elif UNITY_IOS
-using System.Runtime.InteropServices;
-using UnityEngine.iOS;
-#endif
 
 namespace LCHFramework
 {
@@ -27,28 +27,28 @@ namespace LCHFramework
         public static Version version => _version ??= new Version(UnityEngine.Application.version);
         private static Version _version;
         
-        public static int BuildNumber
+        public static long BuildNumber
         {
             get
             {
 #if UNITY_EDITOR && UNITY_STANDALONE_OSX
-                return Convert.ToInt32(PlayerSettings.macOS.buildNumber);
+                return Convert.ToInt64(PlayerSettings.macOS.buildNumber);
 #elif UNITY_EDITOR && UNITY_ANDROID
                 return PlayerSettings.Android.bundleVersionCode;
 #elif UNITY_EDITOR && UNITY_IOS
-                return Convert.ToInt32(PlayerSettings.iOS.buildNumber);
+                return Convert.ToInt64(PlayerSettings.iOS.buildNumber);
 #elif UNITY_EDITOR && UNITY_TVOS
-                return Convert.ToInt32(PlayerSettings.tvOS.buildNumber);
+                return Convert.ToInt64(PlayerSettings.tvOS.buildNumber);
 #elif UNITY_EDITOR && UNITY_VISIONOS && UNITY_2023_2_OR_NEWER && !UNITY_6000_0_OR_NEWER
-                return Convert.ToInt32(PlayerSettings.Bratwurst.buildNumber);
+                return Convert.ToInt64(PlayerSettings.Bratwurst.buildNumber);
 #elif UNITY_EDITOR && UNITY_VISIONOS && UNITY_6000_0_OR_NEWER
-                return Convert.ToInt32(PlayerSettings.VisionOS.buildNumber);
+                return Convert.ToInt64(PlayerSettings.VisionOS.buildNumber);
 #elif !UNITY_EDITOR && UNITY_ANDROID
                 return _buildNumber < -1
-                    ? _buildNumber = AndroidApiLevel < 28 ? AndroidPackageInfo.Get<int>("versionCode") : Convert.ToInt32(AndroidPackageInfo.Get<long>("longVersionCode"))
+                    ? _buildNumber = AndroidApiLevel < 28 ? AndroidPackageInfo.Get<int>("versionCode") : AndroidPackageInfo.Get<long>("longVersionCode")
                     : _buildNumber;
 #elif !UNITY_EDITOR && UNITY_IOS
-                return _buildNumber < -1 ? _buildNumber = Convert.ToInt32(Marshal.PtrToStringAnsi(GetiOSBuildNumber())) : _buildNumber;
+                return _buildNumber < -1 ? _buildNumber = !long.TryParse(Marshal.PtrToStringAnsi(GetiOSBuildNumber()), out var result) ? -1 : result : _buildNumber;
 #else
                 return -1;
 #endif
@@ -59,7 +59,7 @@ namespace LCHFramework
 #if UNITY_STANDALONE_OSX
                 PlayerSettings.macOS.buildNumber = $"{value}";
 #elif UNITY_ANDROID
-                PlayerSettings.Android.bundleVersionCode = value;
+                PlayerSettings.Android.bundleVersionCode = (int)Math.Clamp(value, int.MinValue, int.MaxValue);
 #elif UNITY_IOS
                 PlayerSettings.iOS.buildNumber = $"{value}";
 #elif UNITY_TVOS
@@ -73,7 +73,7 @@ namespace LCHFramework
 #endif
         }
 #if !UNITY_EDITOR
-        private static int _buildNumber = -2;
+        private static long _buildNumber = -2;
 #endif
         
 #if !UNITY_EDITOR && UNITY_ANDROID
@@ -86,7 +86,7 @@ namespace LCHFramework
                     using var buildVersion = new AndroidJavaClass("android.os.Build$VERSION");
                     _androidApiLevel = buildVersion.GetStatic<int>("SDK_INT");
                 }
-
+                
                 return _androidApiLevel;
             }
         }
@@ -117,13 +117,14 @@ namespace LCHFramework
                     var packageName = CurrentActivity.Call<string>("getPackageName");
                     _androidPackageInfo = packageManager.Call<AndroidJavaObject>("getPackageInfo", packageName, 0);
                 }
-
+                
                 return _androidPackageInfo;
             }
         }
         private static AndroidJavaObject _androidPackageInfo;
+#endif
         
-#elif !UNITY_EDITOR && UNITY_IOS
+#if !UNITY_EDITOR && UNITY_IOS
         public static Version IOSVersion => _iOSVersion ??= new Version(Device.systemVersion);
         private static Version _iOSVersion;
 #endif
@@ -136,13 +137,11 @@ namespace LCHFramework
             Observable.OnceApplicationQuit().Subscribe(_ =>
             {
 #if !UNITY_EDITOR && UNITY_ANDROID
-            _currentActivity.Dispose();
-            _androidPackageInfo.Dispose();
+                _currentActivity.Dispose();
+                _androidPackageInfo.Dispose();
 #endif
             });
         }
-        
-        
         
         public static void Quit()
         {
