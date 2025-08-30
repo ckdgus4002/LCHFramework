@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace LCHFramework.Attributes
 {
-    [CustomPropertyDrawer(typeof(ShowIfAttribute))]
+    [CustomPropertyDrawer(typeof(ShowInInspectorAttribute))]
     public class ShowIfDrawer : IfDrawer
     {
         private bool invalidHeight = true;
@@ -13,7 +13,7 @@ namespace LCHFramework.Attributes
         
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            var result = GetIfAttributeResult((IIfAttribute)attribute, property);
+            var result = GetIfAttributeResult((IInInspectorAttribute)attribute, property);
             if (!result) return;
             
             EditorGUI.BeginChangeCheck();
@@ -23,7 +23,7 @@ namespace LCHFramework.Attributes
         
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            var result = GetIfAttributeResult((IIfAttribute)attribute, property);
+            var result = GetIfAttributeResult((IInInspectorAttribute)attribute, property);
             if (!result) return -EditorGUIUtility.standardVerticalSpacing;
 
             if (!invalidHeight) return cachedHeight;

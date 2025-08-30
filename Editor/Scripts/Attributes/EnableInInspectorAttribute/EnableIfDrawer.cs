@@ -4,12 +4,12 @@ using UnityEngine;
 
 namespace LCHFramework.Editor.Attributes
 {
-    [CustomPropertyDrawer(typeof(EnableIfAttribute))]
+    [CustomPropertyDrawer(typeof(EnableInInspectorAttribute))]
     public class EnableIfDrawer : IfDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            var result = GetIfAttributeResult((IIfAttribute)attribute, property);
+            var result = GetIfAttributeResult((IInInspectorAttribute)attribute, property);
             var prevEnabled = GUI.enabled;
             GUI.enabled = result;
             EditorGUI.PropertyField(position, property, label, property.isExpanded);

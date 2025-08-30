@@ -3,7 +3,7 @@ using LCHFramework.Data;
 
 namespace LCHFramework.Attributes
 {
-    public interface IIfAttribute
+    public interface IInInspectorAttribute
     {
         public string TargetName { get; }
         public ComparisonOperator ComparisonOperator { get; }

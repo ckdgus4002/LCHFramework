@@ -17,13 +17,13 @@ namespace LCHFramework.Components
     {
         [SerializeField] private LoadSceneMode loadSceneMode;
         
-        [ShowIf(nameof(loadSceneMode), ComparisonOperator.NotEquals, LoadSceneMode.None)]
+        [ShowInInspector(nameof(loadSceneMode), ComparisonOperator.NotEquals, LoadSceneMode.None)]
         [SerializeField] private float fadeOutDuration = 0.5f;
         
-        [ShowIf(nameof(loadSceneMode), ComparisonOperator.NotEquals, LoadSceneMode.None)]
+        [ShowInInspector(nameof(loadSceneMode), ComparisonOperator.NotEquals, LoadSceneMode.None)]
         [SerializeField] private float fadeInDuration = 0.5f;
         
-        [ShowIf(nameof(loadSceneMode), ComparisonOperator.NotEquals, LoadSceneMode.None)]
+        [ShowInInspector(nameof(loadSceneMode), ComparisonOperator.NotEquals, LoadSceneMode.None)]
         [SerializeField] private string message = "Loading...";
         
         

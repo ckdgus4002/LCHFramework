@@ -6,9 +6,9 @@ using UnityEngine;
 namespace LCHFramework.Attributes
 {
     [AttributeUsage(AttributeTargets.Field)]
-    public class ShowIfAttribute : PropertyAttribute, IIfAttribute
+    public class EnableInInspectorAttribute : PropertyAttribute, IInInspectorAttribute
     {
-        public ShowIfAttribute(string targetName, ComparisonOperator comparisonOperator = ComparisonOperator.Equals, object comparisonValue = null)
+        public EnableInInspectorAttribute(string targetName, ComparisonOperator comparisonOperator = ComparisonOperator.Equals, object comparisonValue = null)
         {
             TargetName = targetName;
             ComparisonOperator = comparisonOperator;
@@ -16,7 +16,7 @@ namespace LCHFramework.Attributes
             Result = null;
         }
         
-        public ShowIfAttribute(bool result)
+        public EnableInInspectorAttribute(bool result)
         {
             TargetName = "";
             ComparisonOperator = ComparisonOperator.Equals;
@@ -30,7 +30,7 @@ namespace LCHFramework.Attributes
         public ComparisonOperator ComparisonOperator { get; }
         public object ComparisonValue { get; }
         public bool? Result { get; set; }
-        public FieldInfo FieldInfo { get; set;  }
+        public FieldInfo FieldInfo { get; set; }
         public MethodInfo MethodInfo { get; set; }
     }
 }
