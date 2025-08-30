@@ -6,7 +6,7 @@ using Object = UnityEngine.Object;
 
 namespace LCHFramework.Attributes
 {
-    public class IfDrawer : PropertyDrawer
+    public class InInspectorDrawer : PropertyDrawer
     {
         private const bool DefaultResult = true;
         
@@ -21,9 +21,10 @@ namespace LCHFramework.Attributes
         {
             if (inInspectorAttribute.Result != null) return (bool)inInspectorAttribute.Result;
             
-            inInspectorAttribute.FieldInfo ??= fieldInfo.DeclaringType!.GetField(inInspectorAttribute.TargetName, TypeUtility.MaxBindingFlags);
-            inInspectorAttribute.MethodInfo ??= fieldInfo.DeclaringType!.GetMethod(inInspectorAttribute.TargetName, TypeUtility.MaxBindingFlags);
-            if (inInspectorAttribute.FieldInfo == null && inInspectorAttribute.MethodInfo == null) return DefaultResult;
+            inInspectorAttribute.FieldInfo ??= property.serializedObject.targetObject.GetType().GetField(inInspectorAttribute.TargetName, TypeUtility.MaxBindingFlags);
+            inInspectorAttribute.PropertyInfo ??= property.serializedObject.targetObject.GetType().GetProperty(inInspectorAttribute.TargetName, TypeUtility.MaxBindingFlags);
+            inInspectorAttribute.MethodInfo ??= property.serializedObject.targetObject.GetType().GetMethod(inInspectorAttribute.TargetName, TypeUtility.MaxBindingFlags);
+            if (inInspectorAttribute.FieldInfo == null && inInspectorAttribute.PropertyInfo == null && inInspectorAttribute.MethodInfo == null) return DefaultResult;
 
             bool result;
             var comparisonValueIsNumber = inInspectorAttribute.ComparisonValue is int || inInspectorAttribute.ComparisonValue is float || inInspectorAttribute.ComparisonValue is Enum || inInspectorAttribute.ComparisonValue is double
@@ -62,7 +63,7 @@ namespace LCHFramework.Attributes
 
         private bool GetHeightAllOpsScalar(IInInspectorAttribute inInspectorAttribute, SerializedProperty property)
         {
-            if (inInspectorAttribute.FieldInfo == null && inInspectorAttribute.MethodInfo == null) return DefaultResult;
+            if (inInspectorAttribute.FieldInfo == null && inInspectorAttribute.PropertyInfo == null && inInspectorAttribute.MethodInfo == null) return DefaultResult;
             
             var newValue = GetNewValue(inInspectorAttribute, property);
             if (!newValue.Equals(lastValue))
@@ -84,7 +85,7 @@ namespace LCHFramework.Attributes
         
         private bool GetHeightAllOpsString(IInInspectorAttribute inInspectorAttribute, SerializedProperty property)
         {
-            if (inInspectorAttribute.FieldInfo == null && inInspectorAttribute.MethodInfo == null) return DefaultResult;
+            if (inInspectorAttribute.FieldInfo == null && inInspectorAttribute.PropertyInfo == null && inInspectorAttribute.MethodInfo == null) return DefaultResult;
             
             var newValue = GetNewValue(inInspectorAttribute, property);
             if (lastValue != newValue)
@@ -107,8 +108,8 @@ namespace LCHFramework.Attributes
         }
 
         private object GetNewValue(IInInspectorAttribute inInspectorAttribute, SerializedProperty property)
-            => inInspectorAttribute.FieldInfo != null
-            ? inInspectorAttribute.FieldInfo.GetValue(property.serializedObject.targetObject)
+            => inInspectorAttribute.FieldInfo != null ? inInspectorAttribute.FieldInfo.GetValue(property.serializedObject.targetObject)
+            : inInspectorAttribute.PropertyInfo != null ? inInspectorAttribute.PropertyInfo.GetValue(property.serializedObject.targetObject)
             : inInspectorAttribute.MethodInfo.Invoke(property.serializedObject.targetObject, null);
     }
 }

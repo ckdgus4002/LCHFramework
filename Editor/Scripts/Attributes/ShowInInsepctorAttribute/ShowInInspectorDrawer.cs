@@ -4,7 +4,7 @@ using UnityEngine;
 namespace LCHFramework.Attributes
 {
     [CustomPropertyDrawer(typeof(ShowInInspectorAttribute))]
-    public class ShowIfDrawer : IfDrawer
+    public class ShowInInspectorDrawer : InInspectorDrawer
     {
         private bool invalidHeight = true;
         private float cachedHeight;

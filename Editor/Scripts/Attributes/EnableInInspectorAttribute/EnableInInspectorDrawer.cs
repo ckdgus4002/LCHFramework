@@ -5,7 +5,7 @@ using UnityEngine;
 namespace LCHFramework.Editor.Attributes
 {
     [CustomPropertyDrawer(typeof(EnableInInspectorAttribute))]
-    public class EnableIfDrawer : IfDrawer
+    public class EnableInInspectorDrawer : InInspectorDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {

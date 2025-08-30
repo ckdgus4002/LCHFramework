@@ -8,7 +8,15 @@ namespace LCHFramework.Attributes
     [AttributeUsage(AttributeTargets.Field)]
     public class EnableInInspectorAttribute : PropertyAttribute, IInInspectorAttribute
     {
-        public EnableInInspectorAttribute(string targetName, ComparisonOperator comparisonOperator = ComparisonOperator.Equals, object comparisonValue = null)
+        public EnableInInspectorAttribute(string targetName)
+        {
+            TargetName = targetName;
+            ComparisonOperator = ComparisonOperator.Equals;
+            ComparisonValue = null;
+            Result = null;        
+        }
+        
+        public EnableInInspectorAttribute(string targetName, ComparisonOperator comparisonOperator, object comparisonValue)
         {
             TargetName = targetName;
             ComparisonOperator = comparisonOperator;
@@ -31,6 +39,7 @@ namespace LCHFramework.Attributes
         public object ComparisonValue { get; }
         public bool? Result { get; set; }
         public FieldInfo FieldInfo { get; set; }
+        public PropertyInfo PropertyInfo { get; set; }
         public MethodInfo MethodInfo { get; set; }
     }
 }

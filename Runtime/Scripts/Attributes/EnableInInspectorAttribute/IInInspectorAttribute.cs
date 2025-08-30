@@ -10,6 +10,7 @@ namespace LCHFramework.Attributes
         public object ComparisonValue { get; }
         public bool? Result { get; set; }
         public FieldInfo FieldInfo { get; set; }
+        public PropertyInfo PropertyInfo { get; set; }
         public MethodInfo MethodInfo { get; set; }
     }
 }
