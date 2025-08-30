@@ -28,8 +28,7 @@ namespace LCHFramework.Utilities
             if (cancellationTokenSource == null) return;
             
             if (cancellationTokenSource.Token.CanBeCanceled) cancellationTokenSource.Cancel();
-            cancellationTokenSource.Dispose();
-            cancellationTokenSource = null;
+            IDisposableUtility.DisposeAndSetNull(ref cancellationTokenSource);
         }
     }
 }
