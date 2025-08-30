@@ -1,6 +1,8 @@
 #if !UNITY_EDITOR && UNITY_IOS
 using System.Runtime.InteropServices;
 using UnityEngine.iOS;
+#elif !UNITY_EDITOR && UNITY_ANDROID
+using LCHFramework.Utilities;
 #elif UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -44,11 +46,16 @@ namespace LCHFramework
 #elif UNITY_EDITOR && UNITY_VISIONOS && UNITY_6000_0_OR_NEWER
                 return Convert.ToInt64(PlayerSettings.VisionOS.buildNumber);
 #elif !UNITY_EDITOR && UNITY_ANDROID
+                using var packageManager = CurrentActivity.Call<AndroidJavaObject>("getPackageManager");
+                using var packageInfo = packageManager.Call<AndroidJavaObject>("getPackageInfo", CurrentActivity.Call<string>("getPackageName"), 0);
+                var hasLongVersionCode = 28 <= AndroidApiLevel && AndroidJNI.GetFieldID(AndroidJNI.GetObjectClass(packageInfo.GetRawObject()), "longVersionCode", "J") != IntPtr.Zero;
                 return _buildNumber < -1
-                    ? _buildNumber = AndroidApiLevel < 28 ? AndroidPackageInfo.Get<int>("versionCode") : AndroidPackageInfo.Get<long>("longVersionCode")
+                    ? _buildNumber = !hasLongVersionCode ? packageInfo.Get<int>("versionCode") : packageInfo.Get<long>("longVersionCode")
                     : _buildNumber;
 #elif !UNITY_EDITOR && UNITY_IOS
-                return _buildNumber < -1 ? _buildNumber = !long.TryParse(Marshal.PtrToStringAnsi(GetiOSBuildNumber()), out var result) ? -1 : result : _buildNumber;
+                return _buildNumber < -1
+                    ? _buildNumber = !long.TryParse(Marshal.PtrToStringAnsi(GetiOSBuildNumber()), out var result) ? -1 : result
+                    : _buildNumber;
 #else
                 return -1;
 #endif
@@ -106,22 +113,6 @@ namespace LCHFramework
             }
         }
         private static AndroidJavaObject _currentActivity;
-
-        private static AndroidJavaObject AndroidPackageInfo
-        {
-            get
-            {
-                if (_androidPackageInfo == null)
-                {
-                    using var packageManager = CurrentActivity.Call<AndroidJavaObject>("getPackageManager");
-                    var packageName = CurrentActivity.Call<string>("getPackageName");
-                    _androidPackageInfo = packageManager.Call<AndroidJavaObject>("getPackageInfo", packageName, 0);
-                }
-                
-                return _androidPackageInfo;
-            }
-        }
-        private static AndroidJavaObject _androidPackageInfo;
 #endif
         
 #if !UNITY_EDITOR && UNITY_IOS
@@ -137,8 +128,7 @@ namespace LCHFramework
             Observable.OnceApplicationQuit().Subscribe(_ =>
             {
 #if !UNITY_EDITOR && UNITY_ANDROID
-                _currentActivity.Dispose();
-                _androidPackageInfo.Dispose();
+                IDisposableUtility.DisposeAndSetNull(ref _currentActivity);
 #endif
             });
         }
