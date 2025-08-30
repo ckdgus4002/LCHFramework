@@ -1,10 +1,12 @@
 using System;
 using System.Threading.Tasks;
 using LCHFramework.Managers.UI;
+using LCHFramework.Utilities;
 using UniRx;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using Debug = UnityEngine.Debug;
 
 namespace LCHFramework.Managers
 {
@@ -81,14 +83,14 @@ namespace LCHFramework.Managers
                 () => loadScene.IsValid() && loadScene.Result.Scene.isLoaded);
             
             
-            
-            while (Time.time <= startTime + fadeOutDuration + 1 || !loadScene.IsDone) await Awaitable.NextFrameAsync(); 
+            await TaskUtility.WaitWhile(() => Time.time <= startTime + fadeOutDuration + 1 || !loadScene.IsDone);
             
             
             await loadScene.Result.ActivateAsync();
             
             
             isLoadingScene = false;
+            SoundManager.Instance.ClearAll();
             _ = Resources.UnloadUnusedAssets();
             GC.Collect();
             

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using LCHFramework.Extensions;
+using UniRx;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -10,37 +11,66 @@ namespace LCHFramework.Managers
 {
     public class AudioSourcePool : MonoBehaviour
     {
+        public static void StopAudioSource(AudioSource audioSource)
+        {
+            audioSource.Stop();
+            audioSource.time = audioSource.clip.length;      // 끝 위치(초 단위)로 점프
+            audioSource.timeSamples = audioSource.clip.samples - 1; // (정밀하게는 샘플 단위)
+        }
+        
+        
+        
         private readonly List<AudioSource> audioSources = new();
+        private ObjectPool<AudioSource> audioSourcePool;
+        private readonly Dictionary<AudioSource, IDisposable[]> audioSourceDisposables = new();
         
         
         public bool IsPlaying(IEnumerable<AudioSource> isPlayingAudioSources = null) => !(isPlayingAudioSources ?? IsPlayingAudioSources).IsEmpty();
-
-        public IEnumerable<AudioSource> IsPlayingAudioSources => audioSources.Where(t => t.isPlaying);
         
-        private ObjectPool<AudioSource> ObjectPool => _audioSourcePool ??= new ObjectPool<AudioSource>(() => 
+        public IEnumerable<AudioSource> IsPlayingAudioSources => audioSources.Where(t => t != null && t.isPlaying);
+        
+        
+        
+        private void Awake()
+        {
+            audioSourcePool = new ObjectPool<AudioSource>(() => 
             {
                 var audioSource = new GameObject().AddComponent<AudioSource>(); 
                 audioSource.transform.SetParent(transform);
                 return audioSource;
-            },
-            audioSource =>
+                
+            }, audioSource =>
             {
-                audioSources.Add(audioSource);
+                if (!audioSources.Contains(audioSource)) audioSources.Add(audioSource);
+                if (!audioSourceDisposables.ContainsKey(audioSource)) audioSourceDisposables.Add(audioSource, new []
+                {
+                    SoundManager.MasterVolume.Subscribe(masterVolume => audioSource.volume *= masterVolume * SoundManager.LocalVolumes[name].Value),
+                    SoundManager.LocalVolumes[name].Subscribe(localVolume => audioSource.volume *= SoundManager.MasterVolume.Value * localVolume),
+                });
+                SetAudioSourceTimeScale(audioSource, SoundManager.TimeScale);
                 audioSource.SetActive(true);
-            },
-            audioSource =>
+                
+            }, audioSource =>
             {
                 audioSources.Remove(audioSource);
+                audioSourceDisposables[audioSource].ForEach(t => { if (t != null) t.Dispose(); });
+                if (audioSource == null) return;
                 audioSource.SetActive(false);
-            },
-            audioSource =>
+                
+            }, audioSource =>
             {
                 audioSources.Remove(audioSource);
+                if (audioSource == null) return;
+                Destroy(audioSource.gameObject);
             });
-        private ObjectPool<AudioSource> _audioSourcePool;
+        }
         
         
         
+        public void SetAudioSourcesTimeScale(float timeScale) => audioSources.ForEach(t => SetAudioSourceTimeScale(t, timeScale));
+        
+        private void SetAudioSourceTimeScale(AudioSource audioSource, float timeScale) { if (audioSource != null) audioSource.pitch = timeScale; }
+
         public AudioPlayResult Play(AudioClip audioClip, float volume, bool loop, Vector3 position, AudioPlayType audioPlayType)
         {
             var isPlayingAudioSources = IsPlayingAudioSources.ToArray();
@@ -48,7 +78,7 @@ namespace LCHFramework.Managers
             var canFadeAudioSourceVolume = name == SoundManager.Bgm;
             if (audioPlayType == AudioPlayType.StoppableAudio && isPlaying && canFadeAudioSourceVolume)
             {
-                var audioSource = ObjectPool.Get();
+                var audioSource = audioSourcePool.Get();
                 isPlayingAudioSources.ForEach(t => StartCoroutine(FadeAudioSourceVolumeCor(t, 0, callback: () =>
                 {
                     isPlayingAudioSources.ForEach(StopAudioSource);
@@ -70,73 +100,53 @@ namespace LCHFramework.Managers
         }
 
         private AudioPlayResult PlayAudioSource(AudioClip audioClip, float volume, bool loop, Vector3 position, bool canFadeAudioSourceVolume)
-            => PlayAudioSource(ObjectPool.Get(), audioClip, volume, loop, position, canFadeAudioSourceVolume);
+            => PlayAudioSource(audioSourcePool.Get(), audioClip, volume, loop, position, canFadeAudioSourceVolume);
 
         private AudioPlayResult PlayAudioSource(AudioSource audioSource, AudioClip audioClip, float volume, bool loop, Vector3 position, bool canFadeAudioSourceVolume)
         {
             audioSource.name = audioClip.name;
-            SetAudioSourceTimeScale(audioSource, SoundManager.TimeScale);
             audioSource.clip = audioClip;
             audioSource.loop = loop;
             audioSource.transform.position = position;
             audioSource.Play();
-            var calculatedVolume = SoundManager.MasterVolume.Value * SoundManager.LocalVolumes[name].Value * volume;
+            volume *= SoundManager.MasterVolume.Value * SoundManager.LocalVolumes[name].Value;
             if (canFadeAudioSourceVolume)
-                StartCoroutine(FadeAudioSourceVolumeCor(audioSource, calculatedVolume, callback: () => ReleaseAudioSource(audioSource, audioClip.length)));
+                StartCoroutine(FadeAudioSourceVolumeCor(audioSource, volume, callback: () => StartCoroutine(ReleaseAudioSourceCor(audioSource, ReleaseAudioSourcePredicate))));
             else
             {
-                audioSource.volume = calculatedVolume;
-                ReleaseAudioSource(audioSource, audioClip.length);
+                audioSource.volume = volume;
+                StartCoroutine(ReleaseAudioSourceCor(audioSource, ReleaseAudioSourcePredicate));
             }
             
             return new AudioPlayResult { isFail = false, isSuccess = true, audioClipLength = audioClip.length, audioSource = audioSource };
         }
-        
+
         private IEnumerator FadeAudioSourceVolumeCor(AudioSource audioSource, float volume, float duration = SoundManager.FadeDuration, Action callback = null)
         {
             var startVolume = audioSource.volume;
             var startTime = Time.time;
             var endTime = startTime + duration;
-            while (Time.time < endTime)
+            while (audioSource != null && Time.time < endTime)
             {
                 audioSource.volume = Mathf.Lerp(startVolume, volume, (Time.time - startTime) / (endTime - startTime));
                 yield return null;
             }
-            audioSource.volume = volume;
+            if (audioSource != null) audioSource.volume = volume;
             callback?.Invoke();
         }
+        
+        private IEnumerator ReleaseAudioSourceCor(AudioSource audioSource, Func<AudioSource, bool> predicate)
+        {
+            yield return new WaitUntil(() => predicate.Invoke(audioSource));
+            audioSourcePool.Release(audioSource);
+        }
 
-        public void SetAudioSourcesTimeScale(float timeScale) => audioSources.ForEach(t => SetAudioSourceTimeScale(t, timeScale));
-
-        private void SetAudioSourceTimeScale(AudioSource audioSource, float timeScale) => audioSource.pitch = timeScale;
+        private bool ReleaseAudioSourcePredicate(AudioSource audioSource) => audioSource == null || !audioSource.isPlaying && audioSource.timeSamples < 1;
+        
+        
         
         public void StopAllAudioSources() => audioSources.ForEach(StopAudioSource);
 
-        private void StopAudioSource(AudioSource audioSource)
-        {
-            audioSource.Stop();
-            ReleaseAudioSource(audioSource);
-        }
-        
-        public void ReleaseAudioSources() => audioSources.ForEach(t => ReleaseAudioSource(t));
-
-        private void ReleaseAudioSource(AudioSource audioSource, float delay = 0)
-        {
-            StartCoroutine(Coroutine());
-            IEnumerator Coroutine()
-            {
-                var elapsed = 0f;
-                while (elapsed <= delay)
-                {
-                    if (!audioSource.isPlaying) continue;
-                    
-                    yield return null;
-                    elapsed += Time.unscaledDeltaTime * SoundManager.TimeScale;
-                }
-                ObjectPool.Release(audioSource);
-            }
-        }
-
-        public void DisposeAudioSourcePool() => ObjectPool.Dispose();
+        public void ClearAudioSourcePool() => audioSourcePool.Clear();
     }
 }
