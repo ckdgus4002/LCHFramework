@@ -1,57 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LCHFramework.Utilities;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.Exceptions;
-using UnityEngine.U2D;
+using Debug = UnityEngine.Debug;
 
 namespace LCHFramework.Managers
 {
-    public static class AddressablesLoadManager<T>
-    {
-        private static readonly Dictionary<string, AsyncOperationHandle<T>> LoadedAssets = new();
-        
-        
-        
-        public static AsyncOperationHandle<T> LoadAssetAsync(string address)
-        {
-            if (!LoadedAssets.ContainsKey(address))
-            {
-                var m_Handle = Addressables.LoadAssetAsync<T>(address);
-                m_Handle.Completed += handle =>
-                {
-                    string dlError = AddressablesManager.GetDownloadError(m_Handle);
-                    if (!string.IsNullOrEmpty(dlError))
-                    {
-                        // handle what error
-                        Debug.LogError(dlError);
-                    }
-                    else if (handle.Result is SpriteAtlas spriteAtlas)
-                    {
-                        SpriteAtlasBindingManager.AddSpriteAtlas(spriteAtlas);
-                    }
-                };
-                LoadedAssets.Add(address, m_Handle);
-            }
-
-            return LoadedAssets[address];
-        }
-        
-        
-        
-        public static void ReleaseAsset(string address)
-        {
-            if (LoadedAssets.Remove(address, out var value))
-            {
-                if (value.Result is SpriteAtlas spriteAtlas) SpriteAtlasBindingManager.RemoveSpriteAtlas(spriteAtlas);
-                
-                Addressables.Release(value);
-            }
-        }
-    }
-    
     public static class AddressablesManager
     {
         public static async Awaitable<bool> DownloadAsync(string label,
@@ -64,7 +22,7 @@ namespace LCHFramework.Managers
             var downloadSize = Addressables.GetDownloadSizeAsync(label);
             onDownloadSize?.Invoke(downloadSize);
             var downloadSizeStartTime = Time.time;
-            while (!downloadSize.IsDone || Time.time - downloadSizeStartTime < minimumDuration) await Awaitable.NextFrameAsync();
+            await TaskUtility.WaitWhile(() => !downloadSize.IsDone || Time.time - downloadSizeStartTime < minimumDuration);
             
             if (downloadSize.Status == AsyncOperationStatus.Succeeded)
             {
@@ -76,7 +34,7 @@ namespace LCHFramework.Managers
                     var download = DownloadAsync(label, false);
                     onDownload?.Invoke(downloadSize, download);
                     var downloadStartTime = Time.time;
-                    while (!download.IsDone || Time.time - downloadStartTime < minimumDuration) await Awaitable.NextFrameAsync();
+                    await TaskUtility.WaitWhile(() => !download.IsDone || Time.time - downloadStartTime < minimumDuration);
                     
                     downloadIsSuccess = download.Status == AsyncOperationStatus.Succeeded;
                     Addressables.Release(download);
