@@ -1,10 +1,8 @@
 using System.Threading.Tasks;
+using LCHFramework.Extensions;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using Object = UnityEngine.Object;
-#if UNITY_EDITOR
-using UnityEditor.AddressableAssets;
-#endif
 
 namespace LCHFramework.Components
 {
@@ -21,10 +19,7 @@ namespace LCHFramework.Components
         
         
 #if UNITY_EDITOR
-        private void OnValidate()
-        {
-            address = asset == null ? string.Empty : AddressableAssetSettingsDefaultObject.Settings?.FindAssetEntry(asset.AssetGUID)?.address;
-        }
+        private void OnValidate() => address = asset == null ? string.Empty : asset.GetAddress();
 #endif  
         
         private void Start()
