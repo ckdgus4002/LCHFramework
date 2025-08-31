@@ -73,8 +73,7 @@ namespace LCHFramework.Components
                 return CanvasOrNull != null ? CanvasOrNull.sortingOrder
                     : RendererOrNull != null ? RendererOrNull.sortingOrder
                     : RootCanvasOrNull != null ? RootCanvasOrNull.sortingOrder
-                    : -1
-                    ;
+                    : -1;
             }
             set
             {
@@ -89,9 +88,9 @@ namespace LCHFramework.Components
         
         
         
-        protected override void  Start()
+        protected override void Awake()
         {
-            base.Start();
+            base.Awake();
             
             DefaultSortingOrder = SortingOrder;
         }
