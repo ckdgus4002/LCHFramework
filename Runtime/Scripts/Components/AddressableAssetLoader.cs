@@ -22,10 +22,8 @@ namespace LCHFramework.Components
         
         
         public override Task LoadAsync()
-            => AddressablesLoadManager<Object>.LoadAssetAsync(address).Task
-                .ContinueWith(t => IsLoaded = t.IsCompletedSuccessfully);
+            => AddressablesLoadManager<Object>.LoadAssetAsync(address).Task.ContinueWith(t => IsLoaded = t.IsCompletedSuccessfully);
 
-        private void Release()
-            => AddressablesLoadManager<Object>.ReleaseAsset(address);
+        private void Release() => AddressablesLoadManager<Object>.ReleaseAsset(address);
     }
 }
