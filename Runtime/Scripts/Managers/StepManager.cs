@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using LCHFramework.Attributes;
@@ -85,9 +86,9 @@ namespace LCHFramework.Managers
         
         
         
-        protected override void Start()
+        protected override IEnumerator Start()
         {
-            base.Start();
+            yield return StartCoroutine(base.Start());
             
             disposables.Add(MessageBroker.Default.Receive<SetCurrentStepMessage>().Subscribe(message =>
             {
