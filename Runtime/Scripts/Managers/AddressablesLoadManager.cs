@@ -6,7 +6,7 @@ using UnityEngine.U2D;
 
 namespace LCHFramework.Managers
 {
-    public static class AddressablesLoadManager<T>
+    public static class AddressablesLoadManager<T> where T : Object
     {
         private static readonly Dictionary<string, AsyncOperationHandle<T>> LoadedAssets = new();
         
