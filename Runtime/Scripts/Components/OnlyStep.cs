@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using LCHFramework.Managers;
 using UniRx;
@@ -15,9 +16,9 @@ namespace LCHFramework.Components
         
         
         
-        protected override void Start()
+        protected override IEnumerator Start()
         {
-            base.Start();
+            yield return StartCoroutine(base.Start());
 
             MessageBroker.Default.Receive<CurrentStepChangedMessage>().Subscribe(message =>
             {

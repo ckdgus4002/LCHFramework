@@ -106,9 +106,11 @@ namespace LCHFramework.Components
             EnableCount++;
         }
         
-        protected virtual void Start()
+        protected virtual IEnumerator Start()
         {
             if (transform is RectTransform) InitializeTRS();
+            
+            yield break;
         }
         
         protected virtual void OnDisable()
