@@ -24,7 +24,6 @@ namespace LCHFramework.Managers
     
     public struct LoadSceneFadeInMessage
     {
-        public string prevSceneName;
         public string sceneName;
     }
     
@@ -89,18 +88,20 @@ namespace LCHFramework.Managers
             await loadScene.Result.ActivateAsync();
             
             
-            isLoadingScene = false;
             SoundManager.Instance.ClearAll();
             _ = Resources.UnloadUnusedAssets();
             GC.Collect();
             
             
             var sceneName = loadScene.Result.Scene.name;
-            MessageBroker.Default.Publish(new LoadSceneFadeInMessage { prevSceneName = prevSceneName, sceneName = sceneName });
+            await MessageBroker.Default.Receive<LoadSceneFadeInMessage>().Where(t => t.sceneName == sceneName).Take(1).ToTask();
+            
+            
             await Awaitable.WaitForSecondsAsync(fadeInDuration);
             
             
             MessageBroker.Default.Publish(new LoadSceneCompletedMessage { prevSceneName = prevSceneName, sceneName = sceneName });
+            isLoadingScene = false;
         }
     }
 }
