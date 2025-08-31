@@ -22,7 +22,7 @@ namespace LCHFramework.Managers
         
         private readonly List<AudioSource> audioSources = new();
         private ObjectPool<AudioSource> audioSourcePool;
-        private readonly Dictionary<AudioSource, IDisposable[]> audioSourceDisposables = new();
+        private readonly Dictionary<AudioSource, CompositeDisposable> audioSourceDisposables = new();
         
         
         public bool IsPlaying(IEnumerable<AudioSource> isPlayingAudioSources = null) => !(isPlayingAudioSources ?? IsPlayingAudioSources).IsEmpty();
@@ -41,19 +41,21 @@ namespace LCHFramework.Managers
                 
             }, audioSource =>
             {
-                if (!audioSources.Contains(audioSource)) audioSources.Add(audioSource);
-                if (!audioSourceDisposables.ContainsKey(audioSource)) audioSourceDisposables.Add(audioSource, new []
+                if (!audioSources.Contains(audioSource)) 
+                    audioSources.Add(audioSource);
+                if (!audioSourceDisposables.ContainsKey(audioSource))
                 {
-                    SoundManager.MasterVolume.Subscribe(masterVolume => audioSource.volume *= masterVolume * SoundManager.LocalVolumes[name].Value),
-                    SoundManager.LocalVolumes[name].Subscribe(localVolume => audioSource.volume *= SoundManager.MasterVolume.Value * localVolume),
-                });
+                    audioSourceDisposables.Add(audioSource, new CompositeDisposable());
+                    audioSourceDisposables[audioSource].Add(SoundManager.MasterVolume.Subscribe(masterVolume => audioSource.volume *= masterVolume * SoundManager.LocalVolumes[name].Value));
+                    audioSourceDisposables[audioSource].Add(SoundManager.LocalVolumes[name].Subscribe(localVolume => audioSource.volume *= SoundManager.MasterVolume.Value * localVolume));
+                }
                 SetAudioSourceTimeScale(audioSource, SoundManager.TimeScale);
                 audioSource.SetActive(true);
                 
             }, audioSource =>
             {
                 audioSources.Remove(audioSource);
-                audioSourceDisposables[audioSource].ForEach(t => { if (t != null) t.Dispose(); });
+                audioSourceDisposables[audioSource].Dispose();
                 if (audioSource == null) return;
                 audioSource.SetActive(false);
                 
