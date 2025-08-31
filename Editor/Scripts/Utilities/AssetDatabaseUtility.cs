@@ -8,7 +8,7 @@ namespace LCHFramework.Editor.Utilities
     {
         public static T[] LoadAssetAtTypes<T>(string filter, string[] searchInFolders = null) where T : Object
             => AssetDatabase.FindAssets(filter, searchInFolders)
-                .Select(guid => AssetDatabase.LoadAssetAtPath<T>(AssetDatabase.GUIDToAssetPath(guid)))
+                .Select(guid => AssetDatabase.LoadAssetByGUID<T>(new GUID(guid)))
                 .Where(t => t != null)
                 .ToArray();
     }
