@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace LCHFramework.Components
 {
-    public class AddressableSceneLoader : AddressableLoader
+    public class AddressableSceneLoader : AddressableLoader<Object>
     {
         [SerializeField] private LoadSceneMode loadSceneMode;
         
@@ -22,6 +22,18 @@ namespace LCHFramework.Components
         
         
         
-        public override Task LoadAsync() => SceneManager.LoadSceneAsync(asset.GetAddress(), loadSceneMode, fadeOutDuration, fadeInDuration, message);
+        private void Start()
+        {
+            if (loadOnStart) _ = LoadAsync();
+        }
+        
+        
+        
+        // UnityEvent event.
+        public void OnClick() => _ = LoadAsync();
+        
+        
+        
+        public Task LoadAsync() => SceneManager.LoadSceneAsync(asset.GetAddress(), loadSceneMode, fadeOutDuration, fadeInDuration, message);
     }
 }
