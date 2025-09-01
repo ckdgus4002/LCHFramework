@@ -1,19 +1,13 @@
 using System.Threading.Tasks;
 using LCHFramework.Attributes;
 using LCHFramework.Data;
+using LCHFramework.Extensions;
 using LCHFramework.Managers;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace LCHFramework.Components
 {
-#if UNITY_EDITOR
-    public class AddressableSceneLoader : AddressableLoader<SceneAsset>
-#else
-    public class AddressableSceneLoader : AddressableLoader<Object>
-#endif
+    public class AddressableSceneLoader : AddressableLoader
     {
         [SerializeField] private LoadSceneMode loadSceneMode;
         
@@ -28,7 +22,6 @@ namespace LCHFramework.Components
         
         
         
-        public override Task LoadAsync()
-            => SceneManager.LoadSceneAsync(address, loadSceneMode, fadeOutDuration, fadeInDuration, message);
+        public override Task LoadAsync() => SceneManager.LoadSceneAsync(asset.GetAddress(), loadSceneMode, fadeOutDuration, fadeInDuration, message);
     }
 }
