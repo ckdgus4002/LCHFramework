@@ -1,17 +1,24 @@
-using System.Threading.Tasks;
 using LCHFramework.Extensions;
 using LCHFramework.Managers;
 using UnityEngine;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using Object = UnityEngine.Object;
 
 namespace LCHFramework.Components
 {
-    public class AddressableAssetLoader : AddressableLoader
+    public class AddressableAssetLoader : AddressableLoader<Object>
     {
         [SerializeField] protected bool releaseOnDestroy = true;
         
         
         public bool IsLoaded { get; private set; }
+        
+        
+        
+        private void Start()
+        {
+            if (loadOnStart) _ = LoadAsync();
+        }
         
         
         
@@ -22,7 +29,17 @@ namespace LCHFramework.Components
         
         
         
-        public override Task LoadAsync() => AddressablesLoadManager<Object>.LoadAssetAsync(asset.GetAddress()).Task.ContinueWith(t => IsLoaded = t.IsCompletedSuccessfully);
+        // UnityEvent event.
+        public void OnClick() => _ = LoadAsync();
+        
+        
+        
+        public AsyncOperationHandle<Object> LoadAsync()
+        {
+            var handle = AddressablesLoadManager<Object>.LoadAssetAsync(asset.GetAddress());
+            handle.Completed += t => IsLoaded = t.Status == AsyncOperationStatus.Succeeded;
+            return handle;
+        }
 
         private void Release() => AddressablesLoadManager<Object>.ReleaseAsset(asset.GetAddress());
     }
