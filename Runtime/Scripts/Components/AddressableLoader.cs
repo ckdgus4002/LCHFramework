@@ -1,26 +1,15 @@
 using System.Threading.Tasks;
-using LCHFramework.Extensions;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using Object = UnityEngine.Object;
 
 namespace LCHFramework.Components
 {
-    public abstract class AddressableLoader<T> : MonoBehaviour where T : Object
+    public abstract class AddressableLoader : MonoBehaviour
     {
         [SerializeField] private bool loadOnStart = true;
-
-#if UNITY_EDITOR
-        [SerializeField] private AssetReferenceT<T> asset;
-#endif  
-        
-        [HideInInspector] [SerializeField] protected string address;
+        [SerializeField] protected AssetReference asset;
         
         
-        
-#if UNITY_EDITOR
-        private void OnValidate() => address = asset == null ? string.Empty : asset.GetAddress();
-#endif  
         
         private void Start()
         {

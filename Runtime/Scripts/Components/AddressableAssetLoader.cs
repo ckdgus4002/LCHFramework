@@ -1,11 +1,12 @@
 using System.Threading.Tasks;
+using LCHFramework.Extensions;
 using LCHFramework.Managers;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace LCHFramework.Components
 {
-    public class AddressableAssetLoader : AddressableLoader<Object>
+    public class AddressableAssetLoader : AddressableLoader
     {
         [SerializeField] protected bool releaseOnDestroy = true;
         
@@ -21,9 +22,8 @@ namespace LCHFramework.Components
         
         
         
-        public override Task LoadAsync()
-            => AddressablesLoadManager<Object>.LoadAssetAsync(address).Task.ContinueWith(t => IsLoaded = t.IsCompletedSuccessfully);
+        public override Task LoadAsync() => AddressablesLoadManager<Object>.LoadAssetAsync(asset.GetAddress()).Task.ContinueWith(t => IsLoaded = t.IsCompletedSuccessfully);
 
-        private void Release() => AddressablesLoadManager<Object>.ReleaseAsset(address);
+        private void Release() => AddressablesLoadManager<Object>.ReleaseAsset(asset.GetAddress());
     }
 }
