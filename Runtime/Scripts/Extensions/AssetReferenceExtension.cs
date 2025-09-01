@@ -12,7 +12,7 @@ namespace LCHFramework.Extensions
         public static string GetAddress(this AssetReference asset)
         {
 #if UNITY_EDITOR
-            return AddressableAssetSettingsDefaultObject.Settings.FindAssetEntry(asset.AssetGUID).address;
+            return AddressableAssetSettingsDefaultObject.Settings?.FindAssetEntry(asset.AssetGUID)?.address;
 #else
             return Addressables.LoadResourceLocationsAsync(asset.RuntimeKey).WaitForCompletion().First().PrimaryKey;
 #endif
