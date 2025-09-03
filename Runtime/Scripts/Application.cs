@@ -47,15 +47,22 @@ namespace LCHFramework
                 return Convert.ToInt64(PlayerSettings.VisionOS.buildNumber);
 #elif !UNITY_EDITOR && UNITY_ANDROID
                 using var packageManager = CurrentActivity.Call<AndroidJavaObject>("getPackageManager");
-                using var packageInfo = packageManager.Call<AndroidJavaObject>("getPackageInfo", CurrentActivity.Call<string>("getPackageName"), 0);
-                var hasLongVersionCode = 28 <= AndroidApiLevel && AndroidJNI.GetFieldID(AndroidJNI.GetObjectClass(packageInfo.GetRawObject()), "longVersionCode", "J") != IntPtr.Zero;
-                return _buildNumber < -1
-                    ? _buildNumber = !hasLongVersionCode ? packageInfo.Get<int>("versionCode") : packageInfo.Get<long>("longVersionCode")
-                    : _buildNumber;
+                var packageName = CurrentActivity.Call<string>("getPackageName");
+                AndroidJavaObject packageInfo = null;
+                if (AndroidApiLevel < 33)
+                    packageInfo = packageManager.Call<AndroidJavaObject>("getPackageInfo", packageName, 0);
+                else
+                {
+                    using var packageInfoFlags = new AndroidJavaClass("android.content.pm.PackageManager$PackageInfoFlags");
+                    using var packageInfoFlagsOf = packageInfoFlags.CallStatic<AndroidJavaObject>("of", 0L);
+                    packageInfo = packageManager.Call<AndroidJavaObject>("getPackageInfo", packageName, packageInfoFlagsOf);
+                }
+                _buildNumber = _buildNumber < -1 ? AndroidApiLevel < 28 ? packageInfo.Get<int>("versionCode") : packageInfo.Call<long>("getLongVersionCode") : _buildNumber;
+                packageInfo.Dispose();
+                return _buildNumber;
 #elif !UNITY_EDITOR && UNITY_IOS
-                return _buildNumber < -1
-                    ? _buildNumber = !long.TryParse(Marshal.PtrToStringAnsi(GetiOSBuildNumber()), out var result) ? -1 : result
-                    : _buildNumber;
+                _buildNumber = _buildNumber < -1 ? !long.TryParse(Marshal.PtrToStringAnsi(GetiOSBuildNumber()), out var result) ? -1 : result : _buildNumber;
+                return _buildNumber;
 #else
                 return -1;
 #endif
@@ -83,15 +90,18 @@ namespace LCHFramework
         private static long _buildNumber = -2;
 #endif
         
-#if !UNITY_EDITOR && UNITY_ANDROID
         public static int AndroidApiLevel
         {
             get
             {
                 if (_androidApiLevel < -1)
                 {
+#if UNITY_EDITOR || !UNITY_ANDROID
+                    _androidApiLevel = -1;
+#else
                     using var buildVersion = new AndroidJavaClass("android.os.Build$VERSION");
                     _androidApiLevel = buildVersion.GetStatic<int>("SDK_INT");
+#endif
                 }
                 
                 return _androidApiLevel;
@@ -99,6 +109,7 @@ namespace LCHFramework
         }
         private static int _androidApiLevel = -2;
         
+#if !UNITY_EDITOR && UNITY_ANDROID
         public static AndroidJavaObject CurrentActivity
         {
             get
@@ -115,10 +126,14 @@ namespace LCHFramework
         private static AndroidJavaObject _currentActivity;
 #endif
         
-#if !UNITY_EDITOR && UNITY_IOS
-        public static Version IOSVersion => _iOSVersion ??= new Version(Device.systemVersion);
-        private static Version _iOSVersion;
+        public static Version IOSVersion => _iOSVersion == null
+#if UNITY_EDITOR || !UNITY_IOS
+            ? _iOSVersion = new Version()
+#else
+            ? _iOSVersion = new Version(Device.systemVersion)
 #endif
+            : _iOSVersion;
+        private static Version _iOSVersion;
         
         
         
