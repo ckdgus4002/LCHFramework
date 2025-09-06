@@ -12,9 +12,9 @@ namespace LCHFramework.Managers
         SkippableAudio,
     }
     
-    public struct AudioPlayResult
+    public struct SoundPlayResult
     {
-        public static AudioPlayResult fail = new() { isFail = true };
+        public static SoundPlayResult fail = new() { isFail = true };
         
         public bool isFail;
         public bool isSuccess;
@@ -86,7 +86,7 @@ namespace LCHFramework.Managers
             LocalVolumes.Add(poolName, new ReactiveProperty<float> { Value = DefaultVolume });
         }
         
-        public AudioPlayResult Play(AudioClip audioClip, string audioSourcePoolName = DefaultAudioSourcePoolName, AudioPlayType audioPlayType = DefaultAudioPlayType, float volume = DefaultVolume, bool loop = DefaultLoop, Vector3? position = null)
+        public SoundPlayResult Play(AudioClip audioClip, string audioSourcePoolName = DefaultAudioSourcePoolName, AudioPlayType audioPlayType = DefaultAudioPlayType, float volume = DefaultVolume, bool loop = DefaultLoop, Vector3? position = null)
         {
             var audioSourcePool = !audioSourcePools.TryGetValue(audioSourcePoolName, out var result) ? audioSourcePools[DefaultAudioSourcePoolName] : result;
             return audioSourcePool.Play(audioClip, volume, loop, position ?? transform.position, audioPlayType);
