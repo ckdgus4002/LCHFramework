@@ -23,6 +23,8 @@ namespace LCHFramework.Managers.UI
         private CanvasGroup canvasGroup;
         
         
+        protected override bool IsDontDestroyOnLoad => transform.parent == null;
+        
         public override bool IsShown => Wrapper.activeSelf;
         
         public virtual string[] LoadingMessages => _loadingMessages ??= new[] { DefaultLoadingMessage };
