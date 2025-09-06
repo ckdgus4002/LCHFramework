@@ -88,7 +88,7 @@ namespace LCHFramework.Managers
         
         protected override IEnumerator Start()
         {
-            yield return StartCoroutine(base.Start());
+            yield return base.Start();
             
             disposables.Add(MessageBroker.Default.Receive<SetCurrentStepMessage>().Subscribe(message =>
             {
