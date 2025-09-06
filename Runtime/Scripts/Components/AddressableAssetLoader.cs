@@ -30,7 +30,7 @@ namespace LCHFramework.Components
         
         
         // UnityEvent event.
-        public void OnClick() => _ = LoadAsync();
+        public override void OnClick() => _ = LoadAsync();
         
         
         
