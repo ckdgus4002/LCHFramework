@@ -18,7 +18,6 @@ namespace LCHFramework.Managers
     
     public struct LoadSceneFadeOutMessage
     {
-        public string prevSceneName;
         public string sceneName;
     }
     
@@ -29,14 +28,19 @@ namespace LCHFramework.Managers
     
     public struct LoadSceneCompletedMessage
     {
-        public string prevSceneName;
         public string sceneName;
     }
     
     public static class SceneManager
     {
         private const string LoadSceneErrorMessage = "문제가 발생하였습니다. 앱을 재시작해주세요.";
+        
+        
+        
         private static bool isLoadingScene;
+
+
+        public static string PrevSceneName { get; private set; } = string.Empty;
         
         
         
@@ -68,8 +72,8 @@ namespace LCHFramework.Managers
             
             SoundManager.Instance.StopAll();
             isLoadingScene = true;
-            var prevSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-            MessageBroker.Default.Publish(new LoadSceneFadeOutMessage { prevSceneName = prevSceneName, sceneName = sceneAddress });
+            PrevSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            MessageBroker.Default.Publish(new LoadSceneFadeOutMessage { sceneName = sceneAddress });
             var loadScene = Addressables.LoadSceneAsync(sceneAddress, activateOnLoad: false);
             var startTime = Time.time;
             if (mode == LoadSceneMode.LoadingUI) _ = Loading.Instance.LoadAsync(
@@ -100,7 +104,7 @@ namespace LCHFramework.Managers
             await Awaitable.WaitForSecondsAsync(fadeInDuration);
             
             
-            MessageBroker.Default.Publish(new LoadSceneCompletedMessage { prevSceneName = prevSceneName, sceneName = sceneName });
+            MessageBroker.Default.Publish(new LoadSceneCompletedMessage { sceneName = sceneName });
             isLoadingScene = false;
         }
     }
