@@ -17,7 +17,7 @@ namespace LCHFramework
 #endif
         
         
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void RuntimeInitializeOnLoadMethod() => CreateGameObjectIfInstanceIsNull();
         
         public static Coroutine Delay(float seconds, Action callback) => Delay(Instance, seconds, callback);
