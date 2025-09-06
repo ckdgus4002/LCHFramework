@@ -13,11 +13,11 @@ namespace LCHFramework.Managers.UI
         {
             gameObject.SetActive(true);
         }
-
+        
         public virtual void Hide()
         {
+            if (MessageBox.Instance.Items.Where(t => t.IsShown).All(t => t == this)) MessageBox.Instance.Hide();
             gameObject.SetActive(false);
-            if (MessageBox.Instance.Items.All(t => !t.IsShown)) MessageBox.Instance.Hide();
         }
     }
 }
