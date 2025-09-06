@@ -7,9 +7,12 @@ namespace LCHFramework.Managers
 {
     public enum AudioPlayType
     {
-        NestableAudio,
-        StoppableAudio,
-        SkippableAudio,
+        /// 동시 재생.
+        NestableAudio, 
+        /// 재생중이던것을 멈추고 재생.
+        StoppableAudio, 
+        /// 재생중이지 않으면 재생.
+        SkippableAudio, 
     }
     
     public struct SoundPlayResult
