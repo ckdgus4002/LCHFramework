@@ -78,7 +78,7 @@ namespace LCHFramework.Managers
             var isPlayingAudioSources = IsPlayingAudioSources.ToArray();
             var isPlaying = IsPlaying(isPlayingAudioSources);
             var canFadeAudioSourceVolume = name == SoundManager.Bgm;
-            if (audioPlayType == AudioPlayType.StoppableAudio && isPlaying && canFadeAudioSourceVolume)
+            if (audioPlayType == AudioPlayType.StoppableAudio && canFadeAudioSourceVolume)
             {
                 var audioSource = audioSourcePool.Get();
                 isPlayingAudioSources.ForEach(t => StartCoroutine(FadeAudioSourceVolumeCor(t, 0, callback: () =>
@@ -88,7 +88,7 @@ namespace LCHFramework.Managers
                 })));
                 return new SoundPlayResult { isFail = false, isSuccess = true, audioClipLength = audioClip.length, audioSource = audioSource };
             }
-            else if (audioPlayType == AudioPlayType.StoppableAudio && isPlaying && !canFadeAudioSourceVolume)
+            else if (audioPlayType == AudioPlayType.StoppableAudio && !canFadeAudioSourceVolume)
             {
                 isPlayingAudioSources.ForEach(StopAudioSource);
                 return PlayAudioSource(audioClip, volume, loop, position, canFadeAudioSourceVolume);
