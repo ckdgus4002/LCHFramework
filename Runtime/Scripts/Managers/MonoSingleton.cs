@@ -7,6 +7,7 @@ namespace LCHFramework.Managers
 {
     public interface ISingleton
     {
+        /// False면 기존것을 유지하고, True면 기존것을 파괴합니다.
         public bool IsDestroyPrevInstance { get; }
     }
     

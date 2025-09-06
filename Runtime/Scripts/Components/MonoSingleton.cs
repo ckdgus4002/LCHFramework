@@ -23,6 +23,7 @@ namespace LCHFramework.Components
         
         [SerializeField] private Component singletonType;
         [SerializeField] private bool isDontDestroyOnLoad;
+        [Tooltip("False면 기존것을 유지하고, True면 기존것을 파괴합니다.")]
         [SerializeField] private bool isDestroyPrevInstance = true;
         
         
