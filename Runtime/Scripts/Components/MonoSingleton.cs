@@ -48,8 +48,8 @@ namespace LCHFramework.Components
             
             if (instances.GetValueOrDefault(SingletonType) == this)
             {
-                SceneManager.sceneLoaded += OnSceneLoaded;
                 DestroyNotMonoSingletonByType();
+                SceneManager.sceneLoaded += OnSceneLoaded;
                 if (IsDontDestroyOnLoad) DontDestroyOnLoad(gameObject);
             }
         }
