@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using LCHFramework.Extensions;
@@ -28,7 +29,7 @@ namespace LCHFramework.Components.UI
                     foreach (var button in GetComponentsInChildren<Button>(true))
                     {
                         var buttonInfo = new ButtonInfo(this, button);
-                        UnityEventUtility.AddPersistentListener(button.onClick, () => OnButtonClick(button));
+                        UnityEventUtility.AddObjectPersistentListener(button.onClick, OnButtonClick, button);
                         _buttonInfos.Add(buttonInfo);
                     }
                 }
@@ -71,6 +72,7 @@ namespace LCHFramework.Components.UI
         
         
         
+        [Serializable]
         public enum ButtonClickWhenIsOnType
         {
             None = 0,
@@ -78,6 +80,7 @@ namespace LCHFramework.Components.UI
             Relaunch
         }
         
+        [Serializable]
         public class ButtonInfo
         {
             public ButtonInfo(ButtonGroup buttonGroup, Button button)
