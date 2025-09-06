@@ -1,3 +1,4 @@
+using UnityEngine;
 using UnityEngine.Events;
 #if UNITY_EDITOR
 using UnityEditor.Events;
@@ -7,6 +8,25 @@ namespace LCHFramework.Utilities
 {
     public static partial class UnityEventUtility
     {
+        public static void RemovePersistentListener(UnityEvent unityEvent, UnityAction call)
+        {
+#if UNITY_EDITOR
+            UnityEventTools.RemovePersistentListener(unityEvent, call);
+#else
+            unityEvent.RemoveListener(call);
+#endif    
+        }
+        
+        public static void RemovePersistentListener<T>(UnityEvent unityEvent, UnityAction<T> call, T argument)
+        {
+#if UNITY_EDITOR
+            UnityEventTools.RemovePersistentListener(unityEvent, call);
+#else
+            unityEvent.RemoveListener(() => call(argument));
+#endif
+        }
+        
+        
         public static void AddPersistentListener(UnityEvent unityEvent, UnityAction call)
         {
 #if UNITY_EDITOR
@@ -16,85 +36,49 @@ namespace LCHFramework.Utilities
 #endif    
         }
         
-        public static void AddPersistentListener<T0>(UnityEvent<T0> unityEvent, UnityAction<T0> call)
+        public static void AddBoolPersistentListener(UnityEvent unityEvent, UnityAction<bool> call, bool argument)
         {
 #if UNITY_EDITOR
-            UnityEventTools.AddPersistentListener(unityEvent, call);
+            UnityEventTools.AddBoolPersistentListener(unityEvent, call, argument);
 #else
-            unityEvent.AddListener(call);
+            unityEvent.AddListener(() => call(argument));
 #endif    
         }
         
-        public static void AddPersistentListener<T0, T1>(UnityEvent<T0, T1> unityEvent, UnityAction<T0, T1> call)
+        public static void AddFloatPersistentListener(UnityEvent unityEvent, UnityAction<float> call, float argument)
         {
 #if UNITY_EDITOR
-            UnityEventTools.AddPersistentListener(unityEvent, call);
+            UnityEventTools.AddFloatPersistentListener(unityEvent, call, argument);
 #else
-            unityEvent.AddListener(call);
+            unityEvent.AddListener(() => call(argument));
 #endif    
         }
         
-        public static void AddPersistentListener<T0, T1, T2>(UnityEvent<T0, T1, T2> unityEvent, UnityAction<T0, T1, T2> call)
+        public static void AddIntPersistentListener(UnityEvent unityEvent, UnityAction<int> call, int argument)
         {
 #if UNITY_EDITOR
-            UnityEventTools.AddPersistentListener(unityEvent, call);
+            UnityEventTools.AddIntPersistentListener(unityEvent, call, argument);
 #else
-            unityEvent.AddListener(call);
+            unityEvent.AddListener(() => call(argument));
 #endif    
         }
         
-        public static void AddPersistentListener<T0, T1, T2, T3>(UnityEvent<T0, T1, T2, T3> unityEvent, UnityAction<T0, T1, T2, T3> call)
+        public static void AddObjectPersistentListener<T>(UnityEvent unityEvent, UnityAction<T> call, T argument) where T : Object
         {
 #if UNITY_EDITOR
-            UnityEventTools.AddPersistentListener(unityEvent, call);
+            UnityEventTools.AddObjectPersistentListener(unityEvent, call, argument);
 #else
-            unityEvent.AddListener(call);
+            unityEvent.AddListener(() => call(argument));
 #endif    
         }
-
-        public static void RemovePersistentListener(UnityEvent unityEvent, UnityAction call)
-        {
-#if UNITY_EDITOR
-            UnityEventTools.RemovePersistentListener(unityEvent, call);
-#else
-            unityEvent.RemoveListener(call);
-#endif
-        }
         
-        public static void RemovePersistentListener<T0>(UnityEvent<T0> unityEvent, UnityAction<T0> call)
+        public static void AddStringPersistentListener(UnityEvent unityEvent, UnityAction<string> call, string argument)
         {
 #if UNITY_EDITOR
-            UnityEventTools.RemovePersistentListener(unityEvent, call);
+            UnityEventTools.AddStringPersistentListener(unityEvent, call, argument);
 #else
-            unityEvent.RemoveListener(call);
-#endif
-        }
-        
-        public static void RemovePersistentListener<T0, T1>(UnityEvent<T0, T1> unityEvent, UnityAction<T0, T1> call)
-        {
-#if UNITY_EDITOR
-            UnityEventTools.RemovePersistentListener(unityEvent, call);
-#else
-            unityEvent.RemoveListener(call);
-#endif
-        }
-        
-        public static void RemovePersistentListener<T0, T1, T2>(UnityEvent<T0, T1, T2> unityEvent, UnityAction<T0, T1, T2> call)
-        {
-#if UNITY_EDITOR
-            UnityEventTools.RemovePersistentListener(unityEvent, call);
-#else
-            unityEvent.RemoveListener(call);
-#endif
-        }
-        
-        public static void RemovePersistentListener<T0, T1, T2, T3>(UnityEvent<T0, T1, T2, T3> unityEvent, UnityAction<T0, T1, T2, T3> call)
-        {
-#if UNITY_EDITOR
-            UnityEventTools.RemovePersistentListener(unityEvent, call);
-#else
-            unityEvent.RemoveListener(call);
-#endif
+            unityEvent.AddListener(() => call(argument));
+#endif    
         }
     }
 }
