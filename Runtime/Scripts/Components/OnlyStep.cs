@@ -18,8 +18,8 @@ namespace LCHFramework.Components
         
         protected override IEnumerator Start()
         {
-            yield return StartCoroutine(base.Start());
-
+            yield return base.Start();
+            
             MessageBroker.Default.Receive<CurrentStepChangedMessage>().Subscribe(message =>
             {
                 var prevStepIndex = message.prevStepOrNull == null ? -1 : message.prevStepOrNull.Index;
