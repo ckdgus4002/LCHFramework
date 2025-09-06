@@ -68,6 +68,8 @@ namespace LCHFramework.Managers
         {
             base.Awake();
             
+            if (Instance != this) return;
+            
             TimeScale = Time.timeScale;
             foreach (var t in new[] { Bgm, Narration, Sfx }) CreateAudioSourcePool(t);
         }

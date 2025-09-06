@@ -20,6 +20,8 @@ namespace LCHFramework.Managers.UI
         {
             base.Awake();
             
+            if (Instance != this) return;
+            
             Hide();
         }
         
