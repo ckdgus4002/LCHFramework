@@ -44,7 +44,7 @@ namespace LCHFramework.Managers
             {
                 if (value.Result is SpriteAtlas spriteAtlas) SpriteAtlasBindingManager.RemoveSpriteAtlas(spriteAtlas);
                 
-                Addressables.Release(value);
+                value.Release();
             }
         }
     }
