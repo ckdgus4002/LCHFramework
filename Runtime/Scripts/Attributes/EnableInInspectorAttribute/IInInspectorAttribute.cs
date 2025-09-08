@@ -6,9 +6,10 @@ namespace LCHFramework.Attributes
     public interface IInInspectorAttribute
     {
         public string TargetName { get; }
-        public ComparisonOperator ComparisonOperator { get; }
-        public object ComparisonValue { get; }
-        public bool? Result { get; set; }
+        public bool NeedInitializeComparison { get; }
+        public ComparisonOperator ComparisonOperator { get; set; }
+        public object ComparisonValue { get; set; }
+        public bool? Result { get; }
         public FieldInfo FieldInfo { get; set; }
         public PropertyInfo PropertyInfo { get; set; }
         public MethodInfo MethodInfo { get; set; }

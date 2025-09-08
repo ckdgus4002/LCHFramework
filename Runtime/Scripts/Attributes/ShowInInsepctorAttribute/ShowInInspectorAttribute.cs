@@ -11,6 +11,7 @@ namespace LCHFramework.Attributes
         public ShowInInspectorAttribute(string targetName)
         {
             TargetName = targetName;
+            NeedInitializeComparison = true;
             ComparisonOperator = ComparisonOperator.Equals;
             ComparisonValue = null;
             Result = null;
@@ -19,6 +20,7 @@ namespace LCHFramework.Attributes
         public ShowInInspectorAttribute(string targetName, ComparisonOperator comparisonOperator, object comparisonValue)
         {
             TargetName = targetName;
+            NeedInitializeComparison = false;
             ComparisonOperator = comparisonOperator;
             ComparisonValue = comparisonValue;
             Result = null;
@@ -27,6 +29,7 @@ namespace LCHFramework.Attributes
         public ShowInInspectorAttribute(bool result)
         {
             TargetName = "";
+            NeedInitializeComparison = false;
             ComparisonOperator = ComparisonOperator.Equals;
             ComparisonValue = null;
             Result = result;
@@ -35,8 +38,9 @@ namespace LCHFramework.Attributes
         
         
         public string TargetName { get; }
-        public ComparisonOperator ComparisonOperator { get; }
-        public object ComparisonValue { get; }
+        public bool NeedInitializeComparison { get; }
+        public ComparisonOperator ComparisonOperator { get; set; }
+        public object ComparisonValue { get; set; }
         public bool? Result { get; set; }
         public FieldInfo FieldInfo { get; set;  }
         public PropertyInfo PropertyInfo { get; set; }
