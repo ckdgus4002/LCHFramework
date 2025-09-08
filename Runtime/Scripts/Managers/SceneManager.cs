@@ -38,10 +38,7 @@ namespace LCHFramework.Managers
         
         
         private static bool isLoadingScene;
-
-
-        public static string PrevSceneName { get; private set; } = string.Empty;
-        
+        private static bool isUILoadingIsDone;
         
         
         public static float DefaultFadeOutDuration(LoadSceneMode mode) => mode switch
@@ -70,12 +67,14 @@ namespace LCHFramework.Managers
             if (isLoadingScene) { Debug.Log($"{nameof(isLoadingScene)} is True!"); return; }
             
             
-            SoundManager.Instance.StopAll();
             isLoadingScene = true;
-            PrevSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            
+            
             MessageBroker.Default.Publish(new LoadSceneFadeOutMessage { sceneName = sceneAddress });
-            var loadScene = Addressables.LoadSceneAsync(sceneAddress, activateOnLoad: false);
+            SoundManager.Instance.StopAll();
+            var loadScene = Addressables.LoadSceneAsync(sceneAddress);
             var startTime = Time.time;
+            isUILoadingIsDone = false;
             if (mode == LoadSceneMode.LoadingUI) _ = Loading.Instance.LoadAsync(
                 () => loadScene.IsValid() && loadScene.OperationException != null ? $"{LoadSceneErrorMessage} ({loadScene.OperationException})" 
                     : loadScene.IsValid() && loadScene.Status == AsyncOperationStatus.Failed ? $"{LoadSceneErrorMessage} ({loadScene.Status})" 
@@ -83,13 +82,17 @@ namespace LCHFramework.Managers
                 fadeOutDuration,
                 fadeInDuration,
                 () => Math.Min(Time.time - (startTime + fadeOutDuration), !loadScene.IsValid() ? 0 : loadScene.PercentComplete),
-                () => loadScene.IsValid() && loadScene.Result.Scene.isLoaded);
+                () => isUILoadingIsDone);
+
+
+            await TaskUtility.WaitUntil(() => loadScene.IsDone);
             
             
-            await TaskUtility.WaitWhile(() => Time.time <= startTime + fadeOutDuration + 1 || !loadScene.IsDone);
+            var sceneName = loadScene.Result.Scene.name;
+            await MessageBroker.Default.Receive<LoadSceneFadeInMessage>().Where(t => t.sceneName == sceneName).Take(1).ToTask();
             
             
-            await loadScene.Result.ActivateAsync();
+            await TaskUtility.WaitUntil(() => startTime + fadeOutDuration + 1 <= Time.time);
             
             
             SoundManager.Instance.ClearAll();
@@ -97,10 +100,7 @@ namespace LCHFramework.Managers
             GC.Collect();
             
             
-            var sceneName = loadScene.Result.Scene.name;
-            await MessageBroker.Default.Receive<LoadSceneFadeInMessage>().Where(t => t.sceneName == sceneName).Take(1).ToTask();
-            
-            
+            isUILoadingIsDone = true;
             await Awaitable.WaitForSecondsAsync(fadeInDuration);
             
             
