@@ -12,7 +12,7 @@ namespace LCHFramework.Utilities
         private static readonly Dictionary<Type, Dictionary<int, MethodInfo>> _methodInfos = new();
         public static MethodInfo GetMethodInfo(Type type, string methodName, params Type[] argumentTypes)
         {
-            var methodHash = methodName.GetHashCode() ^ argumentTypes.Aggregate(0, (hash, r) => hash ^= r.GetHashCode());
+            var methodHash = methodName.GetHashCode() ^ argumentTypes.Aggregate(0, (hash, r) => hash ^ r.GetHashCode());
             if (_methodInfos.TryGetValue(type, out var methodInfosByHashes))
                 if (methodInfosByHashes.TryGetValue(methodHash, out var methodInfo))
                     return methodInfo;

@@ -13,7 +13,7 @@ namespace LCHFramework.Attributes
             TargetName = targetName;
             ComparisonOperator = ComparisonOperator.Equals;
             ComparisonValue = null;
-            Result = null;        
+            Result = null;
         }
         
         public EnableInInspectorAttribute(string targetName, ComparisonOperator comparisonOperator, object comparisonValue)

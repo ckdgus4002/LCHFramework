@@ -9,7 +9,7 @@ namespace LCHFramework.Editor.Attributes
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            var result = GetIfAttributeResult((IInInspectorAttribute)attribute, property);
+            var result = GetInInspectorAttributeResult((IInInspectorAttribute)attribute, property);
             var prevEnabled = GUI.enabled;
             GUI.enabled = result;
             EditorGUI.PropertyField(position, property, label, property.isExpanded);
@@ -17,6 +17,8 @@ namespace LCHFramework.Editor.Attributes
         }
         
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-            => EditorGUI.GetPropertyHeight(property, label);
+        {
+            return EditorGUI.GetPropertyHeight(property, label);
+        }
     }   
 }
