@@ -7,7 +7,6 @@ using UnityEngine.UI;
 
 namespace LCHFramework.Managers.UI
 {
-    [RequireComponent(typeof(CanvasGroup))]
     public class Loading : MonoSingleton<Loading>
     {
         public const float DefaultFadeInTime = 0.5f;
@@ -49,7 +48,7 @@ namespace LCHFramework.Managers.UI
             
             if (Instance != this) return;
             
-            canvasGroup = GetComponent<CanvasGroup>();
+            canvasGroup = GetComponentInChildren<CanvasGroup>();
             Hide();
         }
         
