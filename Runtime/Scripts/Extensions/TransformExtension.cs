@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 
 namespace LCHFramework.Extensions
@@ -41,33 +40,24 @@ namespace LCHFramework.Extensions
             return result.ToArray();
         }
         
-        public static string GetPath(this Transform transform)
-        {
-            var sceneName = transform.gameObject.scene.name;
-            var path = new StringBuilder(transform.name);
-            while ((transform = transform.parent) != null) path = path.Insert(0, $"{transform.name}/");
-
-            return $"{sceneName}/{path}";
-        }
-        
-        public static int GetDepth(this Transform transform, Transform parent = null)
+        public static int GetDepth(this Transform from, Transform to = null)
         {
             var result = 1;
             do
             {
-                if (transform.parent != null && transform.parent != parent)
+                if (from.parent != null && from.parent != to)
                 {
                     result++;
-                    transform = transform.parent;
+                    from = from.parent;
                 }
-                else if (transform.parent == parent)
+                else if (from.parent == to)
                     return result;
                 else
                     return -1;
-                
+                    
             } while (true);
         }
-
+        
         public static Transform FindInChildren(this Transform transform, string n)
             => transform.FindInChildren(childName => n == childName);
         

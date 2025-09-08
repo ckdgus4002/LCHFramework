@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using UnityEngine;
 
 namespace LCHFramework.Extensions
@@ -67,5 +68,14 @@ namespace LCHFramework.Extensions
         
         public static void SetActive(this Component component, bool value) 
             => component.gameObject.SetActive(value);
+        
+        public static string GetPath(this Component component)
+        {
+            var transform = component.transform;
+            var path = new StringBuilder(transform.name);
+            while ((transform = transform.parent) != null) path = path.Insert(0, $"{transform.name}/");
+
+            return $"{component.gameObject.scene.name}/{path}";
+        }
     }
 }
