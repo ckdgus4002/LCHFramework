@@ -6,6 +6,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceProviders;
 using Debug = UnityEngine.Debug;
 
 namespace LCHFramework.Managers
@@ -39,6 +40,7 @@ namespace LCHFramework.Managers
         
         private static bool isLoadingScene;
         private static bool isUILoadingIsDone;
+        private static AsyncOperationHandle<SceneInstance> loadScene;
         
         
         public static float DefaultFadeOutDuration(LoadSceneMode mode) => mode switch
@@ -72,19 +74,26 @@ namespace LCHFramework.Managers
             
             MessageBroker.Default.Publish(new LoadSceneFadeOutMessage { sceneName = sceneAddress });
             SoundManager.Instance.StopAll();
-            var loadScene = Addressables.LoadSceneAsync(sceneAddress);
             var startTime = Time.time;
             isUILoadingIsDone = false;
             if (mode == LoadSceneMode.LoadingUI) _ = Loading.Instance.LoadAsync(
-                () => loadScene.IsValid() && loadScene.OperationException != null ? $"{LoadSceneErrorMessage} ({loadScene.OperationException})" 
-                    : loadScene.IsValid() && loadScene.Status == AsyncOperationStatus.Failed ? $"{LoadSceneErrorMessage} ({loadScene.Status})" 
-                    : message,
+                () =>
+                {
+                    var fadeOutIsDone = startTime + fadeOutDuration <= Time.time; 
+                    return fadeOutIsDone && loadScene.IsValid() && loadScene.OperationException != null ? $"{LoadSceneErrorMessage} ({loadScene.OperationException})"
+                        : fadeOutIsDone && loadScene.IsValid() && loadScene.Status == AsyncOperationStatus.Failed ? $"{LoadSceneErrorMessage} ({loadScene.Status})"
+                        : message;
+                },
                 fadeOutDuration,
                 fadeInDuration,
                 () => Math.Min(Time.time - (startTime + fadeOutDuration), !loadScene.IsValid() ? 0 : loadScene.PercentComplete),
                 () => isUILoadingIsDone);
 
 
+            await Awaitable.WaitForSecondsAsync(fadeOutDuration);
+            
+            
+            loadScene = Addressables.LoadSceneAsync(sceneAddress);
             await TaskUtility.WaitUntil(() => loadScene.IsDone);
             
             
