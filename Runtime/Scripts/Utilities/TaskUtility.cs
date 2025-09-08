@@ -11,7 +11,7 @@ namespace LCHFramework.Utilities
         
         
         
-        public static class CompletedTasks
+        public static class CompletedTask
         {
             public static Task<bool> False => new(() => false);
         
