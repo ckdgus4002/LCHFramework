@@ -13,7 +13,7 @@ namespace LCHFramework.Attributes
         
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            var result = GetIfAttributeResult((IInInspectorAttribute)attribute, property);
+            var result = GetInInspectorAttributeResult((IInInspectorAttribute)attribute, property);
             if (!result) return;
             
             EditorGUI.BeginChangeCheck();
@@ -23,14 +23,13 @@ namespace LCHFramework.Attributes
         
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            var result = GetIfAttributeResult((IInInspectorAttribute)attribute, property);
+            var result = GetInInspectorAttributeResult((IInInspectorAttribute)attribute, property);
             if (!result) return -EditorGUIUtility.standardVerticalSpacing;
 
             if (!invalidHeight) return cachedHeight;
             
             invalidHeight = false;
-            cachedHeight = EditorGUI.GetPropertyHeight(property, label, property.isExpanded);
-            return cachedHeight;
+            return cachedHeight = EditorGUI.GetPropertyHeight(property, label, property.isExpanded);
         }
     }
 }
