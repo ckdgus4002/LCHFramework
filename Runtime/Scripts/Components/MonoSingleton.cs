@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using LoadSceneMode = UnityEngine.SceneManagement.LoadSceneMode;
 using SceneManager = UnityEngine.SceneManagement.SceneManager;
 #if UNITY_EDITOR
+using NUnit.Framework.Internal;
 using UnityEditor;
 #endif
 
@@ -16,6 +17,7 @@ namespace LCHFramework.Components
     [DefaultExecutionOrder(EventSystemExecutionOrder - 1)]
     public sealed class MonoSingleton : AbstractMonoSingleton
     {
+        public const bool IsDestroyNotMonoSingletonByType = true;
         private const int EventSystemExecutionOrder = -1000;
         private static readonly Dictionary<Type, MonoSingleton> instances = new();
         
@@ -49,9 +51,14 @@ namespace LCHFramework.Components
             
             if (instances.GetValueOrDefault(SingletonType) == this)
             {
-                DestroyNotMonoSingletonByType();
-                SceneManager.sceneLoaded += OnSceneLoaded;
-                if (IsDontDestroyOnLoad) DontDestroyOnLoad(gameObject);
+                if (IsDestroyNotMonoSingletonByType)
+                {
+                    DestroyNotMonoSingletonByType();
+                    SceneManager.sceneLoaded += OnSceneLoaded;    
+                }
+
+                if (IsDontDestroyOnLoad)
+                    DontDestroyOnLoad(gameObject);
             }
         }
         
@@ -85,7 +92,7 @@ namespace LCHFramework.Components
     {
         public override void OnInspectorGUI()
         {
-            EditorGUILayout.Toggle("Is Destroy Not Mono Singleton Of Type", true);
+            EditorGUILayout.Toggle("Is Destroy Not Mono Singleton By Type", MonoSingleton.IsDestroyNotMonoSingletonByType);
             
             base.OnInspectorGUI();
         }
