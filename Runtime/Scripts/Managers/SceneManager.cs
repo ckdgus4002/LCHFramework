@@ -40,6 +40,7 @@ namespace LCHFramework.Managers
         
         private static bool isLoadingScene;
         private static bool isUILoadingIsDone;
+        private static AsyncOperationHandle<SceneInstance> prevLoadScene;
         private static AsyncOperationHandle<SceneInstance> loadScene;
         
         
@@ -70,6 +71,7 @@ namespace LCHFramework.Managers
             
             
             isLoadingScene = true;
+            prevLoadScene = loadScene;
             
             
             MessageBroker.Default.Publish(new LoadSceneFadeOutMessage { sceneName = sceneAddress });
