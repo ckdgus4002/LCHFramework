@@ -8,7 +8,6 @@ using UnityEngine.SceneManagement;
 using LoadSceneMode = UnityEngine.SceneManagement.LoadSceneMode;
 using SceneManager = UnityEngine.SceneManagement.SceneManager;
 #if UNITY_EDITOR
-using NUnit.Framework.Internal;
 using UnityEditor;
 #endif
 
@@ -49,22 +48,23 @@ namespace LCHFramework.Components
             
             Singleton.EnsureInstance(this, instances.GetValueOrDefault(SingletonType), t => instances[SingletonType] = t, t => Destroy(t.DestroyTarget));
             
-            if (instances.GetValueOrDefault(SingletonType) == this)
+            var instance = instances.GetValueOrDefault(SingletonType);
+            if (instance == this && IsDestroyNotMonoSingletonByType)
             {
-                if (IsDestroyNotMonoSingletonByType)
-                {
-                    DestroyNotMonoSingletonByType();
-                    SceneManager.sceneLoaded += OnSceneLoaded;    
-                }
+                DestroyNotMonoSingletonByType();
+                SceneManager.sceneLoaded += OnSceneLoaded;
+            }
 
-                if (IsDontDestroyOnLoad)
-                    DontDestroyOnLoad(gameObject);
+            if (instance == this && IsDontDestroyOnLoad)
+            {
+                DontDestroyOnLoad(gameObject);
             }
         }
         
         private void OnDestroy()
         {
-            if (instances.GetValueOrDefault(SingletonType) == this)
+            var instance = instances.GetValueOrDefault(SingletonType);
+            if (instance == this)
             {
                 SceneManager.sceneLoaded -= OnSceneLoaded;
                 instances.Remove(SingletonType);
