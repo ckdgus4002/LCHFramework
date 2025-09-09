@@ -22,7 +22,7 @@ namespace LCHFramework.Managers
             var downloadSize = Addressables.GetDownloadSizeAsync(label);
             onDownloadSize?.Invoke(downloadSize);
             var downloadSizeStartTime = Time.time;
-            await TaskUtility.WaitWhile(() => !downloadSize.IsDone || Time.time - downloadSizeStartTime < minimumDuration);
+            await AwaitableUtility.WaitWhile(() => !downloadSize.IsDone || Time.time - downloadSizeStartTime < minimumDuration);
             
             if (downloadSize.Status == AsyncOperationStatus.Succeeded)
             {
@@ -34,7 +34,7 @@ namespace LCHFramework.Managers
                     var download = DownloadAsync(label, false);
                     onDownload?.Invoke(downloadSize, download);
                     var downloadStartTime = Time.time;
-                    await TaskUtility.WaitWhile(() => !download.IsDone || Time.time - downloadStartTime < minimumDuration);
+                    await AwaitableUtility.WaitWhile(() => !download.IsDone || Time.time - downloadStartTime < minimumDuration);
                     
                     downloadIsSuccess = download.Status == AsyncOperationStatus.Succeeded;
                     Addressables.Release(download);

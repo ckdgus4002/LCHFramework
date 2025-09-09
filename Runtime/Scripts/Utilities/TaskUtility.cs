@@ -1,16 +1,9 @@
-using System;
 using System.Threading.Tasks;
 
 namespace LCHFramework.Utilities
 {
     public static class TaskUtility
     {
-        public static async Task WaitUntil(Func<bool> predicate) { while (!predicate()) await Task.Yield(); }
-        
-        public static async Task WaitWhile(Func<bool> predicate) { while (predicate()) await Task.Yield(); }
-        
-        
-        
         public static class CompletedTask
         {
             public static Task<bool> False => new(() => false);
