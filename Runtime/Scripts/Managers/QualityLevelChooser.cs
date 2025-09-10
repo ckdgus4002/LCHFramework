@@ -15,29 +15,24 @@ namespace LCHFramework.Managers
             int fillrate;
             var vram = SystemInfo.graphicsMemorySize;
             var cpus = SystemInfo.processorCount;
-#if !UNITY_5_3_OR_NEWER
-            if ((fillrate = SystemInfo.graphicsPixelFillrate) < 0)
-#endif
-            {
-                if (shaderLevel < 10)
-                    fillrate = 1000;
-                else if (shaderLevel < 20)
-                    fillrate = 1300;
-                else if (shaderLevel < 30)
-                    fillrate = 2000;
-                else
-                    fillrate = 3000;
+            if (shaderLevel < 10)
+                fillrate = 1000;
+            else if (shaderLevel < 20)
+                fillrate = 1300;
+            else if (shaderLevel < 30)
+                fillrate = 2000;
+            else
+                fillrate = 3000;
 
-                if (6 <= cpus)
-                    fillrate *= 3;
-                else if (3 <= cpus)
-                    fillrate *= 2;
+            if (6 <= cpus)
+                fillrate *= 3;
+            else if (3 <= cpus)
+                fillrate *= 2;
 
-                if (512 <= vram)
-                    fillrate *= 2;
-                else if (vram <= 128)
-                    fillrate /= 2;
-            }
+            if (512 <= vram)
+                fillrate *= 2;
+            else if (vram <= 128)
+                fillrate /= 2;
 
             var resx = Screen.width;
             var resy = Screen.height;

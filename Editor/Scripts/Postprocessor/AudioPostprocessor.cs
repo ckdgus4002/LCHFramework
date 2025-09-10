@@ -28,11 +28,7 @@ namespace LCHFramework.Editor
             // defaultSampleSettings.loadType = isBgm ? AudioClipLoadType.Streaming : isLongSfx ? AudioClipLoadType.CompressedInMemory : AudioClipLoadType.DecompressOnLoad;
             defaultSampleSettings.loadType = AudioClipLoadType.DecompressOnLoad;
             var preloadAudioData = true;
-#if !UNITY_2022_3_OR_NEWER
-            audioImporter.preloadAudioData = preloadAudioData;
-#else
             defaultSampleSettings.preloadAudioData = preloadAudioData;
-#endif
             serializedObject.ApplyModifiedProperties();
             // defaultSampleSettings.compressionFormat = isNoiseSfx ? AudioCompressionFormat.ADPCM : isShortSfx ? AudioCompressionFormat.PCM : AudioCompressionFormat.Vorbis;
             defaultSampleSettings.compressionFormat = AudioCompressionFormat.Vorbis;
