@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using LCHFramework.Extensions;
 using LCHFramework.Managers.UI;
-using LCHFramework.Utilities;
 using UniRx;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -88,21 +88,17 @@ namespace LCHFramework.Managers
             await Awaitable.WaitForSecondsAsync(fadeOutDuration);
             
             
-            loadScene = Addressables.LoadSceneAsync(sceneAddress, !prevLoadScene.IsValid() ? UnityEngine.SceneManagement.LoadSceneMode.Single : UnityEngine.SceneManagement.LoadSceneMode.Additive);
-            await AwaitableUtility.WaitUntil(() => loadScene.IsDone);
-
-
-            var unloadSceneIsDone = !prevLoadScene.IsValid();
-            if (prevLoadScene.IsValid()) Addressables.UnloadSceneAsync(prevLoadScene.Result).Completed += _ => unloadSceneIsDone = true;
-            var sceneName = loadScene.Result.Scene.name;
-            await MessageBroker.Default.Receive<LoadSceneFadeInMessage>().Where(t => t.sceneName == sceneName).Take(1).ToTask();
-            await AwaitableUtility.WaitUntil(() => unloadSceneIsDone);
+            UnityEngine.SceneManagement.SceneManager.LoadScene("TempScene");
+            await (loadScene = Addressables.LoadSceneAsync(sceneAddress)).ToAwaitable();
             
             
             SoundManager.Instance.ClearAll();
-            _ = Resources.UnloadUnusedAssets();
             GC.Collect();
-            await AwaitableUtility.WaitUntil(() => startTime + fadeOutDuration + 1 <= Time.time);
+            var sceneName = loadScene.Result.Scene.name;
+            await MessageBroker.Default.Receive<LoadSceneFadeInMessage>().Where(t => t.sceneName == sceneName).Take(1).ToTask();
+            
+            
+            await Awaitable.WaitForSecondsAsync(startTime + fadeOutDuration + 1 - Time.time);
             
             
             isUILoadingIsDone = true;
