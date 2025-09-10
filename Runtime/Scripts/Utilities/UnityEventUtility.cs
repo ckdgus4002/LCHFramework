@@ -6,7 +6,7 @@ using UnityEditor.Events;
 
 namespace LCHFramework.Utilities
 {
-    public static partial class UnityEventUtility
+    public static class UnityEventUtility
     {
         public static void RemovePersistentListener(UnityEvent unityEvent, UnityAction call)
         {
