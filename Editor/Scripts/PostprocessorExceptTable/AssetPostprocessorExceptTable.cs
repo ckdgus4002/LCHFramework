@@ -14,7 +14,7 @@ namespace LCHFramework.Editor
             {
                 if (_instances == null || _instancesTime != Time.frameCount)
                 {
-                    _instances = AssetDatabaseUtility.LoadAssetAtTypes<T>($"{typeof(T).Name}");
+                    _instances = AssetDatabaseUtility.LoadAssetsByType<T>($"{typeof(T).Name}");
                     _instancesTime = Time.frameCount;
                 }
 
