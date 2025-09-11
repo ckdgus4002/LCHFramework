@@ -74,8 +74,9 @@ namespace LCHFramework.Managers
             MessageBroker.Default.Publish(new LoadSceneFadeOutMessage { sceneName = sceneAddress });
             SoundManager.Instance.StopAll();
             isLoadingScene = true;
-            prevLoadScene = loadScene;
             isUILoadingIsDone = false;
+            prevLoadScene = loadScene;
+            loadScene = default;
             var startTime = Time.time;
             if (mode == LoadSceneMode.LoadingUI) _ = Loading.Instance.LoadAsync(
                 () => loadScene.IsValid() && loadScene.OperationException != null ? $"{LoadSceneErrorMessage} ({loadScene.OperationException})"
@@ -89,6 +90,8 @@ namespace LCHFramework.Managers
             
             
             UnityEngine.SceneManagement.SceneManager.LoadScene("TempScene");
+            
+            
             await (loadScene = Addressables.LoadSceneAsync(sceneAddress)).ToAwaitable();
             
             
