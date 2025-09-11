@@ -16,17 +16,6 @@ namespace LCHFramework.Managers.UI
         
         
         
-        protected override void Awake()
-        {
-            base.Awake();
-            
-            if (Instance != this) return;
-            
-            Hide();
-        }
-        
-        
-        
         public void Show(string key, params object[] objects)
         {
             Wrapper.SetActive(true);

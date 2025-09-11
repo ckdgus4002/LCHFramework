@@ -19,15 +19,15 @@ namespace LCHFramework.Managers.UI
         public Slider slider;
         
         
-        private CanvasGroup canvasGroup;
-        
-        
         protected override bool IsDontDestroyOnLoad => transform.parent == null;
         
         public override bool IsShown => Wrapper.activeSelf;
         
         public virtual string[] LoadingMessages => _loadingMessages ??= new[] { DefaultLoadingMessage };
         private string[] _loadingMessages;
+        
+        private CanvasGroup CanvasGroup => _canvasGroup == null ? _canvasGroup = GetComponentInChildren<CanvasGroup>() : _canvasGroup;
+        private CanvasGroup _canvasGroup;
         
         private GameObject Wrapper => _wrapper == null ? _wrapper = transform.Find(nameof(Wrapper)).gameObject : _wrapper;
         private GameObject _wrapper;
@@ -40,18 +40,7 @@ namespace LCHFramework.Managers.UI
             messageText = GetComponentsInChildren<TMP_Text>().FirstOrDefault(t => t.name.Contains("Message", StringComparison.OrdinalIgnoreCase) && t.name.Contains("Text", StringComparison.OrdinalIgnoreCase));
             slider = GetComponentInChildren<Slider>();
         }
-#endif
-
-        protected override void Awake()
-        {
-            base.Awake();
-            
-            if (Instance != this) return;
-            
-            canvasGroup = GetComponentInChildren<CanvasGroup>();
-            Hide();
-        }
-        
+#endif  
         
         
         public async Awaitable LoadAsync(Func<float> getPercentOrNull, Func<bool> getIsDone)
@@ -64,7 +53,7 @@ namespace LCHFramework.Managers.UI
             var startTime = Time.time;
             while (true)
             {
-                canvasGroup.alpha = (Time.time - startTime) / fadeInTime;
+                CanvasGroup.alpha = (Time.time - startTime) / fadeInTime;
                 messageText.text = getMessage.Invoke();
                 slider.gameObject.SetActive(getPercentOrNull != null);
                 var isDone = getIsDone.Invoke();
@@ -78,7 +67,7 @@ namespace LCHFramework.Managers.UI
             var endTime = Time.time;
             while (true)
             {
-                canvasGroup.alpha = 1 - (Time.time - endTime) / fadeOutTime;
+                CanvasGroup.alpha = 1 - (Time.time - endTime) / fadeOutTime;
                 if (Time.time - endTime <= fadeOutTime) await Awaitable.NextFrameAsync();
                 else break;
             }

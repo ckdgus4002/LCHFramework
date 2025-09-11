@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using LCHFramework.Extensions;
 using UniRx;
@@ -60,10 +61,12 @@ namespace LCHFramework.Managers
         
         
         
-        protected readonly Dictionary<string, AudioSourcePool> audioSourcePools = new();
+        public readonly Dictionary<string, AudioSourcePool> audioSourcePools = new();
         
         
         protected override bool IsDontDestroyOnLoad => transform.parent == null;
+        
+        public override bool IsDestroyPrevInstance => false;
         
         
         
@@ -71,10 +74,14 @@ namespace LCHFramework.Managers
         {
             base.Awake();
             
-            if (Instance != this) return;
+            foreach (var t in new[] { Bgm, Narration, Sfx }) CreateAudioSourcePool(t);
+        }
+        
+        protected override void OnEnable()
+        {
+            base.OnEnable();
             
             TimeScale = Time.timeScale;
-            foreach (var t in new[] { Bgm, Narration, Sfx }) CreateAudioSourcePool(t);
         }
         
         
