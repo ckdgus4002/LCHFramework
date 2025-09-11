@@ -46,6 +46,8 @@ namespace LCHFramework
 #elif UNITY_EDITOR && UNITY_VISIONOS && UNITY_6000_0_OR_NEWER
                 return Convert.ToInt64(PlayerSettings.VisionOS.buildNumber);
 #elif !UNITY_EDITOR && UNITY_ANDROID
+                if (-2 < _buildNumber) return _buildNumber;
+
                 using var packageManager = CurrentActivity.Call<AndroidJavaObject>("getPackageManager");
                 var packageName = CurrentActivity.Call<string>("getPackageName");
                 AndroidJavaObject packageInfo = null;
@@ -57,11 +59,13 @@ namespace LCHFramework
                     using var packageInfoFlagsOf = packageInfoFlags.CallStatic<AndroidJavaObject>("of", 0L);
                     packageInfo = packageManager.Call<AndroidJavaObject>("getPackageInfo", packageName, packageInfoFlagsOf);
                 }
-                _buildNumber = _buildNumber < -1 ? AndroidApiLevel < 28 ? packageInfo.Get<int>("versionCode") : packageInfo.Call<long>("getLongVersionCode") : _buildNumber;
+                _buildNumber = AndroidApiLevel < 28 ? packageInfo.Get<int>("versionCode") : packageInfo.Call<long>("getLongVersionCode");
                 packageInfo.Dispose();
                 return _buildNumber;
 #elif !UNITY_EDITOR && UNITY_IOS
-                _buildNumber = _buildNumber < -1 ? !long.TryParse(Marshal.PtrToStringAnsi(GetiOSBuildNumber()), out var result) ? -1 : result : _buildNumber;
+                if (-2 < _buildNumber) return _buildNumber;
+
+                _buildNumber = !long.TryParse(Marshal.PtrToStringAnsi(GetiOSBuildNumber()), out var result) ? -1 : result;
                 return _buildNumber;
 #else
                 return -1;
