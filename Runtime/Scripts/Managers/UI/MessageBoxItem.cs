@@ -9,7 +9,7 @@ namespace LCHFramework.Managers.UI
         
         
         
-        public virtual void Show()
+        public virtual void Show(params object[] objects)
         {
             gameObject.SetActive(true);
         }

@@ -27,13 +27,13 @@ namespace LCHFramework.Managers.UI
         
         
         
-        public void Show(string key)
+        public void Show(string key, params object[] objects)
         {
             Wrapper.SetActive(true);
             var item = Items.FirstOrDefault(t => t.Key == key);
             Items.ForEach(t =>
             {
-                if (t == item) t.Show();
+                if (t == item) t.Show(objects);
                 else t.Hide();
             });
         }
