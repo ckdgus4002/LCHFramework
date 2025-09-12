@@ -4,10 +4,10 @@ namespace LCHFramework.Utilities
 {
     public static class IDisposableUtility
     {
-        public static void DisposeAndSetNull<T>(ref T disposable) where T : class, IDisposable
+        public static void DisposeAndSetDefault<T>(ref T disposable) where T : IDisposable
         {
             disposable?.Dispose();
-            disposable = null;
+            disposable = default;
         }
     }
 }
