@@ -7,7 +7,6 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
-using Debug = UnityEngine.Debug;
 
 namespace LCHFramework.Managers
 {
@@ -40,8 +39,10 @@ namespace LCHFramework.Managers
         
         private static bool isLoadingScene;
         private static bool isUILoadingIsDone;
-        private static AsyncOperationHandle<SceneInstance> prevLoadScene;
         private static AsyncOperationHandle<SceneInstance> loadScene;
+        
+        
+        public static string PrevSceneAddress { get; private set; } 
         
         
         
@@ -75,7 +76,7 @@ namespace LCHFramework.Managers
             SoundManager.Instance.StopAll();
             isLoadingScene = true;
             isUILoadingIsDone = false;
-            prevLoadScene = loadScene;
+            PrevSceneAddress = sceneAddress;
             loadScene = default;
             var startTime = Time.time;
             if (mode == LoadSceneMode.LoadingUI) _ = Loading.Instance.LoadAsync(
