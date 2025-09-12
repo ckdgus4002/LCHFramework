@@ -39,7 +39,22 @@ namespace LCHFramework.Components
         
         public static bool TryFindFirstObjectByType(Type type, FindObjectsInactive findObjectsInactive, out Object result)
             => (result = FindFirstObjectByType(type, findObjectsInactive)) != null;
+
+        public static bool TryFindAnyInterfaceByType<T>(out T result) where T : class
+            => TryFindAnyInterfaceByType(FindObjectsInactive.Exclude, out result);
         
+        public static bool TryFindAnyInterfaceByType<T>(FindObjectsInactive findObjectsInactive, out T result) where T : class
+            => (result = FindAnyInterfaceByType<T>(findObjectsInactive)) != null;
+        
+        public static T FindAnyInterfaceByType<T>(FindObjectsInactive findObjectsInactive = FindObjectsInactive.Exclude) where T : class
+        {
+            foreach (var t in FindObjectsByType<Component>(findObjectsInactive, FindObjectsSortMode.InstanceID))
+                if (t.TryGetComponent<T>(out var result))
+                    return result;
+
+            return null;
+        }
+                
         public static Coroutine RestartCoroutine(MonoBehaviour monoBehaviour, Coroutine stopCoroutine, IEnumerator startCoroutine)
         {
             if (stopCoroutine != null) monoBehaviour.StopCoroutine(stopCoroutine);
