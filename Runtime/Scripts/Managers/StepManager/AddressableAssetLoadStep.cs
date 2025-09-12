@@ -3,7 +3,7 @@ using LCHFramework.Components;
 using UniRx;
 using UnityEngine;
 
-namespace LCHFramework.Managers
+namespace LCHFramework.Managers.StepManager
 {
     [RequireComponent(typeof(AddressableAssetLoader))]
     public class AddressableAssetLoadStep : Step

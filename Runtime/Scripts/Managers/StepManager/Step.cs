@@ -1,6 +1,6 @@
 using LCHFramework.Components;
 
-namespace LCHFramework.Managers
+namespace LCHFramework.Managers.StepManager
 {
     public class Step : LCHMonoBehaviour
     {

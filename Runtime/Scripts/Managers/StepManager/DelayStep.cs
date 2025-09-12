@@ -4,7 +4,7 @@ using LCHFramework.Utilities;
 using UniRx;
 using UnityEngine;
 
-namespace LCHFramework.Managers
+namespace LCHFramework.Managers.StepManager
 {
     public class DelayStep : Step
     {

@@ -8,7 +8,7 @@ using UniRx;
 using UnityEngine;
 using Debug = LCHFramework.Utilities.Debug;
 
-namespace LCHFramework.Managers
+namespace LCHFramework.Managers.StepManager
 {
     public struct SetCurrentStepMessage
     {
