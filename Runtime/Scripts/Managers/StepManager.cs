@@ -52,12 +52,7 @@ namespace LCHFramework.Managers.StepManager
         
         public T2 CurrentStep
         {
-            get
-            {
-                if (_currentStep == null) CurrentStep = startStep;
-                
-                return _currentStep;
-            }
+            get => _currentStep == null ? CurrentStep = startStep : _currentStep;
             set
             {
                 if (_currentStep == (value ??= startStep)) return;
