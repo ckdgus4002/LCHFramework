@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace LCHFramework.Components.UI
 {
-    public class SizeTracker : LayoutSelfController
+    public class TargetSizeTracker : LayoutSelfController
     {
         public RectTransform widthTarget;
         [ShowInInspector(nameof(widthTarget))] public float leftPadding;
