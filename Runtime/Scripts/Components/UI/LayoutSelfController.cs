@@ -19,32 +19,22 @@ namespace LCHFramework.Components.UI
         
         protected virtual bool PositionXIsChanged() => false;
 
-        protected virtual void SetPositionX()
-        {
-        }
+        protected virtual void SetPositionX() { }
         
         protected virtual bool PositionYIsChanged() => false;
 
-        protected virtual void SetPositionY()
-        {
-        }
+        protected virtual void SetPositionY() { }
         
         protected virtual bool PositionZIsChanged() => false;
 
-        protected virtual void SetPositionZ()
-        {
-        }
+        protected virtual void SetPositionZ() { }
         
         protected virtual bool HorizontalIsChanged() => false;
         
-        public virtual void SetLayoutHorizontal()
-        {
-        }
+        public virtual void SetLayoutHorizontal() { }
 
         protected virtual bool VerticalIsChanged() => false;
 
-        public virtual void SetLayoutVertical()
-        {
-        }
+        public virtual void SetLayoutVertical() { }
     }
 }
