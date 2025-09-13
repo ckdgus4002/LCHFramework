@@ -147,7 +147,7 @@ namespace LCHFramework
             Observable.OnceApplicationQuit().Subscribe(_ =>
             {
 #if !UNITY_EDITOR && UNITY_ANDROID
-                IDisposableUtility.DisposeAndSetNull(ref _currentActivity);
+                IDisposableUtility.DisposeAndSetDefault(ref _currentActivity);
 #endif
             });
         }
