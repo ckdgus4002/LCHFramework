@@ -22,8 +22,8 @@ namespace LCHFramework.Extensions
         public static Task<bool> SuppressCancellationThrow(this Task task)
         {
             var status = task.Status;
-            if (status == TaskStatus.RanToCompletion) return TaskUtility.CompletedTask.False;
-            if (status == TaskStatus.Canceled) return TaskUtility.CompletedTask.True;
+            if (status == TaskStatus.RanToCompletion) return Task.FromResult(false);
+            if (status == TaskStatus.Canceled) return Task.FromResult(true);
             return new Task<bool>(() => task.Status == TaskStatus.Canceled, new TaskCanceledException(task).CancellationToken);
         }
     }
