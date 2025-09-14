@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace LCHFramework.Components.UI
 {
     [RequireComponent(typeof(Canvas))]
-    public class CanvasWidthTracker : LayoutSelfController
+    public class CanvasWidthController : LayoutSelfController
     {
         private float _prevAspect;
 
