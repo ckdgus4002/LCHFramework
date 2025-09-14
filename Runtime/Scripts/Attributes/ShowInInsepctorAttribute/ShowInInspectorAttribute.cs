@@ -12,7 +12,7 @@ namespace LCHFramework.Attributes
         {
             TargetName = targetName;
             NeedInitializeComparison = true;
-            ComparisonOperator = ComparisonOperator.Equals;
+            ComparisonOperator = default;
             ComparisonValue = null;
             Result = null;
         }
@@ -30,7 +30,7 @@ namespace LCHFramework.Attributes
         {
             TargetName = "";
             NeedInitializeComparison = false;
-            ComparisonOperator = ComparisonOperator.Equals;
+            ComparisonOperator = default;
             ComparisonValue = null;
             Result = result;
         }

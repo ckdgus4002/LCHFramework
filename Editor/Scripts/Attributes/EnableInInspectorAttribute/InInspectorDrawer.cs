@@ -22,16 +22,16 @@ namespace LCHFramework.Attributes
             if (inInspectorAttribute.FieldInfo == null && inInspectorAttribute.PropertyInfo == null && inInspectorAttribute.MethodInfo == null) return DefaultResult;
             
             
-            var value = inInspectorAttribute.FieldInfo != null ? inInspectorAttribute.FieldInfo.GetValue(property.serializedObject.targetObject) 
+            var valueOrNull = inInspectorAttribute.FieldInfo != null ? inInspectorAttribute.FieldInfo.GetValue(property.serializedObject.targetObject) 
                 : inInspectorAttribute.PropertyInfo != null ? inInspectorAttribute.PropertyInfo.GetValue(property.serializedObject.targetObject)
                 : inInspectorAttribute.MethodInfo != null ? inInspectorAttribute.MethodInfo.Invoke(property.serializedObject.targetObject, null)
                 : null;
             inInspectorAttribute.ComparisonOperator = !inInspectorAttribute.NeedInitializeComparison ? inInspectorAttribute.ComparisonOperator
-                : !value!.GetType().IsValueType ? ComparisonOperator.NotEquals
+                : (valueOrNull == null || !valueOrNull.GetType().IsValueType) ? ComparisonOperator.NotEquals
                 : ComparisonOperator.Equals;
             inInspectorAttribute.ComparisonValue = !inInspectorAttribute.NeedInitializeComparison ? inInspectorAttribute.ComparisonValue
-                : value is bool ? true
-                : null;
+                : valueOrNull is not bool ? null
+                : true;
             
             
             switch (inInspectorAttribute.ComparisonValue)
@@ -40,7 +40,7 @@ namespace LCHFramework.Attributes
                 {
                     if (inInspectorAttribute.ComparisonOperator != ComparisonOperator.Equals && inInspectorAttribute.ComparisonOperator != ComparisonOperator.NotEquals) return DefaultResult;
 
-                    var a = Convert.ToBoolean(value);
+                    var a = Convert.ToBoolean(valueOrNull);
                     var b = Convert.ToBoolean(inInspectorAttribute.ComparisonValue);
                     return inInspectorAttribute.ComparisonOperator switch
                     {
@@ -51,7 +51,7 @@ namespace LCHFramework.Attributes
                 }
                 case int or float or Enum or double or decimal or short or long or ushort or uint or ulong or byte or sbyte:
                 {
-                    var a = Convert.ToDecimal(value);
+                    var a = Convert.ToDecimal(valueOrNull);
                     var b = Convert.ToDecimal(inInspectorAttribute.ComparisonValue);
                     return inInspectorAttribute.ComparisonOperator switch
                     {
@@ -66,7 +66,7 @@ namespace LCHFramework.Attributes
                 }
                 case string:
                 {
-                    var a = Convert.ToString(value);
+                    var a = Convert.ToString(valueOrNull);
                     var b = Convert.ToString(inInspectorAttribute.ComparisonValue);
                     return inInspectorAttribute.ComparisonOperator switch
                     {
@@ -83,7 +83,7 @@ namespace LCHFramework.Attributes
                 {
                     if (inInspectorAttribute.ComparisonOperator != ComparisonOperator.Equals && inInspectorAttribute.ComparisonOperator != ComparisonOperator.NotEquals) return DefaultResult;
 
-                    var a = value!.ToString() == "null" ? null : value;
+                    var a = valueOrNull!.ToString() == "null" ? null : valueOrNull;
                     var b = inInspectorAttribute.ComparisonValue;
                     return inInspectorAttribute.ComparisonOperator switch
                     {
