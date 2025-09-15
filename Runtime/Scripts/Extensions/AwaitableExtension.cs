@@ -18,6 +18,18 @@ namespace LCHFramework.Extensions
             }
         }
         
+        public static async void Forget<T>(this Awaitable<T> awaitable, bool logException = true)
+        {
+            try
+            {
+                await awaitable;
+            }
+            catch (Exception e)
+            {
+                if (logException) Debug.LogException(e);
+            }
+        }
+        
         public static async Awaitable SuppressCancellationThrow(this Awaitable awaitable)
         {
             try
@@ -27,6 +39,19 @@ namespace LCHFramework.Extensions
             catch (OperationCanceledException)
             {
             }
+        }
+        
+        public static async Awaitable<T> SuppressCancellationThrow<T>(this Awaitable<T> awaitable)
+        {
+            try
+            {
+                await awaitable;
+            }
+            catch (OperationCanceledException)
+            {
+            }
+            
+            return default;
         }
     }
 }
