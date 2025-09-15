@@ -16,10 +16,10 @@ namespace LCHFramework.Managers.StepManager
         public override void Show()
         {
             base.Show();
-
+            
             Observable.EveryUpdate()
                 .Where(_ => AssetLoaders.All(t => t.IsLoaded))
-                .Take(1)
+                .First()
                 .Subscribe(_ => MessageBroker.Default.Publish(new PassCurrentStepMessage()))
                 .AddTo(gameObject);
         }
