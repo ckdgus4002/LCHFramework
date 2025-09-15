@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using LCHFramework.Attributes;
 using LCHFramework.Data;
 using LCHFramework.Extensions;
@@ -18,7 +17,9 @@ namespace LCHFramework.Components
         [SerializeField] private float fadeInDuration = 0.5f;
         
         [ShowInInspector(nameof(loadSceneMode), ComparisonOperator.NotEquals, LoadSceneMode.None)]
-        [SerializeField] private string message = "Loading...";
+        [SerializeField] private string loadingMessage = "Loading...";
+        
+        [SerializeField] private string message = "";
         
         
         
@@ -34,6 +35,6 @@ namespace LCHFramework.Components
         
         
         
-        public Task LoadAsync() => SceneManager.LoadSceneAsync(asset.GetAddress(), loadSceneMode, fadeOutDuration, fadeInDuration, message);
+        public Awaitable LoadAsync() => SceneManager.LoadSceneAsync(asset.GetAddress(), loadSceneMode, fadeOutDuration, fadeInDuration, loadingMessage, message);
     }
 }

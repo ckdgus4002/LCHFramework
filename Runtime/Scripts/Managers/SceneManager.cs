@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using LCHFramework.Extensions;
 using LCHFramework.Managers.UI;
 using UniRx;
@@ -16,21 +15,6 @@ namespace LCHFramework.Managers
         LoadingUI,
     }
     
-    public struct LoadSceneFadeOutMessage
-    {
-        public string sceneName;
-    }
-    
-    public struct LoadSceneFadeInMessage
-    {
-        public string sceneName;
-    }
-    
-    public struct LoadSceneCompletedMessage
-    {
-        public string sceneName;
-    }
-    
     public static class SceneManager
     {
         private const string LoadSceneErrorMessage = "문제가 발생하였습니다. 앱을 재시작해주세요.";
@@ -43,6 +27,7 @@ namespace LCHFramework.Managers
         
         
         public static string PrevSceneAddress { get; private set; } 
+        public static string Message { get; private set; }
         
         
         
@@ -58,31 +43,33 @@ namespace LCHFramework.Managers
             _ => 0
         };
         
-        public static string DefaultMessage(LoadSceneMode mode) => mode switch
+        public static string DefaultLoadingMessage(LoadSceneMode mode) => mode switch
         {
             LoadSceneMode.LoadingUI => Loading.DefaultLoadingMessage,
             _ => string.Empty
         };
         
-        public static async Task LoadSceneAsync(string sceneAddress, LoadSceneMode mode)
-            => await LoadSceneAsync(sceneAddress, mode, DefaultFadeOutDuration(mode), DefaultFadeInDuration(mode), DefaultMessage(mode));
+        public static async Awaitable LoadSceneAsync(string sceneAddress, LoadSceneMode mode, string message = "")
+            => await LoadSceneAsync(sceneAddress, mode, DefaultFadeOutDuration(mode), DefaultFadeInDuration(mode), DefaultLoadingMessage(mode), message);
         
-        public static async Task LoadSceneAsync(string sceneAddress, LoadSceneMode mode, float fadeOutDuration, float fadeInDuration, string message)
+        public static async Awaitable LoadSceneAsync(string sceneAddress, LoadSceneMode mode, float fadeOutDuration, float fadeInDuration, string loadingMessage, string message = "")
         {
             if (isLoadingScene) { Debug.Log($"{nameof(isLoadingScene)} is True!"); return; }
             
             
-            MessageBroker.Default.Publish(new LoadSceneFadeOutMessage { sceneName = sceneAddress });
             SoundManager.Instance.StopAll();
             isLoadingScene = true;
+            Message = message;
+            MessageBroker.Default.Publish(new LoadSceneFadeOutMessage { sceneAddress = PrevSceneAddress, nextSceneAddress = sceneAddress });
+            
+            
             isUILoadingIsDone = false;
-            PrevSceneAddress = sceneAddress;
             loadScene = default;
             var startTime = Time.time;
             if (mode == LoadSceneMode.LoadingUI) _ = Loading.Instance.LoadAsync(
                 () => loadScene.IsValid() && loadScene.OperationException != null ? $"{LoadSceneErrorMessage} ({loadScene.OperationException})"
                     : loadScene.IsValid() && loadScene.Status == AsyncOperationStatus.Failed ? $"{LoadSceneErrorMessage} Status is Failed."
-                    : message,
+                    : loadingMessage,
                 fadeOutDuration,
                 fadeInDuration,
                 () => Math.Min(Time.time - (startTime + fadeOutDuration), !loadScene.IsValid() ? 0 : loadScene.PercentComplete),
@@ -98,8 +85,7 @@ namespace LCHFramework.Managers
             
             SoundManager.Instance.ClearAll();
             GC.Collect();
-            var sceneName = loadScene.Result.Scene.name;
-            await MessageBroker.Default.Receive<LoadSceneFadeInMessage>().Where(t => t.sceneName == sceneName).Take(1).ToTask();
+            await MessageBroker.Default.Receive<LoadSceneFadeInMessage>().Where(t => t.sceneAddress == sceneAddress).First();
             
             
             await Awaitable.WaitForSecondsAsync(startTime + fadeOutDuration + 1 - Time.time);
@@ -109,8 +95,17 @@ namespace LCHFramework.Managers
             await Awaitable.WaitForSecondsAsync(fadeInDuration);
             
             
-            MessageBroker.Default.Publish(new LoadSceneCompletedMessage { sceneName = sceneName });
+            PrevSceneAddress = sceneAddress;
             isLoadingScene = false;
+            MessageBroker.Default.Publish(new LoadSceneCompletedMessage { prevSceneAddress = PrevSceneAddress, sceneAddress = sceneAddress });
         }
+        
+        
+        
+        public struct LoadSceneFadeOutMessage { public string sceneAddress; public string nextSceneAddress; }
+    
+        public struct LoadSceneFadeInMessage { public string sceneAddress; }
+    
+        public struct LoadSceneCompletedMessage { public string prevSceneAddress; public string sceneAddress; }
     }
 }
