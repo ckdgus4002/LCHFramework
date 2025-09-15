@@ -40,7 +40,8 @@ namespace LCHFramework.Managers.UI
             messageText = GetComponentsInChildren<TMP_Text>().FirstOrDefault(t => t.name.Contains("Message", StringComparison.OrdinalIgnoreCase) && t.name.Contains("Text", StringComparison.OrdinalIgnoreCase));
             slider = GetComponentInChildren<Slider>();
         }
-#endif  
+#endif
+        
         
         
         public async Awaitable LoadAsync(Func<float> getPercentOrNull, Func<bool> getIsDone)
@@ -63,7 +64,7 @@ namespace LCHFramework.Managers.UI
                 if (!isDone) await Awaitable.NextFrameAsync();
                 else break;
             }
-
+            
             var endTime = Time.time;
             while (true)
             {
