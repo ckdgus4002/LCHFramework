@@ -80,6 +80,7 @@ namespace LCHFramework.Managers
             UnityEngine.SceneManagement.SceneManager.LoadScene("TempScene");
             
             
+            PrevSceneAddress = sceneAddress;
             await (loadScene = Addressables.LoadSceneAsync(sceneAddress)).ToAwaitable();
             
             
@@ -95,7 +96,6 @@ namespace LCHFramework.Managers
             await Awaitable.WaitForSecondsAsync(fadeInDuration);
             
             
-            PrevSceneAddress = sceneAddress;
             isLoadingScene = false;
             MessageBroker.Default.Publish(new LoadSceneCompletedMessage { prevSceneAddress = PrevSceneAddress, sceneAddress = sceneAddress });
         }
