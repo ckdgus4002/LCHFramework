@@ -59,7 +59,7 @@ namespace LCHFramework.Managers
             
             SoundManager.Instance.StopAll();
             isLoadingScene = true;
-            Message = message;
+            Message = !string.IsNullOrWhiteSpace(message) ? message : Message;
             MessageBroker.Default.Publish(new LoadSceneFadeOutMessage { sceneAddress = PrevSceneAddress, nextSceneAddress = sceneAddress });
             
             
