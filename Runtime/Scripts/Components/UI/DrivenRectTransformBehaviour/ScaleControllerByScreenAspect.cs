@@ -8,8 +8,16 @@ namespace LCHFramework.Components.UI
 {
     public class ScaleControllerByScreenAspect : LayoutSelfController
     {
+        [SerializeField] private float minAspect;
+        [SerializeField] private float maxAspect;
+        
+        
         private float screenAspect;
         [NonSerialized] private float _prevScreenAspect;
+        
+        
+        
+        private void Reset() => minAspect = maxAspect = (float)Screen.width / Screen.height;
         
         
         
@@ -38,7 +46,7 @@ namespace LCHFramework.Components.UI
             // origin: 1.7778 // 1920*1080, 960*540
             // scren : 2.3703 // 2560*1080, 3413*1440
             var rectTransformAspect = RectTransformOrNull.rect.width / RectTransformOrNull.rect.height;
-            RectTransformOrNull.localScale = Vector3Utility.New(screenAspect / rectTransformAspect);
+            RectTransformOrNull.localScale = Vector3Utility.New(Mathf.Clamp(minAspect, maxAspect, screenAspect / rectTransformAspect));
             
             if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransformOrNull);
         }
