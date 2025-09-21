@@ -83,7 +83,7 @@ namespace LCHFramework.Attributes
                 {
                     if (inInspectorAttribute.ComparisonOperator != ComparisonOperator.Equals && inInspectorAttribute.ComparisonOperator != ComparisonOperator.NotEquals) return DefaultResult;
 
-                    var a = valueOrNull!.ToString() == "null" ? null : valueOrNull;
+                    var a = valueOrNull?.ToString() == "null" ? null : valueOrNull;
                     var b = inInspectorAttribute.ComparisonValue;
                     return inInspectorAttribute.ComparisonOperator switch
                     {
