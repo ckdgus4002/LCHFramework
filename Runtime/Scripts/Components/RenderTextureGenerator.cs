@@ -20,7 +20,7 @@ namespace LCHFramework.Components
         
         protected abstract int GetRenderTextureHeight();
 
-        protected virtual int GetRenderTextureDepth() => 0;
+        protected virtual int GetRenderTextureDepth() => 24;
         
         
         
