@@ -8,7 +8,7 @@ namespace LCHFramework.Components.UI
 {
     public class ScaleControllerByScreenAspect : LayoutSelfController
     {
-        [SerializeField] private float minAspect = 1;
+        [SerializeField] private float minScale = 1;
         
         
         [NonSerialized] private float screenAspect;
@@ -43,7 +43,7 @@ namespace LCHFramework.Components.UI
             Tracker.Add(this, RectTransformOrNull, DrivenTransformProperties.Scale);
             
             var rectTransformAspect = RectTransformOrNull.rect.width / RectTransformOrNull.rect.height;
-            RectTransformOrNull.localScale = Vector3Utility.New(Mathf.Max(screenAspect / rectTransformAspect, minAspect));
+            RectTransformOrNull.localScale = Vector3Utility.New(Mathf.Max(screenAspect / rectTransformAspect, minScale));
             
             if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransformOrNull);
         }
