@@ -1,3 +1,5 @@
+using LCHFramework.Attributes;
+using LCHFramework.Data;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,12 +12,15 @@ namespace LCHFramework.Components.UI
         [SerializeField] private ControlMode controlMode;
         
         
+        private Camera Camera => _camera == null ? _camera = Camera.main : _camera;
+        [ShowInInspector(nameof(controlMode), ComparisonOperator.Equals, ControlMode.CameraAspect)] [SerializeField] private Camera _camera;
+        
         private AspectRatioFitter AspectRatioFitter => _aspectRatioFitter == null ? GetComponent<AspectRatioFitter>() : _aspectRatioFitter;
         private AspectRatioFitter _aspectRatioFitter;
         
         
         
-        private void Update() => AspectRatioFitter.aspectRatio = controlMode == ControlMode.MainCameraAspect ? Camera.main.aspect
+        private void Update() => AspectRatioFitter.aspectRatio = controlMode == ControlMode.CameraAspect ? Camera.aspect 
             : 1;
         
         
@@ -23,7 +28,7 @@ namespace LCHFramework.Components.UI
         enum ControlMode
         {
             None,
-            MainCameraAspect
+            CameraAspect
         }
     }
 }
