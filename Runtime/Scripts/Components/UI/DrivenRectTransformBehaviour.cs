@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace LCHFramework.Components.UI
 {
-    public class DrivenRectTransformBehaviour : LCHMonoBehaviour
+    public abstract class DrivenRectTransformBehaviour : LCHMonoBehaviour
     {
         protected DrivenRectTransformTracker Tracker { get; } = new();
         

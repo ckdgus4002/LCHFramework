@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace LCHFramework.Components.UI
 {
-    public class TargetSizeTracker : LayoutSelfController
+    public class SizeTrackerByTarget : LayoutSelfController
     {
         public RectTransform widthTarget;
         [ShowInInspector(nameof(widthTarget))] public float leftPadding;
@@ -20,7 +20,7 @@ namespace LCHFramework.Components.UI
         
         
         
-        protected override bool HorizontalIsChanged()
+        protected override bool SizeXIsChanged()
         {
             if (widthTarget == null) return false;
             
@@ -29,9 +29,9 @@ namespace LCHFramework.Components.UI
             return result;
         }
         
-        public override void SetLayoutHorizontal() => SetLayout();
+        protected override void SetSizeX() => SetSize();
 
-        protected override bool VerticalIsChanged()
+        protected override bool SizeYIsChanged()
         {
             if (heightTarget == null) return false;
             
@@ -40,9 +40,11 @@ namespace LCHFramework.Components.UI
             return result;
         }
 
-        public override void SetLayoutVertical() => SetLayout();
-
-        private void SetLayout()
+        protected override void SetSizeY() => SetSize();
+        
+        
+        
+        private void SetSize()
         {
             Tracker.Clear();
             Tracker.Add(this, RectTransformOrNull, widthTarget != null && heightTarget != null ? DrivenTransformProperties.SizeDelta
