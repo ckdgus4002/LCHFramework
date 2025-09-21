@@ -1,3 +1,4 @@
+using System;
 using LCHFramework.Utilities;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -8,7 +9,7 @@ namespace LCHFramework.Components.UI
     public class ScaleControllerByScreenAspect : LayoutSelfController
     {
         private float screenAspect;
-        private float _prevScreenAspect;
+        [NonSerialized] private float _prevScreenAspect;
         
         
         

@@ -1,3 +1,4 @@
+using System;
 using LCHFramework.Attributes;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -15,8 +16,8 @@ namespace LCHFramework.Components.UI
         [ShowInInspector(nameof(heightTarget))] public float bottomPadding;
         
         
-        private float _prevWidth = float.MinValue;
-        private float _prevHeight = float.MinValue;
+        [NonSerialized] private float _prevWidth = float.MinValue;
+        [NonSerialized] private float _prevHeight = float.MinValue;
         
         
         

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -7,7 +8,7 @@ namespace LCHFramework.Components.UI
     public class WidthControllerByScreenAspect : LayoutSelfController
     {
         private float screenAspect;
-        private float _prevScreenAspect;
+        [NonSerialized] private float _prevScreenAspect;
         
         
         
