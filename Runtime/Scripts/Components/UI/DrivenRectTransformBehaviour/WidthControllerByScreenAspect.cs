@@ -7,7 +7,7 @@ namespace LCHFramework.Components.UI
 {
     public class WidthControllerByScreenAspect : LayoutSelfController
     {
-        private float screenAspect;
+        [NonSerialized] private float screenAspect;
         [NonSerialized] private float _prevScreenAspect;
         
         

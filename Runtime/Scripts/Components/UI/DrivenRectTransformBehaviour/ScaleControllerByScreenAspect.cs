@@ -12,7 +12,7 @@ namespace LCHFramework.Components.UI
         [SerializeField] private float maxAspect;
         
         
-        private float screenAspect;
+        [NonSerialized] private float screenAspect;
         [NonSerialized] private float _prevScreenAspect;
         
         
