@@ -18,7 +18,7 @@ namespace LCHFramework.Components.UI
             SetAnchoredPosition();
         }
         
-                
+        
         
         private void SetSize()
         {
@@ -30,16 +30,15 @@ namespace LCHFramework.Components.UI
             RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Screen.safeArea.height * scaleFactor);
         }
         
+        protected virtual Vector2 GetAnchoredPosition()
+            => OrientationManager.InstanceIsNull || OrientationManager.Instance.Orientation.Value is < Orientation.Portrait or > Orientation.LandscapeRight
+                ? Vector2.zero
+                : Screen.safeArea.center - ScreenUtility.HalfSize;
+        
         private void SetAnchoredPosition()
         {
             Tracker.Add(this, RectTransformOrNull, DrivenTransformProperties.AnchoredPosition);
             RectTransformOrNull.anchoredPosition = GetAnchoredPosition();
-        }
-        
-        protected virtual Vector2 GetAnchoredPosition()
-        {
-            var orientation = OrientationManager.Instance.Orientation.Value;
-            return orientation is < Orientation.Portrait or > Orientation.LandscapeRight ? Vector2.zero : Screen.safeArea.center - ScreenUtility.HalfSize; 
         }
     }
 }
