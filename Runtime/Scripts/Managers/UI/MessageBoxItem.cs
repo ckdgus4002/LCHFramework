@@ -5,7 +5,7 @@ namespace LCHFramework.Managers.UI
 {
     public class MessageBoxItem : LCHMonoBehaviour
     {
-        public string Key => name;
+        internal string mKey => name;
         
         
         

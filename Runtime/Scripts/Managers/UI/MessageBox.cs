@@ -6,8 +6,6 @@ namespace LCHFramework.Managers.UI
 {
     public class MessageBox : MonoSingleton<MessageBox>
     {
-        public override bool IsShown => Wrapper.activeSelf && Items.Any(t => t.IsShown);
-        
         private GameObject Wrapper => _wrapper == null ? _wrapper = transform.Find(nameof(Wrapper)).gameObject : _wrapper;
         private GameObject _wrapper;
         
@@ -19,7 +17,7 @@ namespace LCHFramework.Managers.UI
         public void Show(string key, params object[] objects)
         {
             Wrapper.SetActive(true);
-            var item = Items.FirstOrDefault(t => t.Key == key);
+            var item = Items.FirstOrDefault(t => t.mKey == key);
             Items.ForEach(t =>
             {
                 if (t == item) t.Show(objects);
