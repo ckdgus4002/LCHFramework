@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using LCHFramework.Extensions;
 using LCHFramework.Managers.UI;
 using UniRx;
@@ -26,6 +27,7 @@ namespace LCHFramework.Managers
         private static AsyncOperationHandle<SceneInstance> loadScene;
         
         
+        public static string SceneAddress { get; private set; }
         public static string PrevSceneAddress { get; private set; } 
         public static string Message { get; private set; }
         
@@ -80,7 +82,8 @@ namespace LCHFramework.Managers
             UnityEngine.SceneManagement.SceneManager.LoadScene("TempScene");
             
             
-            PrevSceneAddress = sceneAddress;
+            PrevSceneAddress = SceneAddress;
+            SceneAddress = sceneAddress;
             await (loadScene = Addressables.LoadSceneAsync(sceneAddress)).ToAwaitable();
             
             
