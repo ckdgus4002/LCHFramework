@@ -23,11 +23,16 @@ namespace LCHFramework.Components.UI
         private void SetSize()
         {
             if (RootCanvasOrNull == null) return;
+            if (RootCanvasOrNull.renderMode == RenderMode.WorldSpace && LCHFramework.InstanceIsNull) return;
             
-            var scaleFactor = RootCanvasOrNull.scaleFactor.Reverse();
             Tracker.Add(this, RectTransformOrNull, DrivenTransformProperties.SizeDelta);
-            RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Screen.safeArea.width * scaleFactor);
-            RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Screen.safeArea.height * scaleFactor);
+            var rootCanvasSize = ((RectTransform)RootCanvasOrNull.transform).rect.size;
+            RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Screen.safeArea.width * (RootCanvasOrNull.renderMode == RenderMode.WorldSpace
+                ? rootCanvasSize.x / LCHFramework.Instance.targetScreenResolution.x
+                : RootCanvasOrNull.scaleFactor.Reverse()));
+            RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Screen.safeArea.height * (RootCanvasOrNull.renderMode == RenderMode.WorldSpace
+                ? rootCanvasSize.y / LCHFramework.Instance.targetScreenResolution.y
+                : RootCanvasOrNull.scaleFactor.Reverse()));
         }
         
         protected virtual Vector2 GetAnchoredPosition()
