@@ -27,9 +27,9 @@ namespace LCHFramework.Managers
         private static AsyncOperationHandle<SceneInstance> loadScene;
         
         
-        public static string SceneAddress { get; private set; }
-        public static string PrevSceneAddress { get; private set; } 
-        public static string Message { get; private set; }
+        public static string SceneAddress { get; private set; } = "";
+        public static string PrevSceneAddress { get; private set; } = "";
+        public static string Message { get; private set; } = "";
         
         
         
