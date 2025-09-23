@@ -47,14 +47,14 @@ namespace LCHFramework.Managers
         
         
         protected static void InstantiateIfInstanceIsNull()
-            => InstantiateIfInstanceIsNull(Resources.Load<T>(typeof(T).Name));
+            => InstantiateIfInstanceIsNull(() => Resources.Load<T>(typeof(T).Name));
         
-        protected static void InstantiateIfInstanceIsNull(T originalOrNull)
+        protected static void InstantiateIfInstanceIsNull(Func<T> originalOrNull)
         {
             if (InstanceIsNull)
             {
                 if (originalOrNull == null) CreateGameObjectIfInstanceIsNull();
-                else Instantiate(originalOrNull);
+                else Instantiate(originalOrNull.Invoke());
             }
         }
         

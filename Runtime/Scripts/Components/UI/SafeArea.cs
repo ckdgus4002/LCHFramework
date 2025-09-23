@@ -10,7 +10,7 @@ namespace LCHFramework.Components.UI
     [RequireComponent(typeof(RectTransform))]
     public class SafeArea : DrivenRectTransformBehaviour
     {
-        protected virtual void LateUpdate()
+        private void Update()
         {
             Tracker.Clear();
             
