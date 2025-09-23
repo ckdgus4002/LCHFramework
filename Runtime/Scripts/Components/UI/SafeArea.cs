@@ -28,10 +28,10 @@ namespace LCHFramework.Components.UI
             Tracker.Add(this, RectTransformOrNull, DrivenTransformProperties.SizeDelta);
             var rootCanvasSize = ((RectTransform)RootCanvasOrNull.transform).rect.size;
             RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Screen.safeArea.width * (RootCanvasOrNull.renderMode == RenderMode.WorldSpace
-                ? rootCanvasSize.x / LCHFramework.Instance.targetScreenResolution.x
+                ? rootCanvasSize.x / Screen.height
                 : RootCanvasOrNull.scaleFactor.Reverse()));
             RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Screen.safeArea.height * (RootCanvasOrNull.renderMode == RenderMode.WorldSpace
-                ? rootCanvasSize.y / LCHFramework.Instance.targetScreenResolution.y
+                ? rootCanvasSize.y / Screen.height
                 : RootCanvasOrNull.scaleFactor.Reverse()));
         }
         
