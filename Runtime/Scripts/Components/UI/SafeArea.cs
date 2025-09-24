@@ -1,49 +1,49 @@
-﻿using LCHFramework.Data;
-using LCHFramework.Extensions;
-using LCHFramework.Managers;
+﻿using System;
 using LCHFramework.Utilities;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace LCHFramework.Components.UI
 {
-    [ExecuteAlways]
-    [RequireComponent(typeof(RectTransform))]
     public class SafeArea : DrivenRectTransformBehaviour
     {
-        private void Update()
+        [NonSerialized] private Vector2 _prevPosition;
+        [NonSerialized] private Vector2 _prevSize;
+        
+        
+        
+        protected override void OnReset()
         {
-            Tracker.Clear();
-            
-            SetSize();
-            SetAnchoredPosition();
+            _prevPosition = new Vector2(float.MinValue, float.MinValue);
+            _prevSize = new Vector2(float.MinValue, float.MinValue);
         }
         
         
         
-        private void SetSize()
+        protected override bool AllIsChanged()
         {
-            if (RootCanvasOrNull == null) return;
-            if (RootCanvasOrNull.renderMode == RenderMode.WorldSpace && LCHFramework.InstanceIsNull) return;
-            
-            Tracker.Add(this, RectTransformOrNull, DrivenTransformProperties.SizeDelta);
-            var rootCanvasSize = ((RectTransform)RootCanvasOrNull.transform).rect.size;
-            RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Screen.safeArea.width * (RootCanvasOrNull.renderMode == RenderMode.WorldSpace
-                ? rootCanvasSize.x / Screen.width
-                : RootCanvasOrNull.scaleFactor.Reverse()));
-            RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Screen.safeArea.height * (RootCanvasOrNull.renderMode == RenderMode.WorldSpace
-                ? rootCanvasSize.y / Screen.height
-                : RootCanvasOrNull.scaleFactor.Reverse()));
+            var result = _prevPosition != Screen.safeArea.position || _prevSize != Screen.safeArea.size;
+            _prevPosition = Screen.safeArea.position;
+            _prevSize = Screen.safeArea.size;
+            return result;
         }
-        
-        protected virtual Vector2 GetAnchoredPosition()
-            => OrientationManager.InstanceIsNull || OrientationManager.Instance.Orientation.Value is < Orientation.Portrait or > Orientation.LandscapeRight
-                ? Vector2.zero
-                : Screen.safeArea.center - ScreenUtility.HalfSize;
-        
-        private void SetAnchoredPosition()
+
+        protected override void SetAll()
         {
-            Tracker.Add(this, RectTransformOrNull, DrivenTransformProperties.AnchoredPosition);
-            RectTransformOrNull.anchoredPosition = GetAnchoredPosition();
+            Tracker.Add(this, RectTransformOrNull, DrivenTransformProperties.All);
+
+            RectTransformOrNull.anchorMin = Vector2Utility.Half;
+            RectTransformOrNull.anchorMax = Vector2Utility.Half;
+            RectTransformOrNull.pivot = Vector2Utility.Half;
+            RectTransformOrNull.rotation = Quaternion.identity;
+            RectTransformOrNull.localScale = Vector3.one;
+            var scaleFactor = RootCanvasOrNull.renderMode != RenderMode.WorldSpace ? RootCanvasOrNull.scaleFactor : Screen.height / (RootCanvasOrNull.worldCamera.orthographicSize * 2);
+            var insetAverage = new Vector2(Screen.width - Screen.safeArea.width, Screen.height - Screen.safeArea.height) * 0.5f;
+            RectTransformOrNull.position = (Screen.safeArea.position - insetAverage) / scaleFactor;
+            RectTransformOrNull.sizeDelta = Screen.safeArea.size / scaleFactor;
+            
+            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransformOrNull);
         }
     }
 }
