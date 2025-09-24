@@ -23,6 +23,8 @@ namespace LCHFramework.Components.UI
         
         protected override bool AllIsChanged()
         {
+            if (RootCanvasOrNull == null || RootCanvasOrNull.worldCamera == null) return false;
+            
             var result = _prevPosition != Screen.safeArea.position || _prevSize != Screen.safeArea.size;
             _prevPosition = Screen.safeArea.position;
             _prevSize = Screen.safeArea.size;
