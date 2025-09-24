@@ -6,42 +6,39 @@ using UnityEngine.UI;
 
 namespace LCHFramework.Components.UI
 {
-    public class ScaleControllerByScreenAspect : LayoutSelfController
+    public class ScaleControllerByScreenAspect : DrivenRectTransformBehaviour
     {
         [SerializeField] private float minScale = 1;
         
         
-        [NonSerialized] private float screenAspect;
         [NonSerialized] private float _prevScreenAspect;
+        [NonSerialized] private float _prevMinScale;
         
         
         
-        private void OnValidate() => _prevScreenAspect = 0; 
-        
-        
-        
-        protected override bool ScaleXIsChanged() => ScaleIsChanged();
-        
-        protected override void SetScaleX() => SetScale();
-        
-        protected override bool ScaleYIsChanged() => ScaleIsChanged();
-        
-        protected override void SetScaleY() => SetScale();
-        
-        
-        
-        private bool ScaleIsChanged()
+        protected override void OnReset()
         {
-            var result = !Mathf.Approximately(_prevScreenAspect, screenAspect = (float)Screen.width / Screen.height);
+            _prevScreenAspect = float.MinValue;
+            _prevMinScale = float.MinValue;
+        }
+        
+        
+        
+        protected override bool ScaleIsChanged()
+        {
+            var screenAspect = (float)Screen.width / Screen.height;
+            var result = !Mathf.Approximately(_prevScreenAspect, screenAspect) || !Mathf.Approximately(_prevMinScale, minScale);
             _prevScreenAspect = screenAspect;
+            _prevMinScale = minScale;
             return result;
         }
         
-        private void SetScale()
+        protected override void SetScale()
         {
             Tracker.Clear();
             Tracker.Add(this, RectTransformOrNull, DrivenTransformProperties.Scale);
             
+            var screenAspect = (float)Screen.width / Screen.height;
             var rectTransformAspect = RectTransformOrNull.rect.width / RectTransformOrNull.rect.height;
             RectTransformOrNull.localScale = Vector3Utility.New(Mathf.Max(screenAspect / rectTransformAspect, minScale));
             
