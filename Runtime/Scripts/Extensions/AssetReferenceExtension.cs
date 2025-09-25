@@ -12,7 +12,7 @@ namespace LCHFramework.Extensions
     {
         public static string GetAddress(this AssetReference asset)
         {
-            Assert.IsNull(asset);
+            Assert.IsNotNull(asset);
 #if UNITY_EDITOR
             if (AddressableAssetSettingsDefaultObject.Settings == null) return "";
 
