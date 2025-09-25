@@ -9,6 +9,7 @@ namespace LCHFramework.Components.UI
 {
     public class ScaleControllerByScreenAspect : DrivenRectTransformBehaviour
     {
+        public float aspectRatio = 1;
         public bool useMinScale;
         [ShowInInspector(nameof(useMinScale))] public float minScale = 1;
         public bool useMaxScale;
@@ -46,12 +47,11 @@ namespace LCHFramework.Components.UI
             Tracker.Add(this, RectTransform, DrivenTransformProperties.Scale);
             
             var screenAspect = (float)Screen.width / Screen.height;
-            var rectTransformAspect = RectTransform.rect.width / RectTransform.rect.height;
-            var aspectRatio = screenAspect / rectTransformAspect;
-            RectTransform.localScale = Vector3Utility.New(useMinScale && useMaxScale ? Mathf.Clamp(aspectRatio, minScale, maxScale)
-                    : useMinScale && !useMaxScale ? Mathf.Max(aspectRatio, minScale)
-                    : !useMinScale && useMaxScale ? Mathf.Min(aspectRatio, maxScale)
-                    : aspectRatio);
+            var scale = screenAspect / aspectRatio;
+            RectTransform.localScale = Vector3Utility.New(useMinScale && useMaxScale ? Mathf.Clamp(scale, minScale, maxScale)
+                    : useMinScale && !useMaxScale ? Mathf.Max(scale, minScale)
+                    : !useMinScale && useMaxScale ? Mathf.Min(scale, maxScale)
+                    : scale);
             
             if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
         }
