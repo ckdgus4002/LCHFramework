@@ -11,8 +11,11 @@ namespace LCHFramework.Components.UI
         
         
         
+#if UNITY_EDITOR
+        private void OnValidate() => OnReset();
+
         private void Reset() => OnReset();
-        
+#endif  
         private void Update()
         {
             if (AllIsChanged()) SetAll();
