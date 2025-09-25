@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.CompilerServices;
 using LCHFramework.Extensions;
 using LCHFramework.Managers.UI;
 using UniRx;
@@ -10,10 +9,16 @@ using UnityEngine.ResourceManagement.ResourceProviders;
 
 namespace LCHFramework.Managers
 {
+    public interface ILoadSceneUI
+    {
+        public Awaitable OnLoadSceneAsync(Func<string> getMessage, float fadeInDuration, float fadeOutDuration, Func<float> getPercentOrNull, Func<bool> getIsDone);
+    }
+    
     public enum LoadSceneMode
     {
         None,
         LoadingUI,
+        ScreenFadeUI,
     }
     
     public static class SceneManager
@@ -23,7 +28,7 @@ namespace LCHFramework.Managers
         
         
         private static bool isLoadingScene;
-        private static bool isUILoadingIsDone;
+        private static bool uiIsDone;
         private static AsyncOperationHandle<SceneInstance> loadScene;
         
         
@@ -36,19 +41,22 @@ namespace LCHFramework.Managers
         public static float DefaultFadeOutDuration(LoadSceneMode mode) => mode switch
         {
             LoadSceneMode.LoadingUI => Loading.DefaultFadeInTime,
+            LoadSceneMode.ScreenFadeUI => ScreenFader.DefaultFadeInTime,
             _ => 0
         };
         
         public static float DefaultFadeInDuration(LoadSceneMode mode) => mode switch
         {
             LoadSceneMode.LoadingUI => Loading.DefaultFadeOutTime,
+            LoadSceneMode.ScreenFadeUI => ScreenFader.DefaultFadeOutTime,
             _ => 0
         };
         
         public static string DefaultLoadingMessage(LoadSceneMode mode) => mode switch
         {
             LoadSceneMode.LoadingUI => Loading.DefaultLoadingMessage,
-            _ => string.Empty
+            LoadSceneMode.ScreenFadeUI => ScreenFader.DefaultFadeMessage,
+            _ => ""
         };
         
         public static async Awaitable LoadSceneAsync(string sceneAddress, LoadSceneMode mode, string message = "")
@@ -65,17 +73,23 @@ namespace LCHFramework.Managers
             MessageBroker.Default.Publish(new LoadSceneFadeOutMessage { sceneAddress = PrevSceneAddress, nextSceneAddress = sceneAddress });
             
             
-            isUILoadingIsDone = false;
+            uiIsDone = false;
             loadScene = default;
             var startTime = Time.time;
-            if (mode == LoadSceneMode.LoadingUI) _ = Loading.Instance.LoadAsync(
+            var loadSceneUIorNull = (ILoadSceneUI)(mode switch
+            {
+                LoadSceneMode.LoadingUI => Loading.Instance,
+                LoadSceneMode.ScreenFadeUI => ScreenFader.Instance,
+                _ => null
+            });
+            if (loadSceneUIorNull != null) _ = loadSceneUIorNull.OnLoadSceneAsync(
                 () => loadScene.IsValid() && loadScene.OperationException != null ? $"{LoadSceneErrorMessage} ({loadScene.OperationException})"
                     : loadScene.IsValid() && loadScene.Status == AsyncOperationStatus.Failed ? $"{LoadSceneErrorMessage} Status is Failed."
                     : loadingMessage,
                 fadeOutDuration,
                 fadeInDuration,
                 () => Math.Min(Time.time - (startTime + fadeOutDuration), !loadScene.IsValid() ? 0 : loadScene.PercentComplete),
-                () => isUILoadingIsDone);
+                () => uiIsDone);
             await Awaitable.WaitForSecondsAsync(fadeOutDuration);
             
             
@@ -95,7 +109,7 @@ namespace LCHFramework.Managers
             await Awaitable.WaitForSecondsAsync(startTime + fadeOutDuration + 1 - Time.time);
             
             
-            isUILoadingIsDone = true;
+            uiIsDone = true;
             await Awaitable.WaitForSecondsAsync(fadeInDuration);
             
             
