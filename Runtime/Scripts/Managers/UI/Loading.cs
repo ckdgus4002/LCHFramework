@@ -47,8 +47,8 @@ namespace LCHFramework.Managers.UI
         public Awaitable OnLoadSceneAsync(Func<string> getMessage, float fadeInDuration, float fadeOutDuration, Func<float> getPercentOrNull, Func<bool> getIsDone)
             => LoadAsync(getMessage, fadeInDuration, fadeOutDuration, getPercentOrNull, getIsDone);
         
-        public async Awaitable LoadAsync(Func<float> getPercentOrNull, Func<bool> getIsDone)
-            => await LoadAsync(() => LoadingMessages.Pick(), DefaultFadeInTime, DefaultFadeOutTime, getPercentOrNull, getIsDone);
+        public Awaitable LoadAsync(Func<float> getPercentOrNull, Func<bool> getIsDone)
+            => LoadAsync(() => LoadingMessages.Pick(), DefaultFadeInTime, DefaultFadeOutTime, getPercentOrNull, getIsDone);
         
         public async Awaitable LoadAsync(Func<string> getMessage, float fadeInTime, float fadeOutTime, Func<float> getPercentOrNull, Func<bool> getIsDone)
         {

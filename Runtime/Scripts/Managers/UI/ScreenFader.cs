@@ -47,11 +47,14 @@ namespace LCHFramework.Managers.UI
         
         public Awaitable OnLoadSceneAsync(Func<string> getMessage, float fadeInDuration, float fadeOutDuration, Func<float> getPercentOrNull, Func<bool> getIsDone)
             => FadeAsync(Color.black, getMessage, fadeInDuration, 0, fadeOutDuration, 0, getIsDone);
-
-        public async Awaitable FadeAsync(Color color, float fadeInDuration, float fadeOutDuration)
+        
+        public Awaitable FadeAsync(Color color, float fadeInDuration, float fadeOutDuration)
+            => FadeAsync(color, fadeInDuration, 0, fadeOutDuration, 0);
+        
+        public Awaitable FadeAsync(Color color, float fadeInDuration, int fadeInEase, float fadeOutDuration, int fadeOutEase)
         {
             var startTime = Time.time;
-            await FadeAsync(color, () => LoadingMessages.Pick(), fadeInDuration, 0, fadeOutDuration, 0, () => startTime + fadeInDuration + fadeOutDuration <= Time.time);
+            return FadeAsync(color, () => LoadingMessages.Pick(), fadeInDuration, fadeInEase, fadeOutDuration, fadeOutEase, () => startTime + fadeInDuration + fadeOutDuration <= Time.time);
         }
         
         public abstract Awaitable FadeAsync(Color color, Func<string> getMessage, float fadeInDuration, int fadeInEase, float fadeOutDuration, int fadeOutEase, Func<bool> getIsDone);
