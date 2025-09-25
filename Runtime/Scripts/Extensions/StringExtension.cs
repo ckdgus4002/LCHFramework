@@ -15,6 +15,6 @@ namespace LCHFramework.Extensions
         }
         
         public static string ToPascal(this string str)
-            => string.IsNullOrEmpty(str) ? string.Empty : Regex.Replace(str, "(?<!^)([A-Z])", " $1");
+            => string.IsNullOrEmpty(str) ? "" : Regex.Replace(str, "(?<!^)([A-Z])", " $1");
     }
 }

@@ -111,7 +111,7 @@ namespace LCHFramework.Components
         
         protected virtual void Awake()
         {
-            defaultName = name.Replace("(Clone)", string.Empty);
+            defaultName = name.Replace("(Clone)", "");
             
             if (transform is not RectTransform) InitializeTRS();
         }

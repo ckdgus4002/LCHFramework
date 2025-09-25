@@ -6,7 +6,7 @@ namespace LCHFramework.Managers.UI
 {
     public class MessageBox : MonoSingleton<MessageBox>
     {
-        private GameObject Wrapper => _wrapper == null ? _wrapper = transform.Find(nameof(Wrapper)).gameObject : _wrapper;
+        private GameObject Wrapper => _wrapper == null ? _wrapper = transform.GetChild(0).gameObject : _wrapper;
         private GameObject _wrapper;
         
         public MessageBoxItem[] Items => _items ??= GetComponentsInChildren<MessageBoxItem>(true);
