@@ -1,4 +1,5 @@
 using System;
+using LCHFramework.Attributes;
 using LCHFramework.Utilities;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -8,11 +9,15 @@ namespace LCHFramework.Components.UI
 {
     public class ScaleControllerByScreenAspect : DrivenRectTransformBehaviour
     {
-        [SerializeField] private float minScale = 1;
+        public bool useMinScale;
+        [ShowInInspector(nameof(useMinScale))] public float minScale = 1;
+        public bool useMaxScale;
+        [ShowInInspector(nameof(useMaxScale))] public float maxScale = 1;
         
         
         [NonSerialized] private float _prevScreenAspect;
         [NonSerialized] private float _prevMinScale;
+        [NonSerialized] private float _prevMaxScale;
         
         
         
@@ -20,6 +25,7 @@ namespace LCHFramework.Components.UI
         {
             _prevScreenAspect = float.MinValue;
             _prevMinScale = float.MinValue;
+            _prevMaxScale = float.MinValue;
         }
         
         
@@ -27,9 +33,10 @@ namespace LCHFramework.Components.UI
         protected override bool ScaleIsChanged()
         {
             var screenAspect = (float)Screen.width / Screen.height;
-            var result = !Mathf.Approximately(_prevScreenAspect, screenAspect) || !Mathf.Approximately(_prevMinScale, minScale);
+            var result = !Mathf.Approximately(_prevScreenAspect, screenAspect) || (useMinScale && !Mathf.Approximately(_prevMinScale, minScale)) || (useMaxScale && !Mathf.Approximately(_prevMaxScale, maxScale));
             _prevScreenAspect = screenAspect;
             _prevMinScale = minScale;
+            _prevMaxScale = maxScale;
             return result;
         }
         
@@ -40,7 +47,11 @@ namespace LCHFramework.Components.UI
             
             var screenAspect = (float)Screen.width / Screen.height;
             var rectTransformAspect = RectTransform.rect.width / RectTransform.rect.height;
-            RectTransform.localScale = Vector3Utility.New(Mathf.Max(screenAspect / rectTransformAspect, minScale));
+            var aspectRatio = screenAspect / rectTransformAspect;
+            RectTransform.localScale = Vector3Utility.New(useMinScale && useMaxScale ? Mathf.Clamp(aspectRatio, minScale, maxScale)
+                    : useMinScale && !useMaxScale ? Mathf.Max(aspectRatio, minScale)
+                    : !useMinScale && useMaxScale ? Mathf.Min(aspectRatio, maxScale)
+                    : aspectRatio);
             
             if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
         }
