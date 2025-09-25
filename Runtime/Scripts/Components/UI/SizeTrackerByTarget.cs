@@ -1,5 +1,6 @@
 using System;
 using LCHFramework.Attributes;
+using LCHFramework.Extensions;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -41,11 +42,11 @@ namespace LCHFramework.Components.UI
         protected override void SetSizeX()
         {
             Tracker.Clear();
-            Tracker.Add(this, RectTransformOrNull, DrivenTransformProperties.SizeDeltaX);
+            Tracker.Add(this, RectTransform, DrivenTransformProperties.SizeDeltaX);
             
-            RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, leftPadding + widthTarget.rect.size.x + rightPadding);
+            RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, leftPadding + (widthTarget.rect.size.x * RectTransform.lossyScale.x.Reverse()) + rightPadding);
             
-            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransformOrNull);
+            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
         }
 
         protected override bool SizeYIsChanged()
@@ -60,11 +61,11 @@ namespace LCHFramework.Components.UI
         protected override void SetSizeY()
         {
             Tracker.Clear();
-            Tracker.Add(this, RectTransformOrNull,DrivenTransformProperties.SizeDeltaY);
+            Tracker.Add(this, RectTransform,DrivenTransformProperties.SizeDeltaY);
             
-            RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, topPadding + heightTarget.rect.size.y + bottomPadding);
+            RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, topPadding + (heightTarget.rect.size.y * RectTransform.lossyScale.y.Reverse()) + bottomPadding);
             
-            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransformOrNull);
+            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
         }
 
         protected override bool SizeIsChanged()
@@ -80,12 +81,12 @@ namespace LCHFramework.Components.UI
         protected override void SetSize()
         {
             Tracker.Clear();
-            Tracker.Add(this, RectTransformOrNull, DrivenTransformProperties.SizeDelta);
+            Tracker.Add(this, RectTransform, DrivenTransformProperties.SizeDelta);
             
-            RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, leftPadding + widthTarget.rect.size.x + rightPadding);
-            RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, topPadding + heightTarget.rect.size.y + bottomPadding);
+            RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, leftPadding + (widthTarget.rect.size.x * RectTransform.lossyScale.x.Reverse()) + rightPadding);
+            RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, topPadding + (heightTarget.rect.size.y * RectTransform.lossyScale.y.Reverse()) + bottomPadding);
             
-            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransformOrNull);
+            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
         }
     }
 }

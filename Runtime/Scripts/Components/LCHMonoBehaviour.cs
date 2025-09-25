@@ -92,19 +92,19 @@ namespace LCHFramework.Components
         
         public float HalfHeight => Height * .5f;
         
-        public virtual float Width => transform is RectTransform ? RectTransformOrNull.rect.size.x
+        public virtual float Width => transform is RectTransform ? RectTransform.rect.size.x
                         : TryGetComponent<Renderer>(out var renderer) ? renderer.bounds.size.x
                         : TryGetComponent<Collider>(out var collider) ? collider.bounds.size.x
                         : throw new ArgumentOutOfRangeException(null, nameof(Width), null);
         
-        public virtual float Height => transform is RectTransform ? RectTransformOrNull.rect.size.y
+        public virtual float Height => transform is RectTransform ? RectTransform.rect.size.y
             : TryGetComponent<Renderer>(out var renderer) ? renderer.bounds.size.y
             : TryGetComponent<Collider>(out var collider) ? collider.bounds.size.y
             : throw new ArgumentOutOfRangeException(null, nameof(Height), null);
         
         public Canvas RootCanvasOrNull => !this.TryGetComponentInParent<Canvas>(out var result) ? null : result.rootCanvas;
         
-        public RectTransform RectTransformOrNull => _rectTransform == null ? _rectTransform = (RectTransform)transform : _rectTransform;
+        public RectTransform RectTransform => _rectTransform == null ? _rectTransform = (RectTransform)transform : _rectTransform;
         private RectTransform _rectTransform;
         
         
@@ -113,7 +113,7 @@ namespace LCHFramework.Components
         {
             defaultName = name.Replace("(Clone)", "");
             
-            if (transform is not RectTransform) InitializeTRS();
+            if (transform is not UnityEngine.RectTransform) InitializeTRS();
         }
         
         protected virtual void OnEnable()

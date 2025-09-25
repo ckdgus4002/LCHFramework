@@ -29,12 +29,12 @@ namespace LCHFramework.Components.UI
         protected override void SetSizeX()
         {
             Tracker.Clear();
-            Tracker.Add(this, RectTransformOrNull, DrivenTransformProperties.SizeDeltaX);
+            Tracker.Add(this, RectTransform, DrivenTransformProperties.SizeDeltaX);
 
             var screenAspect = (float)Screen.width / Screen.height;
-            RectTransformOrNull.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, screenAspect * RectTransformOrNull.rect.height);
+            RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, screenAspect * RectTransform.rect.height);
             
-            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransformOrNull);
+            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
         }
     }
 }

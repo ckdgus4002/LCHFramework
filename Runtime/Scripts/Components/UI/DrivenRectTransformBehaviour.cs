@@ -32,7 +32,7 @@ namespace LCHFramework.Components.UI
             base.OnDisable();
             
             Tracker.Clear();
-            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransformOrNull);
+            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
         }
         
         

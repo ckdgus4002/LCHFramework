@@ -36,13 +36,13 @@ namespace LCHFramework.Components.UI
         protected override void SetScale()
         {
             Tracker.Clear();
-            Tracker.Add(this, RectTransformOrNull, DrivenTransformProperties.Scale);
+            Tracker.Add(this, RectTransform, DrivenTransformProperties.Scale);
             
             var screenAspect = (float)Screen.width / Screen.height;
-            var rectTransformAspect = RectTransformOrNull.rect.width / RectTransformOrNull.rect.height;
-            RectTransformOrNull.localScale = Vector3Utility.New(Mathf.Max(screenAspect / rectTransformAspect, minScale));
+            var rectTransformAspect = RectTransform.rect.width / RectTransform.rect.height;
+            RectTransform.localScale = Vector3Utility.New(Mathf.Max(screenAspect / rectTransformAspect, minScale));
             
-            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransformOrNull);
+            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
         }
     }
 }

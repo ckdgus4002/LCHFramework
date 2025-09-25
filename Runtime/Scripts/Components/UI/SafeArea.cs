@@ -33,19 +33,19 @@ namespace LCHFramework.Components.UI
 
         protected override void SetAll()
         {
-            Tracker.Add(this, RectTransformOrNull, DrivenTransformProperties.All);
+            Tracker.Add(this, RectTransform, DrivenTransformProperties.All);
 
-            RectTransformOrNull.anchorMin = Vector2Utility.Half;
-            RectTransformOrNull.anchorMax = Vector2Utility.Half;
-            RectTransformOrNull.pivot = Vector2Utility.Half;
-            RectTransformOrNull.rotation = Quaternion.identity;
-            RectTransformOrNull.localScale = Vector3.one;
+            RectTransform.anchorMin = Vector2Utility.Half;
+            RectTransform.anchorMax = Vector2Utility.Half;
+            RectTransform.pivot = Vector2Utility.Half;
+            RectTransform.rotation = Quaternion.identity;
+            RectTransform.localScale = Vector3.one;
             var scaleFactor = RootCanvasOrNull.renderMode != RenderMode.WorldSpace ? RootCanvasOrNull.scaleFactor : Screen.height / (RootCanvasOrNull.worldCamera.orthographicSize * 2);
             var insetAverage = new Vector2(Screen.width - Screen.safeArea.width, Screen.height - Screen.safeArea.height) * 0.5f;
-            RectTransformOrNull.position = (Screen.safeArea.position - insetAverage) / scaleFactor;
-            RectTransformOrNull.sizeDelta = Screen.safeArea.size / scaleFactor;
+            RectTransform.position = (Screen.safeArea.position - insetAverage) / scaleFactor;
+            RectTransform.sizeDelta = Screen.safeArea.size / scaleFactor;
             
-            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransformOrNull);
+            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
         }
     }
 }
