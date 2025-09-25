@@ -10,8 +10,8 @@ namespace LCHFramework.Managers.UI
     [RequireComponent(typeof(CanvasGroup))]
     public abstract class ScreenFader : MonoSingleton<ScreenFader>, ILoadSceneUI
     {
-        public const float DefaultFadeInTime = 0.5f;
-        public const float DefaultFadeOutTime = 0.5f;
+        public const float DefaultFadeInDuration = 0.5f;
+        public const float DefaultFadeOutDuration = 0.5f;
         public const string DefaultFadeMessage = "";
         
         

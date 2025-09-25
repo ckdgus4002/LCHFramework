@@ -10,8 +10,8 @@ namespace LCHFramework.Managers.UI
     [RequireComponent(typeof(CanvasGroup))]
     public class Loading : MonoSingleton<Loading>, ILoadSceneUI
     {
-        public const float DefaultFadeInTime = 0.5f;
-        public const float DefaultFadeOutTime = 0.5f;
+        public const float DefaultFadeInDuration = 0.5f;
+        public const float DefaultFadeOutDuration = 0.5f;
         public const string DefaultLoadingMessage = "Loading...";
         
         
@@ -48,9 +48,9 @@ namespace LCHFramework.Managers.UI
             => LoadAsync(getMessage, fadeInDuration, fadeOutDuration, getPercentOrNull, getIsDone);
         
         public Awaitable LoadAsync(Func<float> getPercentOrNull, Func<bool> getIsDone)
-            => LoadAsync(() => LoadingMessages.Pick(), DefaultFadeInTime, DefaultFadeOutTime, getPercentOrNull, getIsDone);
+            => LoadAsync(() => LoadingMessages.Pick(), DefaultFadeInDuration, DefaultFadeOutDuration, getPercentOrNull, getIsDone);
         
-        public async Awaitable LoadAsync(Func<string> getMessage, float fadeInTime, float fadeOutTime, Func<float> getPercentOrNull, Func<bool> getIsDone)
+        public async Awaitable LoadAsync(Func<string> getMessage, float fadeInDuration, float fadeOutDuration, Func<float> getPercentOrNull, Func<bool> getIsDone)
         {
             if (IsShown) return;
             
@@ -58,12 +58,11 @@ namespace LCHFramework.Managers.UI
             var startTime = Time.time;
             while (true)
             {
-                CanvasGroup.alpha = (Time.time - startTime) / fadeInTime;
+                CanvasGroup.alpha = (Time.time - startTime) / fadeInDuration;
                 messageText.text = getMessage.Invoke();
-                slider.gameObject.SetActive(getPercentOrNull != null);
                 var isDone = getIsDone.Invoke();
                 slider.value = isDone ? 1 
-                    : getPercentOrNull != null && startTime + fadeInTime <= Time.time ? getPercentOrNull.Invoke() 
+                    : getPercentOrNull != null && startTime + fadeInDuration <= Time.time ? getPercentOrNull.Invoke() 
                     : 0;
                 if (!isDone) await Awaitable.NextFrameAsync();
                 else break;
@@ -72,8 +71,10 @@ namespace LCHFramework.Managers.UI
             var endTime = Time.time;
             while (true)
             {
-                CanvasGroup.alpha = 1 - (Time.time - endTime) / fadeOutTime;
-                if (Time.time - endTime <= fadeOutTime) await Awaitable.NextFrameAsync();
+                CanvasGroup.alpha = 1 - (Time.time - endTime) / fadeOutDuration;
+                messageText.text = getMessage.Invoke();
+                slider.value = 1;
+                if (Time.time - endTime <= fadeOutDuration) await Awaitable.NextFrameAsync();
                 else break;
             }
             

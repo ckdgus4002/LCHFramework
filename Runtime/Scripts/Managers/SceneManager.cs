@@ -40,15 +40,15 @@ namespace LCHFramework.Managers
         
         public static float DefaultFadeOutDuration(LoadSceneMode mode) => mode switch
         {
-            LoadSceneMode.LoadingUI => Loading.DefaultFadeInTime,
-            LoadSceneMode.ScreenFadeUI => ScreenFader.DefaultFadeInTime,
+            LoadSceneMode.LoadingUI => Loading.DefaultFadeInDuration,
+            LoadSceneMode.ScreenFadeUI => ScreenFader.DefaultFadeInDuration,
             _ => 0
         };
         
         public static float DefaultFadeInDuration(LoadSceneMode mode) => mode switch
         {
-            LoadSceneMode.LoadingUI => Loading.DefaultFadeOutTime,
-            LoadSceneMode.ScreenFadeUI => ScreenFader.DefaultFadeOutTime,
+            LoadSceneMode.LoadingUI => Loading.DefaultFadeOutDuration,
+            LoadSceneMode.ScreenFadeUI => ScreenFader.DefaultFadeOutDuration,
             _ => 0
         };
         
