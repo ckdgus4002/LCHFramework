@@ -48,7 +48,7 @@ namespace LCHFramework.Components.UI
             
             if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
         }
-
+        
         protected override bool SizeYIsChanged()
         {
             if (widthTarget != null || heightTarget == null) return false;
@@ -57,7 +57,7 @@ namespace LCHFramework.Components.UI
             _prevHeight = heightTarget.rect.size.y;
             return result;
         }
-
+        
         protected override void SetSizeY()
         {
             Tracker.Clear();
@@ -67,7 +67,7 @@ namespace LCHFramework.Components.UI
             
             if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
         }
-
+        
         protected override bool SizeIsChanged()
         {
             if (widthTarget == null || heightTarget == null) return false;
@@ -83,8 +83,8 @@ namespace LCHFramework.Components.UI
             Tracker.Clear();
             Tracker.Add(this, RectTransform, DrivenTransformProperties.SizeDelta);
             
-            RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, leftPadding + (widthTarget.rect.size.x * RectTransform.lossyScale.x.Reverse()) + rightPadding);
-            RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, topPadding + (heightTarget.rect.size.y * RectTransform.lossyScale.y.Reverse()) + bottomPadding);
+            RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, leftPadding + (widthTarget.rect.size.x * RectTransform.parent.lossyScale.x.Reverse()) + rightPadding);
+            RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, topPadding + (heightTarget.rect.size.y * RectTransform.parent.lossyScale.y.Reverse()) + bottomPadding);
             
             if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
         }
