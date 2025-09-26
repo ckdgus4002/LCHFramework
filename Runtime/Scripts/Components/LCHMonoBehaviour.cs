@@ -77,9 +77,9 @@ namespace LCHFramework.Components
         
         
         
-        [field: NonSerialized] public bool TRSIsInitialized { get; private set; }
-        [field: NonSerialized] public int EnableCount { get; private set; }
-        [field: NonSerialized] public int DisableCount { get; private set; }
+        public bool TRSIsInitialized { get; private set; }
+        public int EnableCount { get; private set; }
+        public int DisableCount { get; private set; }
         
         
         public bool IsDestroyed => this == null;
@@ -105,7 +105,7 @@ namespace LCHFramework.Components
         public Canvas RootCanvasOrNull => !this.TryGetComponentInParent<Canvas>(out var result) ? null : result.rootCanvas;
         
         public RectTransform RectTransform => _rectTransform == null ? _rectTransform = (RectTransform)transform : _rectTransform;
-        private RectTransform _rectTransform;
+        [NonSerialized] private RectTransform _rectTransform;
         
         
         
