@@ -93,7 +93,7 @@ namespace LCHFramework.Managers
             await Awaitable.WaitForSecondsAsync(fadeOutDuration);
             
             
-            UnityEngine.SceneManagement.SceneManager.LoadScene("TempScene");
+            UnityEngine.SceneManagement.SceneManager.LoadScene("LoadScene");
             
             
             PrevSceneAddress = SceneAddress;
