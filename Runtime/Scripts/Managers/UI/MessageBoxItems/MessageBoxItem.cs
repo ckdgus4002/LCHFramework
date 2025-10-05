@@ -1,7 +1,7 @@
 using System.Linq;
 using LCHFramework.Components;
 
-namespace LCHFramework.Managers.UI
+namespace LCHFramework.Managers.UI.MessageBoxItems
 {
     public class MessageBoxItem : LCHMonoBehaviour
     {
