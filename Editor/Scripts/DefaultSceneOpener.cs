@@ -11,8 +11,7 @@ namespace LCHFramework.Editor
         
         
         
-        // [MenuItem(LCHFramework.MenuItemRootPath + "/" + "Open Default Scene")]
-        [MenuItem("Tools/Open Default Scene")]
+        [MenuItem("Tools/Open Default Scene", false, 1100)]
         private static void OnMenuItemClick()
         {
             if (DefaultSceneOrNull == null) return;
