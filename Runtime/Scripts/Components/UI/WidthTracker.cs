@@ -1,4 +1,5 @@
 using System;
+using LCHFramework.Attributes;
 using LCHFramework.Extensions;
 using LCHFramework.Utilities;
 using UnityEngine;
@@ -10,6 +11,7 @@ namespace LCHFramework.Components.UI
     public class WidthTracker : DrivenRectTransformBehaviour
     {
         public RectTransform target;
+        [ShowInInspector(nameof(target))] public bool isReverseScale;
         
         
         [NonSerialized] private float _prevWidth;
@@ -45,7 +47,7 @@ namespace LCHFramework.Components.UI
             RectTransform.anchorMin = RectTransform.anchorMin.SetX(0.5f);
             RectTransform.anchorMax = RectTransform.anchorMin.SetX(0.5f);
             RectTransform.rotation = target.rotation;
-            RectTransform.localScale = Vector3.one;
+            RectTransform.localScale = new Vector3(1, isReverseScale ? -1 : 1, 1);
             var scaleFactor = RectTransform.parent.lossyScale.x;
             var size = target.rect.size.x * scaleFactor;
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size);
