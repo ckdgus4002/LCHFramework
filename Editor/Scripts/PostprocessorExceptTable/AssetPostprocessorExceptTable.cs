@@ -17,7 +17,7 @@ namespace LCHFramework.Editor
                     _instances = AssetDatabaseUtility.LoadAssetsByType<T>($"{typeof(T).Name}");
                     _instancesTime = Time.frameCount;
                 }
-
+                
                 return _instances;
             }
         }
@@ -32,16 +32,16 @@ namespace LCHFramework.Editor
         
         
         public bool IsExclude(string assetPath)
-            => IsExclude(assetPath, assetPath[assetPath.LastIndexOf('/')..assetPath.LastIndexOf('.')]);
+            => IsExclude(assetPath, assetPath[(assetPath.LastIndexOf('/') + 1)..assetPath.LastIndexOf('.')]);
         
         private bool IsExclude(string assetPath, string assetName)
         {
             if (!exceptAssetPathPrefix.IsEmpty() && exceptAssetPathPrefix.Any(t => assetPath[..t.Length] == t))
                 return true;
-
+            
             if (!exceptAssetNamePrefix.IsEmpty() && exceptAssetNamePrefix.Any(t => assetName[..t.Length] == t))
                 return true;
-                
+            
             return false;
         }
     }
