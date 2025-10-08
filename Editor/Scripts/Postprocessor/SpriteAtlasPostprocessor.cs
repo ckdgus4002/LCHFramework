@@ -43,7 +43,6 @@ namespace LCHFramework.Editor
             var textureSettings = spriteAtlas.GetTextureSettings();
             textureSettings.generateMipMaps = false;
             textureSettings.sRGB = true;
-            textureSettings.filterMode = FilterMode.Bilinear;
             if (spriteAtlasImporterOrNull == null) spriteAtlas.SetTextureSettings(textureSettings);
             else spriteAtlasImporterOrNull.textureSettings = textureSettings;
             
