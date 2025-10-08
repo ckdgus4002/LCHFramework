@@ -5,6 +5,7 @@ using UnityEngine.UI;
 namespace LCHFramework.Components.UI
 {
     [ExecuteAlways]
+    [DisallowMultipleComponent]
     public abstract class DrivenRectTransformBehaviour : LCHMonoBehaviour, ILayoutSelfController
     {
         protected DrivenRectTransformTracker Tracker { get; } = new();

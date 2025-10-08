@@ -43,7 +43,9 @@ namespace LCHFramework.Components.UI
             var scaleFactor = RootCanvasOrNull.renderMode != RenderMode.WorldSpace ? RootCanvasOrNull.scaleFactor : Screen.height / (RootCanvasOrNull.worldCamera.orthographicSize * 2);
             var insetAverage = new Vector2(Screen.width - Screen.safeArea.width, Screen.height - Screen.safeArea.height) * 0.5f;
             RectTransform.position = (Screen.safeArea.position - insetAverage) / scaleFactor;
-            RectTransform.sizeDelta = Screen.safeArea.size / scaleFactor;
+            var size = Screen.safeArea.size / scaleFactor;
+            RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
+            RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
             
             if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
         }
