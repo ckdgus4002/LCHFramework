@@ -36,10 +36,10 @@ namespace LCHFramework.Editor
         
         private bool IsExclude(string assetPath, string assetName)
         {
-            if (!exceptAssetPathPrefix.IsEmpty() && exceptAssetPathPrefix.Any(t => assetPath[..t.Length] == t))
+            if (!exceptAssetPathPrefix.IsEmpty() && exceptAssetPathPrefix.Any(t => t.Length <= assetPath.Length && assetPath[..t.Length] == t))
                 return true;
             
-            if (!exceptAssetNamePrefix.IsEmpty() && exceptAssetNamePrefix.Any(t => assetName[..t.Length] == t))
+            if (!exceptAssetNamePrefix.IsEmpty() && exceptAssetNamePrefix.Any(t => t.Length <= assetName.Length && assetName[..t.Length] == t))
                 return true;
             
             return false;
