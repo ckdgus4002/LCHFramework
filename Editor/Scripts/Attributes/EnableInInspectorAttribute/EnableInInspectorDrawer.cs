@@ -15,10 +15,5 @@ namespace LCHFramework.Editor.Attributes
             EditorGUI.PropertyField(position, property, label, property.isExpanded);
             GUI.enabled = prevEnabled;
         }
-        
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-        {
-            return EditorGUI.GetPropertyHeight(property, label);
-        }
-    }   
+    }
 }

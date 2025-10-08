@@ -49,7 +49,7 @@ namespace LCHFramework.Components.UI
             RectTransform.rotation = target.rotation;
             RectTransform.localScale = new Vector3(isReverseScale.x ? -1 : 1, isReverseScale.y ? -1 : 1, 1);
             var scaleFactor = RectTransform.parent.lossyScale;
-            var size = target.rect.size * scaleFactor;
+            var size = target.rect.size / scaleFactor;
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
             
