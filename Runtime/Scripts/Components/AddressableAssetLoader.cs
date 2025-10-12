@@ -17,7 +17,7 @@ namespace LCHFramework.Components
         
         private void Start()
         {
-            if (loadOnStart) _ = LoadAsync();
+            if (LoadOnStart) _ = LoadAsync();
         }
         
         
