@@ -64,18 +64,14 @@ namespace LCHFramework
         
         private void Update()
         {
-            {
-                var screenSize = new Vector2(Screen.width, Screen.height);
-                if (screenSize != PrevScreenSize) MessageBroker.Default.Publish(new ScreenSizeChangedMessage());
-                PrevScreenSize = screenSize;   
-            }
+            var screenSize = new Vector2(Screen.width, Screen.height);
+            if (screenSize != PrevScreenSize) MessageBroker.Default.Publish(new ScreenSizeChangedMessage());
+            PrevScreenSize = screenSize;
 
-            if (Camera.main is not null)
-            {
-                var mainCameraAspect = Camera.main.aspect;
-                if (!Mathf.Approximately(mainCameraAspect, PrevMainCameraAspect)) MessageBroker.Default.Publish(new MainCameraAspectChangedMessage());
-                PrevMainCameraAspect = mainCameraAspect;    
-            }
+            if (Camera.main == null) return;
+            var mainCameraAspect = Camera.main.aspect;
+            if (!Mathf.Approximately(mainCameraAspect, PrevMainCameraAspect)) MessageBroker.Default.Publish(new MainCameraAspectChangedMessage());
+            PrevMainCameraAspect = mainCameraAspect;
         }
     }
 }
