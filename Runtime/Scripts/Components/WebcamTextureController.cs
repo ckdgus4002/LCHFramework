@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using LCHFramework.Data;
 using LCHFramework.Extensions;
@@ -15,7 +17,7 @@ namespace LCHFramework.Components
         [SerializeField] private bool playOnEnable = true;
         [SerializeField] private bool stopOnDisable = true;
         public WebCamDeviceType webCamDeviceType = WebCamDeviceType.FrontFacing; 
-        public RawImage[] rawImages;
+        public List<RawImage> rawImages;
         
         
         private CancellationTokenSource _getWebcamTextureCts;
@@ -46,7 +48,7 @@ namespace LCHFramework.Components
 #if UNITY_EDITOR
         private void Reset()
         {
-            rawImages = !gameObject.TryGetComponentsInChildren<RawImage>(true, out var result) ? Array.Empty<RawImage>() : result;
+            rawImages = !gameObject.TryGetComponentsInChildren<RawImage>(true, out var result) ? new List<RawImage>() : result.ToList();
         }
 #endif
         protected override void OnEnable()
@@ -71,7 +73,9 @@ namespace LCHFramework.Components
         
         
         
-        private void OnOrientationChanged(Orientation orientation) => rawImages.ForEach(t => t.rectTransform.localEulerAngles = t.rectTransform.localEulerAngles.SetZ(orientation != Orientation.LandscapeRight ? 0 : 180));
+        private void OnOrientationChanged(Orientation orientation) => rawImages
+            .Where(t => t != null)
+            .ForEach(t => t.rectTransform.localEulerAngles = t.rectTransform.localEulerAngles.SetZ(orientation != Orientation.LandscapeRight ? 0 : 180));
         
         
         
@@ -81,7 +85,7 @@ namespace LCHFramework.Components
         {
             var webcamTextureOrNull = await GetWebcamTextureOrNull();
             
-            rawImages.ForEach(t => t.texture = webcamTextureOrNull);
+            rawImages.Where(t => t != null).ForEach(t => t.texture = webcamTextureOrNull);
             if (webcamTextureOrNull != null) webcamTextureOrNull.Play();
         }
         
