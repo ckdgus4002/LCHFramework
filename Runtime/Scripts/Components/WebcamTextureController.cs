@@ -48,7 +48,7 @@ namespace LCHFramework.Components
         {
             rawImages = !gameObject.TryGetComponentsInChildren<RawImage>(true, out var result) ? Array.Empty<RawImage>() : result;
         }
-#endif  
+#endif
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -89,7 +89,7 @@ namespace LCHFramework.Components
         {
             var webcamTextureOrNull = GetWebcamTextureOrNull(false);
                         
-            if (webcamTextureOrNull != null) webcamTextureOrNull.Pause();;
+            if (webcamTextureOrNull != null) webcamTextureOrNull.Pause();
         }
         
         public void Stop()
