@@ -1,3 +1,4 @@
 .vs/
 .idea/
-Runtime/Scripts/Managers/SceneManager/LoadScene.unity*
+Runtime/Scripts/Managers/SceneManager/LoadScene.unity
+Runtime/Scripts/Managers/SceneManager/LoadScene.unity.meta
