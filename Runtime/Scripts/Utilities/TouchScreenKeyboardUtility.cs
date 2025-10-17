@@ -11,10 +11,10 @@ namespace LCHFramework.Utilities
         public static float GetHeight()
         {
 #if UNITY_ANDROID
-            using var unityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+            using var window = Application.CurrentActivity.Call<AndroidJavaObject>("getWindow");
+            using var decorView = window.Call<AndroidJavaObject>("getDecorView");
             using var rect = new AndroidJavaObject("android.graphics.Rect");
-            var view = unityClass.GetStatic<AndroidJavaObject>("currentActivity").Get<AndroidJavaObject>("mUnityPlayer").Call<AndroidJavaObject>("getView");
-            view.Call("getWindowVisibleDisplayFrame", rect);
+            decorView.Call("getWindowVisibleDisplayFrame", rect);
             return Screen.height - rect.Call<int>("height");
 #else
             return TouchScreenKeyboard.area.height;
