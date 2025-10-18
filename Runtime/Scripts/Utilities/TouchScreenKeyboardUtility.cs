@@ -10,7 +10,7 @@ namespace LCHFramework.Utilities
         /// </remarks>
         public static float GetHeight()
         {
-#if UNITY_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
             using var window = Application.CurrentActivity.Call<AndroidJavaObject>("getWindow");
             using var decorView = window.Call<AndroidJavaObject>("getDecorView");
             using var rect = new AndroidJavaObject("android.graphics.Rect");
