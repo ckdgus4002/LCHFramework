@@ -1,3 +1,5 @@
+using System;
+using LCHFramework.Extensions;
 using TMPro;
 using UnityEngine;
 
@@ -17,15 +19,15 @@ namespace LCHFramework.Managers.UI
         private GameObject Wrapper => _wrapper == null ? _wrapper = transform.GetChild(0).gameObject : _wrapper;
         private GameObject _wrapper;
         
-        private TMP_Text Text => _text == null ? _text = GetComponentInChildren<TMP_Text>(true) : _text;
-        private TMP_Text _text;
+        private TMP_Text[] Texts => _texts ??= GetComponentsInChildren<TMP_Text>(true);
+        [NonSerialized] private TMP_Text[] _texts;
         
         
         
         public virtual async Awaitable Show(string message, float fadeInDuration = DefaultFadeInDuration, float fadeOutDuration = DefaultFadeOutDuration)
         {
             Wrapper.SetActive(true);
-            Text.text = message;
+            Texts.ForEach(text => text.text = message);
             var startTime = Time.time;
             while (true)
             {

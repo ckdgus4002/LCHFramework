@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using LCHFramework.Extensions;
 using TMPro;
 using UnityEngine;
@@ -14,9 +13,6 @@ namespace LCHFramework.Managers.UI
         public const float DefaultFadeOutDuration = 0.5f;
         public const string DefaultFadeMessage = "";
         
-        
-        
-        public TMP_Text messageText;
         
         
         public override bool IsShown => Wrapper.activeSelf;
@@ -34,15 +30,10 @@ namespace LCHFramework.Managers.UI
         
         protected Image Image => _image == null ? _image = GetComponentInChildren<Image>(true) : _image;
         private Image _image;
+            
+        protected TMP_Text Text => _text == null ? _text = GetComponentInChildren<TMP_Text>(true) : _text;
+        private TMP_Text _text;
         
-        
-        
-#if UNITY_EDITOR
-        private void Reset()
-        {
-            messageText = GetComponentsInChildren<TMP_Text>().FirstOrDefault(t => t.name.Contains("Message", StringComparison.OrdinalIgnoreCase) && t.name.Contains("Text", StringComparison.OrdinalIgnoreCase));
-        }
-#endif  
         
         
         public Awaitable OnLoadSceneAsync(Func<string> getMessage, float fadeInDuration, float fadeOutDuration, Func<float> getPercentOrNull, Func<bool> getIsDone)
