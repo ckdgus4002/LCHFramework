@@ -18,8 +18,13 @@ namespace LCHFramework
         
         
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void RuntimeInitializeOnLoadMethod() => CreateGameObjectIfInstanceIsNull();
-        
+        private static void RuntimeInitializeOnLoadMethod()
+        {
+            var lchFrameworkOrNull = Resources.Load<LCHFramework>(nameof(LCHFramework));
+            if (lchFrameworkOrNull == null) CreateGameObjectIfInstanceIsNull();
+            else InstantiateIfInstanceIsNull(() => lchFrameworkOrNull);
+        }
+
         public static Coroutine PlayAnimations<T>(IEnumerable<(float, T)> animations, Action<int, T> action, bool loop = false) => PlayAnimations(Instance, animations, action, loop);
         
         public static Coroutine PlayAnimations<T>(MonoBehaviour monoBehaviour, IEnumerable<(float, T)> animations, Action<int, T> action, bool loop = false)
