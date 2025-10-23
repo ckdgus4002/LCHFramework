@@ -3,7 +3,6 @@ using LCHFramework.Attributes;
 using LCHFramework.Extensions;
 using LCHFramework.Utilities;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace LCHFramework.Components.UI
@@ -52,7 +51,7 @@ namespace LCHFramework.Components.UI
             var size = target.rect.size.x / scaleFactor;
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size);
             
-            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(RectTransform);
         }
     }
 }

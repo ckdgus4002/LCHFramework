@@ -2,7 +2,6 @@ using System;
 using LCHFramework.Attributes;
 using LCHFramework.Utilities;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace LCHFramework.Components.UI
@@ -53,7 +52,7 @@ namespace LCHFramework.Components.UI
                     : !useMinScale && useMaxScale ? Mathf.Min(scale, maxScale)
                     : scale);
             
-            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(RectTransform);
         }
     }
 }

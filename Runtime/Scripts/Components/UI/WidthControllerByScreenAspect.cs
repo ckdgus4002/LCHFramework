@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace LCHFramework.Components.UI
@@ -34,7 +33,7 @@ namespace LCHFramework.Components.UI
             var screenAspect = (float)Screen.width / Screen.height;
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, screenAspect * RectTransform.rect.height);
             
-            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(RectTransform);
         }
     }
 }
