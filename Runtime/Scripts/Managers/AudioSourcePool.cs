@@ -75,6 +75,8 @@ namespace LCHFramework.Managers
 
         public SoundPlayResult Play(AudioClip audioClip, float volume, bool loop, Vector3 position, AudioPlayType audioPlayType)
         {
+            if (audioClip == null) return SoundPlayResult.fail;
+            
             var isPlayingAudioSources = IsPlayingAudioSources.ToArray();
             var isPlaying = IsPlaying(isPlayingAudioSources);
             var canFadeAudioSourceVolume = name == SoundManager.Bgm;
