@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace LCHFramework
+namespace LCHFramework.Components
 {
     [RequireComponent(typeof(Rigidbody))]
     public class ParabolaVelocitor : MonoBehaviour
