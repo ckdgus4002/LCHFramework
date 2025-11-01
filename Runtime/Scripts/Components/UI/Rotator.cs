@@ -9,7 +9,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using Debug = LCHFramework.Utilities.Debug;
 
 namespace LCHFramework.Components.UI
 {

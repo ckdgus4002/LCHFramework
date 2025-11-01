@@ -1,6 +1,5 @@
 ﻿using UnityEditor;
 using UnityEditor.Callbacks;
-using Debug = LCHFramework.Utilities.Debug;
 
 namespace LCHFramework.Editor
 {

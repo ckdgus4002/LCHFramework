@@ -7,7 +7,6 @@ using LCHFramework.Extensions;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Networking;
-using Debug = LCHFramework.Utilities.Debug;
 
 namespace LCHFramework.Managers
 {

@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using Debug = LCHFramework.Utilities.Debug;
 
 namespace LCHFramework.Editor
 {

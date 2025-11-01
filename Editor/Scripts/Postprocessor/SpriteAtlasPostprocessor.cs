@@ -7,7 +7,6 @@ using UnityEditor.AddressableAssets;
 using UnityEditor.U2D;
 using UnityEngine;
 using UnityEngine.U2D;
-using Debug = LCHFramework.Utilities.Debug;
 
 namespace LCHFramework.Editor
 {

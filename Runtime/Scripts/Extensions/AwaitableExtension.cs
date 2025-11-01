@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using Debug = LCHFramework.Utilities.Debug;
 
 namespace LCHFramework.Extensions
 {

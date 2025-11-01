@@ -6,7 +6,6 @@ using LCHFramework.Attributes;
 using LCHFramework.Extensions;
 using UniRx;
 using UnityEngine;
-using Debug = LCHFramework.Utilities.Debug;
 
 namespace LCHFramework.Managers.StepManager
 {
