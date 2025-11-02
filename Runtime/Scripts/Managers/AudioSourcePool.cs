@@ -11,15 +11,6 @@ namespace LCHFramework.Managers
 {
     public class AudioSourcePool : MonoBehaviour
     {
-        public static void StopAudioSource(AudioSource audioSource)
-        {
-            audioSource.Stop();
-            audioSource.time = audioSource.clip.length;      // 끝 위치(초 단위)로 점프
-            audioSource.timeSamples = audioSource.clip.samples - 1; // (정밀하게는 샘플 단위)
-        }
-        
-        
-        
         private readonly List<AudioSource> audioSources = new();
         private ObjectPool<AudioSource> audioSourcePool;
         private readonly Dictionary<AudioSource, CompositeDisposable> audioSourceDisposables = new();
@@ -150,6 +141,8 @@ namespace LCHFramework.Managers
         
         
         public void StopAllAudioSources() => audioSources.ForEach(StopAudioSource);
+        
+        private void StopAudioSource(AudioSource audioSource) => audioSource.Stop();
 
         public void ClearAudioSourcePool() => audioSourcePool.Clear();
     }
