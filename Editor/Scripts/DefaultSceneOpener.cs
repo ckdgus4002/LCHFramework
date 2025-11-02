@@ -11,7 +11,7 @@ namespace LCHFramework.Editor
         
         
         
-        [MenuItem("Tools/Open Default Scene", false, 1100)]
+        [MenuItem("Tools/Open Default Scene", false, int.MaxValue)]
         private static void OnMenuItemClick()
         {
             if (DefaultSceneOrNull == null) return;
@@ -23,5 +23,5 @@ namespace LCHFramework.Editor
         {
             EditorSceneManager.OpenScene(DefaultSceneOrNull.path);
         }
-    }   
+    }
 }

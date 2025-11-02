@@ -5,8 +5,8 @@ using LCHFramework.Editor.Utilities;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.U2D;
-using UnityEngine;
 using UnityEngine.U2D;
+using Object = UnityEngine.Object;
 
 namespace LCHFramework.Editor
 {
@@ -30,7 +30,7 @@ namespace LCHFramework.Editor
             var includeInBuild = AddressableAssetSettingsDefaultObject.Settings?.FindAssetEntry(AssetDatabase.AssetPathToGUID(spriteAtlasPath)) == null;
             if (spriteAtlasImporterOrNull == null) spriteAtlas.SetIncludeInBuild(includeInBuild);
             else spriteAtlasImporterOrNull.includeInBuild = includeInBuild;
-
+            
             var packingSettings = spriteAtlas.GetPackingSettings();
             packingSettings.enableRotation = false;
             packingSettings.enableTightPacking = false;
@@ -38,7 +38,7 @@ namespace LCHFramework.Editor
             packingSettings.padding = 4;
             if (spriteAtlasImporterOrNull == null) spriteAtlas.SetPackingSettings(packingSettings);
             else spriteAtlasImporterOrNull.packingSettings = packingSettings;
-
+            
             var textureSettings = spriteAtlas.GetTextureSettings();
             textureSettings.generateMipMaps = false;
             textureSettings.sRGB = true;
@@ -61,7 +61,7 @@ namespace LCHFramework.Editor
             SpriteAtlasUtility.PackAtlases(new[] { spriteAtlas }, EditorUserBuildSettings.activeBuildTarget);
             SyncPlatformSettings();
             
-            Debug.Log($"OnPostprocessSpriteAtlas: {spriteAtlasPath}");
+            Debug.Log($"{nameof(OnPostprocessSpriteAtlas)}: {spriteAtlasPath}");
         }
         
         /// <remarks>

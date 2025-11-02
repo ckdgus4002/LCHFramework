@@ -11,7 +11,7 @@ namespace LCHFramework.Editor
         {
             var audioImporter = (AudioImporter)assetImporter;
             if (AudioPostprocessorExceptTable.Instances.Any(t => t.IsExclude(audioImporter.assetPath))) return;
-
+            
             const bool isMobile = true;
             var isBgm = audioImporter.assetPath.Contains("bgm", StringComparison.OrdinalIgnoreCase);
             var isSfx = audioImporter.assetPath.Contains("sfx", StringComparison.OrdinalIgnoreCase);
@@ -37,7 +37,7 @@ namespace LCHFramework.Editor
             
             foreach (var platformGroup in Application.PlatformGroups) audioImporter.ClearSampleSettingOverride($"{platformGroup}");
             
-            Debug.Log($"OnPostprocessAudio: {assetPath}");
+            Debug.Log($"{nameof(OnPostprocessAudio)}: {assetPath}");
         }
     }   
 }
