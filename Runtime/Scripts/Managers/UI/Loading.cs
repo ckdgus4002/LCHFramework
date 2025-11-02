@@ -16,7 +16,7 @@ namespace LCHFramework.Managers.UI
         
         
         
-        public TMP_Text messageText;
+        public TMP_Text messageTextOrNull;
         public Slider slider;
         
         
@@ -38,7 +38,7 @@ namespace LCHFramework.Managers.UI
 #if UNITY_EDITOR
         private void Reset()
         {
-            messageText = GetComponentsInChildren<TMP_Text>().FirstOrDefault(t => t.name.Contains("Message", StringComparison.OrdinalIgnoreCase) && t.name.Contains("Text", StringComparison.OrdinalIgnoreCase));
+            messageTextOrNull = GetComponentsInChildren<TMP_Text>().FirstOrDefault(t => t.name.Contains("Message", StringComparison.OrdinalIgnoreCase) && t.name.Contains("Text", StringComparison.OrdinalIgnoreCase));
             slider = GetComponentInChildren<Slider>();
         }
 #endif  
@@ -59,7 +59,7 @@ namespace LCHFramework.Managers.UI
             while (true)
             {
                 CanvasGroup.alpha = (Time.time - startTime) / fadeInDuration;
-                messageText.text = getMessage.Invoke();
+                if (messageTextOrNull != null) messageTextOrNull.text = getMessage.Invoke();
                 var isDone = getIsDone.Invoke();
                 slider.value = isDone ? 1 
                     : getPercentOrNull != null && startTime + fadeInDuration <= Time.time ? getPercentOrNull.Invoke() 
@@ -72,7 +72,7 @@ namespace LCHFramework.Managers.UI
             while (true)
             {
                 CanvasGroup.alpha = 1 - (Time.time - endTime) / fadeOutDuration;
-                messageText.text = getMessage.Invoke();
+                if (messageTextOrNull != null) messageTextOrNull.text = getMessage.Invoke();
                 slider.value = 1;
                 if (Time.time - endTime <= fadeOutDuration) await Awaitable.NextFrameAsync();
                 else break;
