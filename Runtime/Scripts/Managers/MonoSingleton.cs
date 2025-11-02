@@ -39,7 +39,7 @@ namespace LCHFramework.Managers
         
         public static T Instance
         {
-            get => _instance ?? (Instance = FindFirstObjectByType<T>());
+            get => _instance ?? (Instance = FindFirstObjectByType<T>(FindObjectsInactive.Include));
             private set => Singleton.EnsureInstance(value, _instance, t => _instance = t, t => Destroy(t.DestroyTarget));
         }
         private static T _instance;
