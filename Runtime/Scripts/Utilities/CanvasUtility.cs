@@ -10,6 +10,8 @@ namespace LCHFramework.Utilities
         
         public static float GetScaleFactor() => GetScaleFactor(OrientationManager.Instance.Orientation.Value, LCHFramework.Instance.targetScreenResolution);
         
+        public static float GetScaleFactor(Vector2 targetScreenResolution) => GetScaleFactor(targetScreenResolution.x <= targetScreenResolution.y ? Orientation.Portrait : Orientation.LandscapeLeft, targetScreenResolution);
+        
         public static float GetScaleFactor(Orientation orientation, Vector2 targetScreenResolution) => orientation switch
         {
             >= Orientation.Portrait and <= Orientation.PortraitUpsideDown => Screen.width / targetScreenResolution.x,
