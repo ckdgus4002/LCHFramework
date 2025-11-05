@@ -8,12 +8,12 @@ namespace LCHFramework.Utilities
     {
         public static float GetScaleFactor(Canvas canvas) => canvas.scaleFactor;
         
-        public static float GetScaleFactor() => GetScaleFactor(OrientationManager.Instance.Orientation.Value);
+        public static float GetScaleFactor() => GetScaleFactor(OrientationManager.Instance.Orientation.Value, LCHFramework.Instance.targetScreenResolution);
         
-        public static float GetScaleFactor(Orientation orientation)  => orientation switch
+        public static float GetScaleFactor(Orientation orientation, Vector2 targetScreenResolution) => orientation switch
         {
-            >= Orientation.Portrait and <= Orientation.PortraitUpsideDown => Screen.width / LCHFramework.Instance.targetScreenResolution.x,
-            >= Orientation.LandscapeLeft and <= Orientation.LandscapeRight => Screen.height / LCHFramework.Instance.targetScreenResolution.y,
+            >= Orientation.Portrait and <= Orientation.PortraitUpsideDown => Screen.width / targetScreenResolution.x,
+            >= Orientation.LandscapeLeft and <= Orientation.LandscapeRight => Screen.height / targetScreenResolution.y,
             _ => -1
         };
     }
