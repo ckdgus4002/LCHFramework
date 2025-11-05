@@ -33,6 +33,7 @@ namespace LCHFramework.Managers
         public virtual bool IsDestroyPrevInstance => true;
     }
     
+    [DisallowMultipleComponent]
     public class MonoSingleton<T> : AbstractMonoSingleton where T : MonoSingleton<T>
     {
         public static bool InstanceIsNull => Instance is null;
