@@ -25,20 +25,13 @@ namespace LCHFramework.Managers
         
         private void Update()
         {
-#if UNITY_EDITOR
-            if (UnityEngine.Application.isEditor)
-            {
-                var mainGameViewSize = Handles.GetMainGameViewSize();
-                Orientation.Value = mainGameViewSize.x <= mainGameViewSize.y ? Data.Orientation.Portrait : Data.Orientation.LandscapeLeft;
-                return;
-            }
-#endif
+#if !UNITY_EDITOR
+            var mainGameViewSize = Handles.GetMainGameViewSize();
+            Orientation.Value = mainGameViewSize.x <= mainGameViewSize.y ? Data.Orientation.Portrait : Data.Orientation.LandscapeLeft;
+#else
             var orientationIndex = Screen.orientation != ScreenOrientation.AutoRotation ? (int)Screen.orientation : (int)Input.deviceOrientation;
-            if (orientationIndex is > 0 and < 5)
-            {
-                Orientation.Value = (Orientation)orientationIndex;
-                return;
-            }
+            Orientation.Value = orientationIndex is < 1 or > 4 ? Orientation.Value : (Orientation)orientationIndex;
+#endif
         }
     }
 }
