@@ -14,18 +14,6 @@ namespace LCHFramework
 {
     public static class Application
     {
-        public static bool isEditor
-        {
-            get
-            {
-#if UNITY_EDITOR
-                return true;
-#else
-                return UnityEngine.Application.isEditor;
-#endif
-            }
-        }
-        
         public static Version version => _version ??= new Version(UnityEngine.Application.version);
         private static Version _version;
         
