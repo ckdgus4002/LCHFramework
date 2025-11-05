@@ -17,10 +17,13 @@ namespace LCHFramework.Managers
         
         public virtual bool IsDestroyPrevInstance => true;
         
+        public bool IsDestroyed { get; private set; }
+        
         
         
         public virtual void Dispose()
         {
+            IsDestroyed = true;
             if (Instance == this)
             {
                 Instance = null;

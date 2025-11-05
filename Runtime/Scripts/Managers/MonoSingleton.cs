@@ -9,6 +9,8 @@ namespace LCHFramework.Managers
     {
         /// False면 기존것을 유지하고, True면 기존것을 파괴합니다.
         public bool IsDestroyPrevInstance { get; }
+        
+        public bool IsDestroyed { get; }
     }
     
     public static class Singleton
@@ -20,7 +22,10 @@ namespace LCHFramework.Managers
                 ? prevInstanceOrNull
                 : value);
             if (prevInstanceOrNull is not null && prevInstanceOrNull != value)
-                disposeInstance.Invoke(valueIsNull || value.IsDestroyPrevInstance ? prevInstanceOrNull : value);
+            {
+                var instance = valueIsNull || value.IsDestroyPrevInstance ? prevInstanceOrNull : value;
+                if (!instance.IsDestroyed) disposeInstance.Invoke(instance);
+            }
         }
     }
     
