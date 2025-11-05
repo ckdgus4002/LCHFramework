@@ -28,6 +28,6 @@ namespace LCHFramework.Components
         }
         
         protected virtual void SetPixelDragThresholdInch(int defaultPixelDragThreshold)
-            => EventSystem.pixelDragThreshold = Math.Max(defaultPixelDragThreshold, Mathf.RoundToInt(defaultPixelDragThreshold * Screen.dpi / mediumDensityScreenDpi));
+            => EventSystem.pixelDragThreshold = Math.Max(defaultPixelDragThreshold, Mathf.RoundToInt(defaultPixelDragThreshold * UnityEngine.Screen.dpi / mediumDensityScreenDpi));
     }
 }

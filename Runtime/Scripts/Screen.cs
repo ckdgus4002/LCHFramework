@@ -5,26 +5,26 @@ namespace LCHFramework
 {
     public static class Screen
     {
-        public static Vector2 Size => new(width, height);
+        public static Vector2Int Size => new(width, height);
         
-        public static float width
+        public static int width
         {
             get
             {
 #if UNITY_EDITOR
-                return Handles.GetMainGameViewSize().x;
+                return (int)Handles.GetMainGameViewSize().x;
 #else
                 return Screen.width;
 #endif
             }
         }
         
-        public static float height
+        public static int height
         {
             get
             {
 #if UNITY_EDITOR
-                return Handles.GetMainGameViewSize().y;
+                return (int)Handles.GetMainGameViewSize().y;
 #else
                 return Screen.height;
 #endif

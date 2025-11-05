@@ -28,9 +28,9 @@ namespace LCHFramework.Components.UI
         {
             if (RootCanvasOrNull == null || (RootCanvasOrNull.renderMode == RenderMode.WorldSpace && RootCanvasOrNull.worldCamera == null)) return false;
             
-            var result = _prevPosition != Screen.safeArea.position || _prevSize != Screen.safeArea.size;
-            _prevPosition = Screen.safeArea.position;
-            _prevSize = Screen.safeArea.size;
+            var result = _prevPosition != UnityEngine.Screen.safeArea.position || _prevSize != UnityEngine.Screen.safeArea.size;
+            _prevPosition = UnityEngine.Screen.safeArea.position;
+            _prevSize = UnityEngine.Screen.safeArea.size;
             return result;
         }
 
@@ -43,12 +43,12 @@ namespace LCHFramework.Components.UI
             RectTransform.pivot = Vector2Utility.Half;
             RectTransform.rotation = Quaternion.identity;
             RectTransform.localScale = Vector3.one;
-            var scaleFactor = RootCanvasOrNull.renderMode != RenderMode.WorldSpace ? RootCanvasOrNull.scaleFactor : Screen.height / (RootCanvasOrNull.worldCamera.orthographicSize * 2);
+            var scaleFactor = RootCanvasOrNull.renderMode != RenderMode.WorldSpace ? RootCanvasOrNull.scaleFactor : UnityEngine.Screen.height / (RootCanvasOrNull.worldCamera.orthographicSize * 2);
             if (scaleFactor == 0) return;
-            var insetAverage = new Vector2(Screen.width - Screen.safeArea.width, Screen.height - Screen.safeArea.height) * 0.5f;
-            var position = new Vector2((sizeModeX == SizeMode.SafeArea ? (Screen.safeArea.position.x - insetAverage.x) : 0 ) / scaleFactor, (sizeModeY == SizeMode.SafeArea ? (Screen.safeArea.position.y - insetAverage.y) : 0 ) / scaleFactor);
+            var insetAverage = new Vector2(UnityEngine.Screen.width - UnityEngine.Screen.safeArea.width, UnityEngine.Screen.height - UnityEngine.Screen.safeArea.height) * 0.5f;
+            var position = new Vector2((sizeModeX == SizeMode.SafeArea ? (UnityEngine.Screen.safeArea.position.x - insetAverage.x) : 0 ) / scaleFactor, (sizeModeY == SizeMode.SafeArea ? (UnityEngine.Screen.safeArea.position.y - insetAverage.y) : 0 ) / scaleFactor);
             RectTransform.localPosition = new Vector2(float.IsInfinity(position.x) ? 0 : position.x, float.IsInfinity(position.y) ? 0 : position.y);
-            var size = new Vector2((sizeModeX == SizeMode.SafeArea ? Screen.safeArea.size.x : Screen.width) / scaleFactor, (sizeModeY == SizeMode.SafeArea ? Screen.safeArea.size.y : Screen.height) / scaleFactor);
+            var size = new Vector2((sizeModeX == SizeMode.SafeArea ? UnityEngine.Screen.safeArea.size.x : UnityEngine.Screen.width) / scaleFactor, (sizeModeY == SizeMode.SafeArea ? UnityEngine.Screen.safeArea.size.y : UnityEngine.Screen.height) / scaleFactor);
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, float.IsInfinity(size.x) ? RectTransform.rect.width : size.x);
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, float.IsInfinity(size.y) ? RectTransform.rect.height : size.y);
             
