@@ -14,6 +14,19 @@ namespace LCHFramework
 {
     public static class Application
     {
+        public static Vector2 ScreenSize
+        {
+            get
+            {
+#if UNITY_EDITOR
+                var mainGameViewSize = Handles.GetMainGameViewSize();
+                return new Vector2(mainGameViewSize.x, mainGameViewSize.y);
+#else
+                return new Vector2(Screen.width, Screen.height);
+#endif
+            }
+        }
+
         public static Version version => _version ??= new Version(UnityEngine.Application.version);
         private static Version _version;
         
