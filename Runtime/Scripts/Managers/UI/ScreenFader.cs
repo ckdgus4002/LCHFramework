@@ -15,7 +15,7 @@ namespace LCHFramework.Managers.UI
         
         
         
-        public override bool IsShown => Wrapper.activeSelf;
+        public override bool IsShown => Wrapper.activeInHierarchy;
         
         protected override bool IsDontDestroyOnLoad => transform.parent == null;
         

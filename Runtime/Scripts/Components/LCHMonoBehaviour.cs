@@ -86,20 +86,20 @@ namespace LCHFramework.Components
         
         public virtual int Index => transform.GetSiblingIndex();
         
-        public virtual bool IsShown => gameObject.activeSelf;
+        public virtual bool IsShown => gameObject.activeInHierarchy;
         
         public float HalfWidth => Width * .5f;
         
         public float HalfHeight => Height * .5f;
         
         public virtual float Width => transform is RectTransform ? RectTransform.rect.size.x
-                        : TryGetComponent<Renderer>(out var renderer) ? renderer.bounds.size.x
-                        : TryGetComponent<Collider>(out var collider) ? collider.bounds.size.x
+                        : TryGetComponent<Renderer>(out var result1) ? result1.bounds.size.x
+                        : TryGetComponent<Collider>(out var result2) ? result2.bounds.size.x
                         : throw new ArgumentOutOfRangeException(null, nameof(Width), null);
         
         public virtual float Height => transform is RectTransform ? RectTransform.rect.size.y
-            : TryGetComponent<Renderer>(out var renderer) ? renderer.bounds.size.y
-            : TryGetComponent<Collider>(out var collider) ? collider.bounds.size.y
+            : TryGetComponent<Renderer>(out var result1) ? result1.bounds.size.y
+            : TryGetComponent<Collider>(out var result2) ? result2.bounds.size.y
             : throw new ArgumentOutOfRangeException(null, nameof(Height), null);
         
         public Canvas RootCanvasOrNull => !this.TryGetComponentInParent<Canvas>(out var result) ? null : result.rootCanvas;
