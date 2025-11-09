@@ -14,7 +14,7 @@ namespace LCHFramework
 #if UNITY_EDITOR
                 return (int)Handles.GetMainGameViewSize().x;
 #else
-                return Screen.width;
+                return UnityEngine.Screen.width;
 #endif
             }
         }
@@ -26,7 +26,7 @@ namespace LCHFramework
 #if UNITY_EDITOR
                 return (int)Handles.GetMainGameViewSize().y;
 #else
-                return Screen.height;
+                return UnityEngine.Screen.height;
 #endif
             }
         }
