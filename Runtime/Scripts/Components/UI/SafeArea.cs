@@ -49,8 +49,8 @@ namespace LCHFramework.Components.UI
             var position = new Vector2((sizeModeX == SizeMode.SafeArea ? (UnityEngine.Screen.safeArea.position.x - insetAverage.x) : 0 ) / scaleFactor, (sizeModeY == SizeMode.SafeArea ? (UnityEngine.Screen.safeArea.position.y - insetAverage.y) : 0 ) / scaleFactor);
             RectTransform.localPosition = new Vector2(float.IsInfinity(position.x) ? 0 : position.x, float.IsInfinity(position.y) ? 0 : position.y);
             var size = new Vector2((sizeModeX == SizeMode.SafeArea ? UnityEngine.Screen.safeArea.size.x : UnityEngine.Screen.width) / scaleFactor, (sizeModeY == SizeMode.SafeArea ? UnityEngine.Screen.safeArea.size.y : UnityEngine.Screen.height) / scaleFactor);
-            RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, float.IsInfinity(size.x) ? RectTransform.rect.width : size.x);
-            RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, float.IsInfinity(size.y) ? RectTransform.rect.height : size.y);
+            RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, float.IsInfinity(size.x) ? Width : size.x);
+            RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, float.IsInfinity(size.y) ? Height : size.y);
             
             LayoutRebuilder.ForceRebuildLayoutImmediate(RectTransform);
         }

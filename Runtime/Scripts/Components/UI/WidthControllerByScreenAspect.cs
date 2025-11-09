@@ -31,7 +31,7 @@ namespace LCHFramework.Components.UI
             Tracker.Add(this, RectTransform, DrivenTransformProperties.SizeDeltaX);
 
             var screenAspect = (float)Screen.width / Screen.height;
-            RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, screenAspect * RectTransform.rect.height);
+            RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, screenAspect * Height);
             
             LayoutRebuilder.ForceRebuildLayoutImmediate(RectTransform);
         }
