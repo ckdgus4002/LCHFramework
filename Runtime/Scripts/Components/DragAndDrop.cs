@@ -22,15 +22,12 @@ namespace LCHFramework.Components
         {
             var result = new Vector3[4];
             if (target is RectTransform targetRectTransform)
-            {
                 targetRectTransform.GetWorldCorners(result);
-            }
             else
             {
                 var bounds = target.TryGetComponent<Collider2D>(out var result0) ? result0.bounds
                         : target.TryGetComponent<Renderer>(out var result1) ? result1.bounds
-                        : throw new OutOfRangeException("bounds")
-                    ;
+                        : throw new OutOfRangeException("bounds");
                 var targetPosition = target.position;
                 result[0] = targetPosition + bounds.min;
                 result[1] = targetPosition + new Vector3(bounds.min.x, bounds.max.y, 0);

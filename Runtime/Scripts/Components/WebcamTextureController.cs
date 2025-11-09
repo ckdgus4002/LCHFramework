@@ -23,25 +23,23 @@ namespace LCHFramework.Components
         private CancellationTokenSource _getWebcamTextureCts;
         
         
-        private WebCamTexture GetWebcamTextureOrNull(bool canCache)
-            => !canCache ? _webcamTexture : throw new NotImplementedException("Instead of using this method, use GetWebcamTextureOrNull()."); 
-        
         public async Awaitable<WebCamTexture> GetWebcamTextureOrNull()
         {
-            if (_webcamTexture == null)
+            if (_webcamTextureOrNull == null)
             {
                 await RequestUserCameraPermissionAsync();
 
                 await Awaitable.NextFrameAsync();
 
-                var webCamDeviceExists = WebCamTexture.devices.TryFirstOrDefault(t => (webCamDeviceType & WebCamDeviceType.FrontFacing) != 0 && t.isFrontFacing
-                    , out var webCamDevice);
-                _webcamTexture = !webCamDeviceExists ? null : new WebCamTexture(webCamDevice.name);
+                var webCamDeviceExists = WebCamTexture.devices.TryFirstOrDefault(t => 
+                    (webCamDeviceType & WebCamDeviceType.FrontFacing) != 0 && t.isFrontFacing,
+                    out var webCamDevice);
+                _webcamTextureOrNull = !webCamDeviceExists ? null : new WebCamTexture(webCamDevice.name);
             }
             
-            return _webcamTexture;
+            return _webcamTextureOrNull;
         }
-        private WebCamTexture _webcamTexture;
+        private WebCamTexture _webcamTextureOrNull;
         
         
         
@@ -91,16 +89,12 @@ namespace LCHFramework.Components
         
         public void Pause()
         {
-            var webcamTextureOrNull = GetWebcamTextureOrNull(false);
-                        
-            if (webcamTextureOrNull != null) webcamTextureOrNull.Pause();
+            if (_webcamTextureOrNull != null) _webcamTextureOrNull.Pause();
         }
         
         public void Stop()
         {
-            var webcamTextureOrNull = GetWebcamTextureOrNull(false);
-            
-            if (webcamTextureOrNull != null) webcamTextureOrNull.Stop();
+            if (_webcamTextureOrNull != null) _webcamTextureOrNull.Stop();
         }
         
         

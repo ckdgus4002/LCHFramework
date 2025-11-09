@@ -95,12 +95,12 @@ namespace LCHFramework.Components
         public virtual float Width => transform is RectTransform ? RectTransform.rect.size.x
                         : TryGetComponent<Renderer>(out var result1) ? result1.bounds.size.x
                         : TryGetComponent<Collider>(out var result2) ? result2.bounds.size.x
-                        : throw new ArgumentOutOfRangeException(null, nameof(Width), null);
+                        : -1;
         
         public virtual float Height => transform is RectTransform ? RectTransform.rect.size.y
             : TryGetComponent<Renderer>(out var result1) ? result1.bounds.size.y
             : TryGetComponent<Collider>(out var result2) ? result2.bounds.size.y
-            : throw new ArgumentOutOfRangeException(null, nameof(Height), null);
+            : -1;
         
         public Canvas RootCanvasOrNull => !this.TryGetComponentInParent<Canvas>(out var result) ? null : result.rootCanvas;
         
