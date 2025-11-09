@@ -99,7 +99,9 @@ namespace LCHFramework.Managers
         public virtual SoundPlayResult Play(AudioClip audioClip, string audioSourcePoolName = DefaultAudioSourcePoolName, AudioPlayType audioPlayType = DefaultAudioPlayType, float volume = DefaultVolume, bool loop = DefaultLoop, Vector3? position = null)
         {
             var audioSourcePool = !audioSourcePools.TryGetValue(audioSourcePoolName, out var result) ? audioSourcePools[DefaultAudioSourcePoolName] : result;
-            return audioSourcePool.Play(audioClip, volume, loop, position ?? transform.position, audioPlayType);
+            var soundPlayResult = audioSourcePool.Play(audioClip, volume, loop, position ?? transform.position, audioPlayType);
+            Debug.Log($"[SoundManager] Play: {(audioClip == null ? "Null" : audioClip.name)}, Result: {soundPlayResult.isSuccess}.");
+            return soundPlayResult;
         }
         
         public void StopAll() => audioSourcePools.ForEach(t => t.Value.StopAllAudioSources());

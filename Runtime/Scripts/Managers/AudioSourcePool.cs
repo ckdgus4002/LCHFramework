@@ -16,9 +16,9 @@ namespace LCHFramework.Managers
         private readonly Dictionary<AudioSource, CompositeDisposable> audioSourceDisposables = new();
         
         
-        public bool IsPlaying(IEnumerable<AudioSource> isPlayingAudioSources = null) => !(isPlayingAudioSources ?? IsPlayingAudioSources).IsEmpty();
+        public bool IsPlaying(IEnumerable<AudioSource> isPlayingAudioSources = null) => !(isPlayingAudioSources ?? PlayingAudioSources).IsEmpty();
         
-        public IEnumerable<AudioSource> IsPlayingAudioSources => audioSources.Where(t => t != null && t.isPlaying);
+        public IEnumerable<AudioSource> PlayingAudioSources => audioSources.Where(t => t != null && t.isPlaying);
         
         
         
@@ -68,13 +68,15 @@ namespace LCHFramework.Managers
         {
             if (audioClip == null) return SoundPlayResult.fail;
             
-            var isPlayingAudioSources = IsPlayingAudioSources.ToArray();
+            var isPlayingAudioSources = PlayingAudioSources.ToArray();
             var isPlaying = IsPlaying(isPlayingAudioSources);
             var canFadeAudioSourceVolume = name == SoundManager.Bgm;
             if (audioPlayType == AudioPlayType.StoppableAudio && canFadeAudioSourceVolume)
             {
                 var audioSource = audioSourcePool.Get();
-                isPlayingAudioSources.ForEach(t => StartCoroutine(FadeAudioSourceVolumeCor(t, 0, callback: () =>
+                if (isPlayingAudioSources.IsEmpty()) return PlayAudioSource(audioSource, audioClip, volume, loop, position, canFadeAudioSourceVolume);
+
+                isPlayingAudioSources.ForEach((t, i) => StartCoroutine(FadeAudioSourceVolumeCor(t, 0, callback: i < isPlayingAudioSources.Length - 1 ? null : () => 
                 {
                     isPlayingAudioSources.ForEach(StopAudioSource);
                     PlayAudioSource(audioSource, audioClip, volume, loop, position, canFadeAudioSourceVolume);
