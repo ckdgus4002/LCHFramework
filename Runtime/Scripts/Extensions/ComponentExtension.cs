@@ -51,7 +51,7 @@ namespace LCHFramework.Extensions
         public static bool TryGetComponentsInChildren<T>(this Component component, bool includeInactive, out T[] result)
             => component.gameObject.TryGetComponentsInChildren(includeInactive, out result); 
         
-        public static void RadioActiveInSiblings(this Component component, bool value)
+        public static void RadioActive(this Component component, bool value)
             => component.ActionInSiblings<Transform>(sibling => sibling.SetActive(sibling == component.transform ? value : !value));
 
         public static void ActionInSiblings<T>(this Component component, Action<T> action)
