@@ -129,7 +129,7 @@ namespace LCHFramework
         
         
         
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        [RuntimeInitializeOnLoadMethod]
         private static void RuntimeInitializeOnLoadMethod()
         {
             Observable.OnceApplicationQuit().Subscribe(_ =>
