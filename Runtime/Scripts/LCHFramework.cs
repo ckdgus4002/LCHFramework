@@ -17,7 +17,7 @@ namespace LCHFramework
 #endif
         
         
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        [RuntimeInitializeOnLoadMethod]
         private static void RuntimeInitializeOnLoadMethod()
         {
             var lchFrameworkOrNull = Resources.Load<LCHFramework>(nameof(LCHFramework));

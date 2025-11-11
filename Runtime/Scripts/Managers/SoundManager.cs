@@ -56,7 +56,7 @@ namespace LCHFramework.Managers
         
         
         
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        [RuntimeInitializeOnLoadMethod]
         private static void RuntimeInitializeOnLoadMethod() => CreateGameObjectIfInstanceIsNull();
         
         

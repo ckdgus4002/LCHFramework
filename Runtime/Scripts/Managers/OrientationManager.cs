@@ -10,7 +10,7 @@ namespace LCHFramework.Managers
     [ExecuteAlways]
     public class OrientationManager : MonoSingleton<OrientationManager>
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        [RuntimeInitializeOnLoadMethod]
         private static void RuntimeInitializeOnLoadMethod() => CreateGameObjectIfInstanceIsNull();
         
         
