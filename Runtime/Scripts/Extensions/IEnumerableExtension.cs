@@ -11,19 +11,19 @@ namespace LCHFramework.Extensions
         private static readonly Random Random = new();
         public static T Pick<T>(this IEnumerable<T> enumerable)
             => enumerable.ElementAt(Random.Next(enumerable.Count()));
-
+        
         public static bool TryFirstOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate, out T result)
             => !EqualityComparer<T>.Default.Equals(result = enumerable.FirstOrDefault(predicate), default);
         
         public static bool TryLastOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate, out T result)
             => !EqualityComparer<T>.Default.Equals(result = enumerable.LastOrDefault(predicate), default);
-
+        
         public static bool Exists<T>(this IEnumerable<T> enumerable)
             => !enumerable.IsEmpty();
         
         public static bool IsEmpty<T>(this IEnumerable<T> enumerable)
             => enumerable == null || !enumerable.Any();
-
+        
         public static bool TryIndexOf<T>(this IEnumerable<T> enumerable, T value, out int result)
             => -1 < (result = enumerable.IndexOf(value));
         
@@ -40,13 +40,13 @@ namespace LCHFramework.Extensions
             }
             return -1;
         }
-
+        
         public static T ClampedElementAt<T>(this IEnumerable<T> enumerable, int index)
             => enumerable.ElementAt(Math.Clamp(index, 0, enumerable.Count() - 1));
         
         public static T ClampedElementAt<T>(this IEnumerable<T> enumerable, int index, int min, int max) 
             => enumerable.ElementAt(Math.Clamp(index, min, max));
-
+        
         public static void RadioActive<T>(this IEnumerable<T> components, T item, bool value) where T : Component
             => components.Select(t => t.gameObject).RadioActive(item.gameObject, value);
         
@@ -63,6 +63,23 @@ namespace LCHFramework.Extensions
         public static void SetActive(this IEnumerable<GameObject> gameObjects, bool value)
         {
             foreach (var gameObject in gameObjects) gameObject.SetActive(value);
+        }
+        
+        public static int FindIndex<T>(this IEnumerable<T> enumerable, Predicate<T> match)
+        {
+            var i = 0;
+            var result = -1;
+            foreach (var t in enumerable)
+            {
+                if (!match.Invoke(t))
+                    i++;
+                else
+                {
+                    result = i;
+                    break;
+                }
+            }
+            return result;
         }
         
         public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
