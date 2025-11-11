@@ -13,7 +13,7 @@ namespace LCHFramework.Components
         
         private void OnGUI()
         {
-            var rect = new Rect(Vector2.zero, new Vector2(Screen.width, Screen.height));
+            var rect = new Rect(Vector2.zero, Screen.Size);
             var guiLabel = $"FPS: {(int)Time.deltaTime.Reverse()}"
                            + $"\nMem: {FileUtility.ToHumanReadableFileSize(Profiler.GetTotalAllocatedMemoryLong(), 2)}"
                            + $"\n!Mem: {FileUtility.ToHumanReadableFileSize(Profiler.GetTotalUnusedReservedMemoryLong(), 2)}"
