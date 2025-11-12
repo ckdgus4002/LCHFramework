@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEditor;
 
 namespace LCHFramework.Editor
@@ -7,8 +8,8 @@ namespace LCHFramework.Editor
         private void OnPreprocessTexture()
         {
             var textureImporter = (TextureImporter)assetImporter;
-            // if (SpritePostprocessorExceptTable.Instances.Any(t => t.IsExclude(textureImporter.assetPath))) return;
             if (textureImporter.textureType != TextureImporterType.Sprite) return;
+            if (SpritePostprocessorExceptTable.Instances.Any(t => t.IsExclude(textureImporter.assetPath))) return;
             
             textureImporter.spritePixelsPerUnit = 1;
             
