@@ -6,22 +6,22 @@ namespace LCHFramework.Components.UI
 {
     public class WidthControllerByScreenAspect : DrivenRectTransformBehaviour
     {
-        [NonSerialized] private float _prevScreenAspect;
+        [NonSerialized] private float _prevScreenAspectRatio;
         
         
         
         protected override void OnReset()
         {
-            _prevScreenAspect = float.MinValue;
+            _prevScreenAspectRatio = float.MinValue;
         }
         
         
         
         protected override bool SizeXIsChanged()
         {
-            var screenAspect = (float)Screen.width / Screen.height;
-            var result = !Mathf.Approximately(_prevScreenAspect, screenAspect);
-            _prevScreenAspect = screenAspect;
+            var screenAspectRatio = Screen.AspectRatio;
+            var result = !Mathf.Approximately(_prevScreenAspectRatio, screenAspectRatio);
+            _prevScreenAspectRatio = screenAspectRatio;
             return result;
         }
         
@@ -29,9 +29,8 @@ namespace LCHFramework.Components.UI
         {
             Tracker.Clear();
             Tracker.Add(this, RectTransform, DrivenTransformProperties.SizeDeltaX);
-
-            var screenAspect = (float)Screen.width / Screen.height;
-            RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, screenAspect * Height);
+            
+            RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Screen.AspectRatio * Height);
             
             LayoutRebuilder.ForceRebuildLayoutImmediate(RectTransform);
         }
