@@ -1,12 +1,9 @@
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using LCHFramework.Editor.Utilities;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.U2D;
 using UnityEngine.U2D;
-using Object = UnityEngine.Object;
 
 namespace LCHFramework.Editor
 {
@@ -45,6 +42,11 @@ namespace LCHFramework.Editor
             if (spriteAtlasImporterOrNull == null) spriteAtlas.SetTextureSettings(textureSettings);
             else spriteAtlasImporterOrNull.textureSettings = textureSettings;
             
+            var defaultPlatformSettings = spriteAtlas.GetPlatformSettings("DefaultTexturePlatform"); 
+            defaultPlatformSettings.textureCompression = TextureImporterCompression.CompressedHQ;
+            if (spriteAtlasImporterOrNull == null) spriteAtlas.SetPlatformSettings(defaultPlatformSettings);
+            else spriteAtlasImporterOrNull.SetPlatformSettings(defaultPlatformSettings);
+            
             foreach (var platformGroup in Application.PlatformGroups)
             {
                 var platformSettings = spriteAtlas.GetPlatformSettings($"{platformGroup}");
@@ -53,22 +55,7 @@ namespace LCHFramework.Editor
                 else spriteAtlasImporterOrNull.SetPlatformSettings(platformSettings);
             }
             
-            spriteAtlas.Remove(spriteAtlas.GetPackables());
-            const string getPackableTargetsMethodName = "GetPackableTargets";
-            var getPackableTargetsOrNull = AssemblyUtility.InvokeMethod($"{nameof(LCHFramework)}.Editor.{nameof(SpriteAtlasPostprocessor)}_{getPackableTargetsMethodName}", getPackableTargetsMethodName, BindingFlags.NonPublic | BindingFlags.Static, null, new object[] { spriteAtlasImporterOrNull, spriteAtlas });
-            var packableTargets = getPackableTargetsOrNull == null ? new[] { AssetDatabase.LoadAssetAtPath<Object>(spriteAtlasPath[..spriteAtlasPath.LastIndexOf('/')]) } : (Object[])getPackableTargetsOrNull; 
-            spriteAtlas.Add(packableTargets);
-            SpriteAtlasUtility.PackAtlases(new[] { spriteAtlas }, EditorUserBuildSettings.activeBuildTarget);
-            SyncPlatformSettings();
-            
             Debug.Log($"{nameof(OnPostprocessSpriteAtlas)}: {spriteAtlasPath}");
-        }
-        
-        /// <remarks>
-        /// https://github.com/Unity-Technologies/UnityCsReference/blob/master/Editor/Mono/2D/SpriteAtlas/SpriteAtlasInspector.cs#L253
-        /// </remarks>
-        private static void SyncPlatformSettings()
-        {
         }
     }
 }
