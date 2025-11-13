@@ -27,10 +27,10 @@ namespace LCHFramework.Components.UI
             {
                 case AspectMode.FitInParent:
                 {
-                    RectTransform.localPosition = Vector2.zero;
                     RectTransform.sizeDelta = Vector2.zero;
                     RectTransform.anchorMin = Vector2.zero;
                     RectTransform.anchorMax = Vector2.one;
+                    RectTransform.anchoredPosition = Vector2.zero;
                     
                     var scale = Vector3.one;
                     var parentSize = ((RectTransform)RectTransform.parent).rect.size;
