@@ -6,8 +6,10 @@ namespace LCHFramework
     public static class Screen
     {
         public static float AspectRatio => (float)width / height;
-        
+
         public static Vector2Int Size => new(width, height);
+        
+        public static Vector2 HalfSize => new(width * 0.5f, height * 0.5f);
         
         public static int width
         {
