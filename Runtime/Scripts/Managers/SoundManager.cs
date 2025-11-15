@@ -96,6 +96,12 @@ namespace LCHFramework.Managers
             LocalVolumes.Add(poolName, new ReactiveProperty<float> { Value = DefaultVolume });
         }
         
+        public SoundPlayResult Play(string audioClipAddress, string audioSourcePoolName = DefaultAudioSourcePoolName, AudioPlayType audioPlayType = DefaultAudioPlayType, float volume = DefaultVolume, bool loop = DefaultLoop, Vector3? position = null)
+        {
+            var audioClip = AddressablesLoadManager<AudioClip>.LoadAssetAsync(audioClipAddress).WaitForCompletion();
+            return Play(audioClip, audioSourcePoolName, audioPlayType, volume, loop, position);
+        }
+        
         public virtual SoundPlayResult Play(AudioClip audioClip, string audioSourcePoolName = DefaultAudioSourcePoolName, AudioPlayType audioPlayType = DefaultAudioPlayType, float volume = DefaultVolume, bool loop = DefaultLoop, Vector3? position = null)
         {
             var audioSourcePool = !audioSourcePools.TryGetValue(audioSourcePoolName, out var result) ? audioSourcePools[DefaultAudioSourcePoolName] : result;
