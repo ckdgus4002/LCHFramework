@@ -10,22 +10,18 @@ namespace LCHFramework.Extensions
 {
     public static class AssetReferenceExtension
     {
-        public static string GetAddress(this AssetReference asset)
+        public static string GetAddress(this AssetReference assetReference)
         {
-            Assert.IsNotNull(asset);
-#if UNITY_EDITOR
-            if (AddressableAssetSettingsDefaultObject.Settings == null) return "";
-
-            var assetEntry = AddressableAssetSettingsDefaultObject.Settings.FindAssetEntry(asset.AssetGUID);
-            if (assetEntry == null) return "";
+            Assert.IsNotNull(assetReference);
             
-            return assetEntry.address;
+#if UNITY_EDITOR
+            var assetEntry = AddressableAssetSettingsDefaultObject.Settings == null ? null : AddressableAssetSettingsDefaultObject.Settings.FindAssetEntry(assetReference.AssetGUID);
+            return assetEntry == null ? "" : assetEntry.address;
 #else
-            var resourceLocations = Addressables.LoadResourceLocationsAsync(asset.RuntimeKey).WaitForCompletion();
-            if (resourceLocations.IsEmpty()) return "";
-
-            return resourceLocations.First().PrimaryKey;
+            return Addressables.LoadResourceLocationsAsync(assetReference.RuntimeKey).WaitForCompletion().FirstOrDefault().PrimaryKey;
 #endif
         }
+        
+        public static bool IsEmpty(this AssetReference assetReference) => !UnityEngine.Application.isPlaying ? assetReference.AssetGUID == string.Empty : !assetReference.RuntimeKeyIsValid();
     }
 }
