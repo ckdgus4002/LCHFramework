@@ -5,7 +5,7 @@ using UnityEngine.U2D;
 
 namespace LCHFramework.Managers
 {
-    public class SpriteAtlasBindingManager
+    internal class SpriteAtlasBindingManager
     {
         private static readonly Dictionary<string, SpriteAtlas> SpriteAtlases = new();
         
