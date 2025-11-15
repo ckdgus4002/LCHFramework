@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
-using UnityEngine;
+using LCHFramework.Extensions;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.U2D;
+using Object = UnityEngine.Object;
 
 namespace LCHFramework.Managers
 {
@@ -12,11 +14,17 @@ namespace LCHFramework.Managers
         
         
         
+        public static AsyncOperationHandle<T> LoadAssetAsync(AssetReferenceT<T> assetReferenceT)
+            => LoadAssetAsync(assetReferenceT.GetAddress(), assetReferenceT.LoadAssetAsync);
+        
         public static AsyncOperationHandle<T> LoadAssetAsync(string address)
+            => LoadAssetAsync(address, () => Addressables.LoadAssetAsync<T>(address));
+        
+        private static AsyncOperationHandle<T> LoadAssetAsync(string address, Func<AsyncOperationHandle<T>> loadAssetAsync)
         {
             if (!LoadedAssets.ContainsKey(address))
             {
-                var m_Handle = Addressables.LoadAssetAsync<T>(address);
+                var m_Handle = loadAssetAsync.Invoke();
                 m_Handle.Completed += handle =>
                 {
                     string dlError = AddressablesManager.GetDownloadError(m_Handle);
@@ -32,7 +40,7 @@ namespace LCHFramework.Managers
                 };
                 LoadedAssets.Add(address, m_Handle);
             }
-
+            
             return LoadedAssets[address];
         }
         
