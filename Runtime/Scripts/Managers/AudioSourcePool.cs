@@ -46,7 +46,7 @@ namespace LCHFramework.Managers
             }, audioSource =>
             {
                 audioSources.Remove(audioSource);
-                audioSourceDisposables[audioSource].Dispose();
+                audioSourceDisposables[audioSource].Clear();
                 if (audioSource == null) return;
                 audioSource.SetActive(false);
                 
@@ -63,7 +63,7 @@ namespace LCHFramework.Managers
         public void SetAudioSourcesTimeScale(float timeScale) => audioSources.ForEach(t => SetAudioSourceTimeScale(t, timeScale));
         
         private void SetAudioSourceTimeScale(AudioSource audioSource, float timeScale) { if (audioSource != null) audioSource.pitch = timeScale; }
-
+        
         public SoundPlayResult Play(AudioClip audioClip, float volume, bool loop, Vector3 position, AudioPlayType audioPlayType)
         {
             if (audioClip == null) return SoundPlayResult.fail;
@@ -75,7 +75,7 @@ namespace LCHFramework.Managers
             {
                 var audioSource = audioSourcePool.Get();
                 if (isPlayingAudioSources.IsEmpty()) return PlayAudioSource(audioSource, audioClip, volume, loop, position, canFadeAudioSourceVolume);
-
+                
                 isPlayingAudioSources.ForEach((t, i) => StartCoroutine(FadeAudioSourceVolumeCor(t, 0, callback: i < isPlayingAudioSources.Length - 1 ? null : () => 
                 {
                     isPlayingAudioSources.ForEach(StopAudioSource);
@@ -98,7 +98,7 @@ namespace LCHFramework.Managers
 
         private SoundPlayResult PlayAudioSource(AudioClip audioClip, float volume, bool loop, Vector3 position, bool canFadeAudioSourceVolume)
             => PlayAudioSource(audioSourcePool.Get(), audioClip, volume, loop, position, canFadeAudioSourceVolume);
-
+        
         private SoundPlayResult PlayAudioSource(AudioSource audioSource, AudioClip audioClip, float volume, bool loop, Vector3 position, bool canFadeAudioSourceVolume)
         {
             audioSource.name = audioClip.name;
@@ -117,7 +117,7 @@ namespace LCHFramework.Managers
             
             return new SoundPlayResult { isFail = false, isSuccess = true, audioClipLength = audioClip.length, audioSource = audioSource };
         }
-
+        
         private IEnumerator FadeAudioSourceVolumeCor(AudioSource audioSource, float volume, float duration = SoundManager.FadeDuration, Action callback = null)
         {
             var startVolume = audioSource.volume;
@@ -137,7 +137,7 @@ namespace LCHFramework.Managers
             yield return new WaitUntil(() => predicate.Invoke(audioSource));
             audioSourcePool.Release(audioSource);
         }
-
+        
         private bool ReleaseAudioSourcePredicate(AudioSource audioSource) => audioSource == null || !audioSource.isPlaying && audioSource.timeSamples < 1;
         
         
@@ -145,7 +145,7 @@ namespace LCHFramework.Managers
         public void StopAllAudioSources() => audioSources.ForEach(StopAudioSource);
         
         private void StopAudioSource(AudioSource audioSource) => audioSource.Stop();
-
+        
         public void ClearAudioSourcePool() => audioSourcePool.Clear();
     }
 }
