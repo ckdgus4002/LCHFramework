@@ -1,5 +1,6 @@
 using System.Linq;
 using UnityEditor;
+using UnityEngine;
 
 namespace LCHFramework.Editor
 {
@@ -7,11 +8,12 @@ namespace LCHFramework.Editor
     {
         private void OnPreprocessTexture()
         {
-            var textureImporter = (TextureImporter)assetImporter;
-            if (textureImporter.textureType != TextureImporterType.Sprite) return;
-            if (SpritePostprocessorExceptTable.Instances.Any(t => t.IsExclude(textureImporter.assetPath))) return;
+            var spriteImporter = (TextureImporter)assetImporter;
+            if (spriteImporter.textureType != TextureImporterType.Sprite) return;
+            if (SpritePostprocessorExceptTable.Instances.Any(t => t.IsExclude(spriteImporter.assetPath))) return;
             
-            textureImporter.spritePixelsPerUnit = 1;
+            spriteImporter.spritePixelsPerUnit = 1;
+            spriteImporter.textureCompression = TextureImporterCompression.Uncompressed;
             
             Debug.Log($"OnPostprocessAudio: {assetPath}");
         }

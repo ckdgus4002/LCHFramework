@@ -43,7 +43,7 @@ namespace LCHFramework.Editor
             else spriteAtlasImporterOrNull.textureSettings = textureSettings;
             
             var defaultPlatformSettings = spriteAtlas.GetPlatformSettings("DefaultTexturePlatform"); 
-            defaultPlatformSettings.textureCompression = TextureImporterCompression.CompressedHQ;
+            defaultPlatformSettings.textureCompression = TextureImporterCompression.Compressed;
             if (spriteAtlasImporterOrNull == null) spriteAtlas.SetPlatformSettings(defaultPlatformSettings);
             else spriteAtlasImporterOrNull.SetPlatformSettings(defaultPlatformSettings);
             
