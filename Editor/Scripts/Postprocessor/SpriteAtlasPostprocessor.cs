@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.U2D;
+using UnityEngine;
 using UnityEngine.U2D;
 
 namespace LCHFramework.Editor
@@ -39,11 +40,15 @@ namespace LCHFramework.Editor
             var textureSettings = spriteAtlas.GetTextureSettings();
             textureSettings.generateMipMaps = false;
             textureSettings.sRGB = true;
+            textureSettings.filterMode = FilterMode.Bilinear;
             if (spriteAtlasImporterOrNull == null) spriteAtlas.SetTextureSettings(textureSettings);
             else spriteAtlasImporterOrNull.textureSettings = textureSettings;
             
-            var defaultPlatformSettings = spriteAtlas.GetPlatformSettings("DefaultTexturePlatform"); 
+            var defaultPlatformSettings = spriteAtlas.GetPlatformSettings("DefaultTexturePlatform");
+            defaultPlatformSettings.maxTextureSize = 4096;
+            defaultPlatformSettings.format = TextureImporterFormat.Automatic;
             defaultPlatformSettings.textureCompression = TextureImporterCompression.Compressed;
+            defaultPlatformSettings.crunchedCompression = false;
             if (spriteAtlasImporterOrNull == null) spriteAtlas.SetPlatformSettings(defaultPlatformSettings);
             else spriteAtlasImporterOrNull.SetPlatformSettings(defaultPlatformSettings);
             
