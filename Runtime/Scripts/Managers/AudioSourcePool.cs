@@ -46,13 +46,14 @@ namespace LCHFramework.Managers
             }, audioSource =>
             {
                 audioSources.Remove(audioSource);
-                audioSourceDisposables[audioSource].Clear();
+                if (audioSourceDisposables.Remove(audioSource, out var disposables)) disposables.Clear();
                 if (audioSource == null) return;
                 audioSource.SetActive(false);
                 
             }, audioSource =>
             {
                 audioSources.Remove(audioSource);
+                if (audioSourceDisposables.Remove(audioSource, out var disposables)) disposables.Clear();
                 if (audioSource == null) return;
                 Destroy(audioSource.gameObject);
             });
