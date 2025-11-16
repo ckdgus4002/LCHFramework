@@ -138,7 +138,7 @@ namespace LCHFramework.Managers
             audioSourcePool.Release(audioSource);
         }
         
-        private bool ReleaseAudioSourcePredicate(AudioSource audioSource) => audioSource == null || !audioSource.isPlaying && audioSource.timeSamples < 1;
+        private bool ReleaseAudioSourcePredicate(AudioSource audioSource) => audioSource == null || (!audioSource.isPlaying && audioSource.timeSamples < 1);
         
         
         
