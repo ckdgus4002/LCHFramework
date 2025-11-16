@@ -3,6 +3,10 @@ using System.Linq;
 using LCHFramework.Editor.Utilities;
 using LCHFramework.Extensions;
 using UnityEngine;
+using Object = UnityEngine.Object;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace LCHFramework.Editor
 {
@@ -26,8 +30,22 @@ namespace LCHFramework.Editor
         
         
         
-        public List<string> exceptAssetPathPrefix;
+        public List<string> exceptAssetPathPrefix = new();
         public List<string> exceptAssetNamePrefix;
+        
+        
+        
+#if UNITY_EDITOR
+        private void Reset()
+        {
+            var assetPath = AssetDatabase.GetAssetPath(this);
+            if (string.IsNullOrEmpty(assetPath) && Selection.assetGUIDs.Exists()) assetPath = AssetDatabase.GUIDToAssetPath(Selection.assetGUIDs[0]);
+            if (string.IsNullOrEmpty(assetPath)) return;
+
+            var lastIndexOf = assetPath.LastIndexOf('/');
+            exceptAssetPathPrefix.Add(lastIndexOf == -1 ? assetPath : assetPath[..lastIndexOf]);
+        }
+#endif
         
         
         
