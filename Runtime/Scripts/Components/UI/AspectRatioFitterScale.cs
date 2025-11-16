@@ -1,3 +1,4 @@
+using LCHFramework.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -31,6 +32,8 @@ namespace LCHFramework.Components.UI
                     RectTransform.anchorMin = Vector2.zero;
                     RectTransform.anchorMax = Vector2.one;
                     RectTransform.anchoredPosition = Vector2.zero;
+                    RectTransform.pivot = Vector2Utility.Half;
+                    RectTransform.rotation = Quaternion.identity;
                     
                     var scale = Vector3.one;
                     var parentSize = ((RectTransform)RectTransform.parent).rect.size;
