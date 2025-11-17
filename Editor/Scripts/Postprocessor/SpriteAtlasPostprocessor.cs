@@ -32,7 +32,6 @@ namespace LCHFramework.Editor
             var packingSettings = spriteAtlas.GetPackingSettings();
             packingSettings.enableRotation = false;
             packingSettings.enableTightPacking = false;
-            packingSettings.enableAlphaDilation = true;
             packingSettings.padding = 4;
             if (spriteAtlasImporterOrNull == null) spriteAtlas.SetPackingSettings(packingSettings);
             else spriteAtlasImporterOrNull.packingSettings = packingSettings;
