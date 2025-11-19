@@ -4,10 +4,10 @@ namespace LCHFramework.Utilities
 {
     public class ObjectUtility
     {
-        public static void Destroy(GameObject texts)
+        public static void Destroy(Object @object)
         {
-            if (!UnityEngine.Application.isPlaying) Object.DestroyImmediate(texts); 
-            else Object.Destroy(texts);
+            if (!UnityEngine.Application.isPlaying) Object.DestroyImmediate(@object); 
+            else Object.Destroy(@object);
         }
     }
 }
