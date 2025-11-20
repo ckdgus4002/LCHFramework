@@ -39,7 +39,7 @@ namespace LCHFramework.Components
             
             return _webcamTextureOrNull;
         }
-        private WebCamTexture _webcamTextureOrNull;
+        [NonSerialized] private WebCamTexture _webcamTextureOrNull;
         
         
         
