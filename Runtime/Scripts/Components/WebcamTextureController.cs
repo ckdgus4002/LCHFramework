@@ -6,13 +6,14 @@ using System.Threading;
 using LCHFramework.Data;
 using LCHFramework.Extensions;
 using LCHFramework.Managers;
+using LCHFramework.Utilities;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace LCHFramework.Components
 {
-    public abstract class WebcamTextureController : LCHMonoBehaviour
+    public class WebcamTextureController : LCHMonoBehaviour
     {
         [SerializeField] private bool playOnEnable = true;
         [SerializeField] private bool stopOnDisable = true;
@@ -27,9 +28,8 @@ namespace LCHFramework.Components
         {
             if (_webcamTextureOrNull == null)
             {
-                await RequestUserCameraPermissionAsync();
-
-                await Awaitable.NextFrameAsync();
+                if (!await RequestUserCameraPermissionAsync()) return null;
+                else await Awaitable.NextFrameAsync();
 
                 var webCamDeviceExists = WebCamTexture.devices.TryFirstOrDefault(t => 
                     (webCamDeviceType & WebCamDeviceType.FrontFacing) != 0 && t.isFrontFacing,
@@ -77,7 +77,7 @@ namespace LCHFramework.Components
         
         
         
-        public abstract Awaitable<bool> RequestUserCameraPermissionAsync();
+        public virtual Awaitable<bool> RequestUserCameraPermissionAsync() => AwaitableUtility.FromResult(true);
         
         public async void Play()
         {
