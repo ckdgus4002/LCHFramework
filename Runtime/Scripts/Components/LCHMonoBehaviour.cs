@@ -92,14 +92,14 @@ namespace LCHFramework.Components
         
         public float HalfHeight => Height * .5f;
         
-        public virtual float Width => transform is RectTransform ? RectTransform.rect.size.x
-                        : TryGetComponent<Renderer>(out var result1) ? result1.bounds.size.x
-                        : TryGetComponent<Collider>(out var result2) ? result2.bounds.size.x
+        public virtual float Width => transform is RectTransform ? RectTransform.rect.size.x * transform.lossyScale.x
+                        : TryGetComponent<Renderer>(out var result1) ? result1.bounds.size.x * transform.lossyScale.x
+                        : TryGetComponent<Collider>(out var result2) ? result2.bounds.size.x * transform.lossyScale.x
                         : -1;
         
-        public virtual float Height => transform is RectTransform ? RectTransform.rect.size.y
-            : TryGetComponent<Renderer>(out var result1) ? result1.bounds.size.y
-            : TryGetComponent<Collider>(out var result2) ? result2.bounds.size.y
+        public virtual float Height => transform is RectTransform ? RectTransform.rect.size.y * transform.lossyScale.y
+            : TryGetComponent<Renderer>(out var result1) ? result1.bounds.size.y * transform.lossyScale.y
+            : TryGetComponent<Collider>(out var result2) ? result2.bounds.size.y * transform.lossyScale.y
             : -1;
         
         public Canvas RootCanvasOrNull => !this.TryGetComponentInParent<Canvas>(out var result) ? null : result.rootCanvas;
