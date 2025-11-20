@@ -8,5 +8,12 @@ namespace LCHFramework.Utilities
         public static async Awaitable WaitUntil(Func<bool> predicate) => await WaitWhile(() => !predicate.Invoke());
         
         public static async Awaitable WaitWhile(Func<bool> predicate) { while (predicate()) await Awaitable.NextFrameAsync(); }
+
+        public static Awaitable<T> FromResult<T>(T result)
+        {
+            var completionSource = new AwaitableCompletionSource<T>();
+            completionSource.SetResult(result);
+            return completionSource.Awaitable;
+        }
     }
 }
