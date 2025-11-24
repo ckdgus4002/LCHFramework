@@ -35,17 +35,11 @@ namespace LCHFramework.Components.UI
                     RectTransform.pivot = Vector2Utility.Half;
                     RectTransform.rotation = Quaternion.identity;
                     
-                    var scale = Vector3.one;
-                    var parentSize = ((RectTransform)RectTransform.parent).rect.size;
-                    if (parentSize.y * aspectRatio < parentSize.x)
-                    {
-                        scale.x = GetSizeDeltaToProduceSize(parentSize.y * aspectRatio, parentSize, 0);
-                    }
-                    else
-                    {
-                        scale.y = GetSizeDeltaToProduceSize(parentSize.x / aspectRatio, parentSize, 1);
-                    }
-                    RectTransform.localScale = scale;
+                    var parent = ((RectTransform)RectTransform.parent);
+                    var parentSize = parent.rect.size * parent.lossyScale;
+                    RectTransform.localScale = parentSize.y * aspectRatio < parentSize.x
+                        ? new Vector3(GetSizeDeltaToProduceSize(parentSize.y * aspectRatio, parentSize, 0), 1, 1)
+                        : new Vector3(1, GetSizeDeltaToProduceSize(parentSize.x / aspectRatio, parentSize, 1), 1);
                     break;
                 }
             }
