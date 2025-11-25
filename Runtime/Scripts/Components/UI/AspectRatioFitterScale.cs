@@ -37,6 +37,7 @@ namespace LCHFramework.Components.UI
                     
                     var parent = ((RectTransform)RectTransform.parent);
                     var parentSize = parent.rect.size * parent.lossyScale;
+                    Debug.Log($"{parentSize}, {parent.rect.size} {parent.lossyScale}, {GetSizeDeltaToProduceSize(parentSize.x / aspectRatio, parentSize, 1)}");
                     RectTransform.localScale = parentSize.y * aspectRatio < parentSize.x
                         ? new Vector3(GetSizeDeltaToProduceSize(parentSize.y * aspectRatio, parentSize, 0), 1, 1)
                         : new Vector3(1, GetSizeDeltaToProduceSize(parentSize.x / aspectRatio, parentSize, 1), 1);
