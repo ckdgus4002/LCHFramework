@@ -26,11 +26,8 @@ namespace LCHFramework.Components
         
         public async Awaitable<WebCamTexture> GetWebcamTextureOrNull()
         {
-            if (_webcamTexture == null)
+            if (_webcamTexture == null && await RequestUserCameraPermissionAsync())
             {
-                if (!await RequestUserCameraPermissionAsync()) return null;
-                else await Awaitable.NextFrameAsync();
-
                 var webCamDeviceExists = WebCamTexture.devices.TryFirstOrDefault(t => 
                     (webCamDeviceType & WebCamDeviceType.FrontFacing) != 0 && t.isFrontFacing,
                     out var webCamDevice);
@@ -39,7 +36,7 @@ namespace LCHFramework.Components
             
             return _webcamTexture;
         }
-        [NonSerialized] private WebCamTexture _webcamTexture;
+        private WebCamTexture _webcamTexture;
         
         
         
