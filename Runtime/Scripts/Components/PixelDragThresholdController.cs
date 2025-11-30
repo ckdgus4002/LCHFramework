@@ -4,7 +4,6 @@ using UnityEngine.EventSystems;
 
 namespace LCHFramework.Components
 {
-    [DisallowMultipleComponent]
     [RequireComponent(typeof(EventSystem))]
     public class PixelDragThresholdController : MonoBehaviour
     {
