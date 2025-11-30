@@ -5,6 +5,7 @@ using LCHFramework.Extensions;
 using UnityEngine;
 using Object = UnityEngine.Object;
 #if UNITY_EDITOR
+using System.IO;
 using UnityEditor;
 #endif
 
@@ -31,7 +32,7 @@ namespace LCHFramework.Editor
         
         
         public List<string> exceptAssetPathPrefix = new();
-        public List<string> exceptAssetNamePrefix;
+        public List<string> exceptAssetNamePrefix = new();
         
         
         
@@ -42,8 +43,8 @@ namespace LCHFramework.Editor
             if (string.IsNullOrEmpty(assetPath) && Selection.assetGUIDs.Exists()) assetPath = AssetDatabase.GUIDToAssetPath(Selection.assetGUIDs[0]);
             if (string.IsNullOrEmpty(assetPath)) return;
 
-            var lastIndexOf = assetPath.LastIndexOf('/');
-            exceptAssetPathPrefix.Add(lastIndexOf == -1 ? assetPath : assetPath[..lastIndexOf]);
+            assetPath = !Path.HasExtension(assetPath) ? assetPath : assetPath[..assetPath.LastIndexOf('/')];
+            if (!exceptAssetPathPrefix.Contains(assetPath)) exceptAssetPathPrefix.Add(assetPath);
         }
 #endif
         
@@ -54,6 +55,10 @@ namespace LCHFramework.Editor
         
         private bool IsExclude(string assetPath, string assetName)
         {
+            var globalExceptAssetPathPrefix = new[] { "Packages", "Plugins" };
+            if (!globalExceptAssetPathPrefix.IsEmpty() && globalExceptAssetPathPrefix.Any(t => t.Length <= assetPath.Length && assetPath[..t.Length] == t))
+                return true;
+                
             if (!exceptAssetPathPrefix.IsEmpty() && exceptAssetPathPrefix.Any(t => t.Length <= assetPath.Length && assetPath[..t.Length] == t))
                 return true;
             
