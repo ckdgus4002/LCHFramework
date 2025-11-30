@@ -25,6 +25,9 @@ namespace LCHFramework.Managers
         
         public static void AddSpriteAtlas(SpriteAtlas spriteAtlas) => SpriteAtlases.Add(spriteAtlas.name, spriteAtlas);
         
-        public static void RemoveSpriteAtlas(SpriteAtlas spriteAtlas) => SpriteAtlases.Remove(spriteAtlas.name);
+        public static void RemoveSpriteAtlas(SpriteAtlas spriteAtlas)
+        {
+            if (spriteAtlas != null) SpriteAtlases.Remove(spriteAtlas.name);
+        }
     }
 }
