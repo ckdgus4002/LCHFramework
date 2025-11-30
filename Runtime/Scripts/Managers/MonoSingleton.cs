@@ -45,7 +45,7 @@ namespace LCHFramework.Managers
         public static T Instance
         {
             get => _instance == null ? Instance = FindFirstObjectByType<T>() : _instance;
-            private set => Singleton.EnsureInstance(value, _instance, t => _instance = t, t => { if (!UnityEngine.Application.isPlaying) DestroyImmediate(t.DestroyTarget); else Destroy(t.DestroyTarget); });
+            private set => Singleton.EnsureInstance(value, _instance, t => _instance = t, t => Destroy(t.DestroyTarget));
         }
         private static T _instance;
         
