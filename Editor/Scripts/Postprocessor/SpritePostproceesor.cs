@@ -8,8 +8,8 @@ namespace LCHFramework.Editor
     {
         private void OnPostprocessTexture(Texture2D texture)
         {
-            var textureImporter = (TextureImporter)assetImporter;
-            if (textureImporter.textureType != TextureImporterType.Sprite) return;
+            var textureImporter = assetImporter as TextureImporter;
+            if (textureImporter == null || textureImporter.textureType != TextureImporterType.Sprite) return;
             
             OnPostprocessSprite(texture, textureImporter);
         }
