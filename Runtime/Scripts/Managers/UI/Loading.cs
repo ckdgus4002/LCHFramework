@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+using System.Threading;
 using LCHFramework.Extensions;
+using LCHFramework.Utilities;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,12 +14,15 @@ namespace LCHFramework.Managers.UI
     {
         public const float DefaultFadeInDuration = 0.5f;
         public const float DefaultFadeOutDuration = 0.5f;
-        public const string DefaultLoadingMessage = "Loading...";
+        public const string DefaultLoadingMessage = "";
         
         
         
         public TMP_Text messageText;
         public Slider slider;
+        
+        
+        private CancellationTokenSource cts;
         
         
         public override bool IsShown => Wrapper.activeInHierarchy;
@@ -44,41 +49,53 @@ namespace LCHFramework.Managers.UI
 #endif  
         
         
-        public Awaitable OnLoadSceneAsync(Func<string> getMessage, float fadeInDuration, float fadeOutDuration, Func<float> getPercentOrNull, Func<bool> getIsDone)
-            => LoadAsync(getMessage, fadeInDuration, fadeOutDuration, getPercentOrNull, getIsDone);
         
         public Awaitable LoadAsync(Func<float> getPercentOrNull, Func<bool> getIsDone)
             => LoadAsync(() => LoadingMessages.Pick(), DefaultFadeInDuration, DefaultFadeOutDuration, getPercentOrNull, getIsDone);
         
-        public async Awaitable LoadAsync(Func<string> getMessage, float fadeInDuration, float fadeOutDuration, Func<float> getPercentOrNull, Func<bool> getIsDone)
+        public Awaitable LoadAsync(Func<string> getMessage, float fadeInDuration, float fadeOutDuration, Func<float> getPercentOrNull, Func<bool> getIsDone)
         {
-            if (IsShown) return;
+            CancellationTokenSourceUtility.RestartTokenSource(ref cts);
+            return Task();
             
-            Wrapper.SetActive(true);
-            var startTime = Time.time;
-            while (true)
+            async Awaitable Task()
             {
-                CanvasGroup.alpha = (Time.time - startTime) / fadeInDuration;
-                if (messageText != null) messageText.text = getMessage.Invoke();
-                var isDone = getIsDone.Invoke();
-                slider.value = isDone ? 1 
-                    : getPercentOrNull != null && startTime + fadeInDuration <= Time.time ? getPercentOrNull.Invoke() 
-                    : 0;
-                if (!isDone) await Awaitable.NextFrameAsync();
-                else break;
-            }
+                Wrapper.SetActive(true);
+                var startTime = Time.time;
+                while (true)
+                {
+                    CanvasGroup.alpha = (Time.time - startTime) / fadeInDuration;
+                    messageText.text = getMessage.Invoke();
+                    var isDone = getIsDone.Invoke();
+                    slider.value = isDone ? 1 
+                        : getPercentOrNull != null && startTime + fadeInDuration <= Time.time ? getPercentOrNull.Invoke() 
+                        : 0;
+                    if (!isDone)
+                    {
+                        await Awaitable.NextFrameAsync(cts.Token).SuppressCancellationThrow();
+                        if (cts.IsCancellationRequested) return;
+                    }
+                    else
+                        break;
+                }
             
-            var endTime = Time.time;
-            while (true)
-            {
-                CanvasGroup.alpha = 1 - (Time.time - endTime) / fadeOutDuration;
-                if (messageText != null) messageText.text = getMessage.Invoke();
-                slider.value = 1;
-                if (Time.time - endTime <= fadeOutDuration) await Awaitable.NextFrameAsync();
-                else break;
-            }
+                var endTime = Time.time;
+                while (true)
+                {
+                    CanvasGroup.alpha = 1 - (Time.time - endTime) / fadeOutDuration;
+                    messageText.text = getMessage.Invoke();
+                    slider.value = 1;
+                    if (Time.time - endTime <= fadeOutDuration)
+                    {
+                        await Awaitable.NextFrameAsync(cts.Token).SuppressCancellationThrow();
+                        if (cts.IsCancellationRequested) return;
+                    }
+                    else
+                        break;
+                }
             
-            Wrapper.SetActive(false);
+                Wrapper.SetActive(false);
+            }
         }
     }
 }

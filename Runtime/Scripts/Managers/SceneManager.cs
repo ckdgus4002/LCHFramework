@@ -11,7 +11,7 @@ namespace LCHFramework.Managers
 {
     public interface ILoadSceneUI
     {
-        public Awaitable OnLoadSceneAsync(Func<string> getMessage, float fadeInDuration, float fadeOutDuration, Func<float> getPercentOrNull, Func<bool> getIsDone);
+        public Awaitable LoadAsync(Func<string> getMessage, float fadeInDuration, float fadeOutDuration, Func<float> getPercentOrNull, Func<bool> getIsDone);
     }
     
     public enum LoadSceneMode
@@ -23,12 +23,14 @@ namespace LCHFramework.Managers
     
     public static class SceneManager
     {
-        private const string LoadSceneErrorMessage = "문제가 발생하였습니다. 앱을 재시작해주세요.";
+        private const string ErrorMessage = "문제가 발생하였습니다. 앱을 재시작해주세요.";
         
         
         
         private static bool isLoadingScene;
         private static bool uiIsDone;
+        private static bool isLoadInProcessing;
+        private static AsyncOperationHandle downloadAddressable;
         private static AsyncOperationHandle<SceneInstance> loadScene;
         
         
@@ -59,10 +61,10 @@ namespace LCHFramework.Managers
             _ => ""
         };
         
-        public static async Awaitable LoadSceneAsync(string sceneAddress, LoadSceneMode mode, string message = "")
-            => await LoadSceneAsync(sceneAddress, mode, DefaultFadeOutDuration(mode), DefaultFadeInDuration(mode), DefaultLoadingMessage(mode), message);
+        public static async Awaitable LoadSceneAsync(string sceneAddress, string addressLabel, LoadSceneMode mode, string message = "")
+            => await LoadSceneAsync(sceneAddress, addressLabel, mode, DefaultFadeOutDuration(mode), DefaultFadeInDuration(mode), DefaultLoadingMessage(mode), message);
         
-        public static async Awaitable LoadSceneAsync(string sceneAddress, LoadSceneMode mode, float fadeOutDuration, float fadeInDuration, string loadingMessage, string message = "")
+        public static async Awaitable LoadSceneAsync(string sceneAddress, string addressLabel, LoadSceneMode mode, float fadeOutDuration, float fadeInDuration, string loadingMessage, string message = "")
         {
             if (isLoadingScene) { Debug.Log($"{nameof(isLoadingScene)} is True!"); return; }
             
@@ -71,10 +73,11 @@ namespace LCHFramework.Managers
             isLoadingScene = true;
             Message = !string.IsNullOrWhiteSpace(message) ? message : Message;
             MessageBroker.Default.Publish(new LoadSceneFadeOutMessage { sceneAddress = PrevSceneAddress, nextSceneAddress = sceneAddress });
-            
-            
+
+
+            downloadAddressable = default;
             uiIsDone = false;
-            loadScene = default;
+            isLoadInProcessing = false;
             var startTime = Time.time;
             var loadSceneUIorNull = (ILoadSceneUI)(mode switch
             {
@@ -82,17 +85,32 @@ namespace LCHFramework.Managers
                 LoadSceneMode.ScreenFadeUI => ScreenFader.Instance,
                 _ => null
             });
-            if (loadSceneUIorNull != null) _ = loadSceneUIorNull.OnLoadSceneAsync(
-                () => loadScene.IsValid() && loadScene.OperationException != null ? $"{LoadSceneErrorMessage} ({loadScene.OperationException})"
-                    : loadScene.IsValid() && loadScene.Status == AsyncOperationStatus.Failed ? $"{LoadSceneErrorMessage} Status is Failed."
-                    : loadingMessage,
+            if (loadSceneUIorNull != null) _ = loadSceneUIorNull.LoadAsync(
+                () =>
+                {
+                    var isValid = (!isLoadInProcessing ? downloadAddressable : loadScene).IsValid();
+                    var operationException = (!isLoadInProcessing ? downloadAddressable : loadScene).OperationException;
+                    var status = (!isLoadInProcessing ? downloadAddressable : loadScene).Status;
+                    return isValid && operationException != null ? $"{ErrorMessage} ({operationException})"
+                        : isValid && status == AsyncOperationStatus.Failed ? $"{ErrorMessage} Status is Failed."
+                        : loadingMessage;
+                },
                 fadeOutDuration,
                 fadeInDuration,
-                () => Math.Min(Time.time - (startTime + fadeOutDuration), !loadScene.IsValid() ? 0 : loadScene.PercentComplete),
+                () =>
+                {
+                    var isValid = (!isLoadInProcessing ? downloadAddressable : loadScene).IsValid();
+                    var percentComplete = (!isLoadInProcessing ? downloadAddressable : loadScene).PercentComplete;
+                    return Math.Min(Time.time - (startTime + fadeOutDuration), !isValid ? 0 : percentComplete);
+                },
                 () => uiIsDone);
             await Awaitable.WaitForSecondsAsync(fadeOutDuration);
             
             
+            await AddressablesManager.DownloadAsync(addressLabel, null, null, (_, download) => downloadAddressable = download);
+
+
+            isLoadInProcessing = true;
             UnityEngine.SceneManagement.SceneManager.LoadScene("LoadScene");
             
             

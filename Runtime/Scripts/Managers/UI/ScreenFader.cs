@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using LCHFramework.Extensions;
 using TMPro;
 using UnityEngine;
@@ -13,6 +14,12 @@ namespace LCHFramework.Managers.UI
         public const float DefaultFadeOutDuration = 0.5f;
         public const string DefaultFadeMessage = "";
         
+        
+        
+        public TMP_Text messageText;
+        
+        
+        protected CancellationTokenSource cts;
         
         
         public override bool IsShown => Wrapper.activeInHierarchy;
@@ -30,13 +37,10 @@ namespace LCHFramework.Managers.UI
         
         protected Image Image => _image == null ? _image = GetComponentInChildren<Image>(true) : _image;
         private Image _image;
-            
-        protected TMP_Text Text => _text == null ? _text = GetComponentInChildren<TMP_Text>(true) : _text;
-        private TMP_Text _text;
         
         
         
-        public Awaitable OnLoadSceneAsync(Func<string> getMessage, float fadeInDuration, float fadeOutDuration, Func<float> getPercentOrNull, Func<bool> getIsDone)
+        public Awaitable LoadAsync(Func<string> getMessage, float fadeInDuration, float fadeOutDuration, Func<float> getPercentOrNull, Func<bool> getIsDone)
             => FadeAsync(Color.black, getMessage, fadeInDuration, 0, fadeOutDuration, 0, getIsDone);
         
         public Awaitable FadeAsync(Color color, float fadeInDuration, float fadeOutDuration)
