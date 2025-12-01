@@ -55,7 +55,7 @@ namespace LCHFramework.Editor
         
         private bool IsExclude(string assetPath, string assetName)
         {
-            var globalExceptAssetPathPrefix = new[] { "Packages", "Plugins" };
+            var globalExceptAssetPathPrefix = new[] { "Assets/Packages", "Assets/Plugins" };
             if (!globalExceptAssetPathPrefix.IsEmpty() && globalExceptAssetPathPrefix.Any(t => t.Length <= assetPath.Length && assetPath[..t.Length] == t))
                 return true;
                 
