@@ -17,7 +17,7 @@ namespace LCHFramework.Components
         
         private void Start()
         {
-            if (LoadOnStart) _ = LoadAsync();
+            if (LoadOnStart) LoadAsync();
         }
         
         
@@ -30,7 +30,7 @@ namespace LCHFramework.Components
         
         
         // UnityEvent event.
-        public override void OnClick() => _ = LoadAsync();
+        public override void OnClick() => LoadAsync();
         
         
         

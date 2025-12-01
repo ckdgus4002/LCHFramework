@@ -3,12 +3,15 @@ using LCHFramework.Data;
 using LCHFramework.Extensions;
 using LCHFramework.Managers;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace LCHFramework.Components
 {
     public class AddressableSceneLoader : AddressableLoader<Object>
     {
         [SerializeField] private LoadSceneMode loadSceneMode;
+        
+        [SerializeField] private AssetLabelReference addressLabel;
         
         [ShowInInspector(nameof(loadSceneMode), ComparisonOperator.NotEquals, LoadSceneMode.None)]
         [SerializeField] private float fadeOutDuration = 0.5f;
@@ -17,7 +20,7 @@ namespace LCHFramework.Components
         [SerializeField] private float fadeInDuration = 0.5f;
         
         [ShowInInspector(nameof(loadSceneMode), ComparisonOperator.NotEquals, LoadSceneMode.None)]
-        [SerializeField] private string loadingMessage = "Loading...";
+        [SerializeField] private string loadingMessage = "";
         
         [SerializeField] private string message = "";
         
@@ -25,16 +28,16 @@ namespace LCHFramework.Components
         
         private void Start()
         {
-            if (LoadOnStart) _ = LoadAsync();
+            if (LoadOnStart) LoadAsync().Forget();
         }
         
         
         
         // UnityEvent event.
-        public override void OnClick() => _ = LoadAsync();
+        public override void OnClick() => LoadAsync().Forget();
         
         
         
-        public Awaitable LoadAsync() => SceneManager.LoadSceneAsync(asset.GetAddress(), loadSceneMode, fadeOutDuration, fadeInDuration, loadingMessage, message);
+        public Awaitable LoadAsync() => SceneManager.LoadSceneAsync(asset.GetAddress(), addressLabel.labelString, loadSceneMode, fadeOutDuration, fadeInDuration, loadingMessage, message);
     }
 }
