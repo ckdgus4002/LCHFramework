@@ -13,27 +13,24 @@ namespace LCHFramework.Managers
     {
         public static async Awaitable<bool> DownloadAsync(string label,
             Action<AsyncOperationHandle<long>> onDownloadSize,
-            Func<AsyncOperationHandle<long>, Awaitable<bool>> waitForCanDownload,
-            Action<AsyncOperationHandle<long>, AsyncOperationHandle> onDownload,
-            float minimumDuration = 1f)
+            Func<AsyncOperationHandle<long>, Awaitable<bool>> getCanDownload,
+            Action<AsyncOperationHandle<long>, AsyncOperationHandle> onDownload)
         {
             var downloadIsSuccess = false;
             var downloadSize = Addressables.GetDownloadSizeAsync(label);
             onDownloadSize?.Invoke(downloadSize);
-            var downloadSizeStartTime = Time.time;
-            await AwaitableUtility.WaitWhile(() => !downloadSize.IsDone || Time.time - downloadSizeStartTime < minimumDuration);
+            await AwaitableUtility.WaitWhile(() => !downloadSize.IsDone);
             
             if (downloadSize.Status == AsyncOperationStatus.Succeeded)
             {
                 if (downloadSize is { Result: > 0 })
                 {
-                    var canDownload = waitForCanDownload == null || await waitForCanDownload.Invoke(downloadSize);
+                    var canDownload = getCanDownload == null || await getCanDownload.Invoke(downloadSize);
                     if (!canDownload) return false;
                 
                     var download = DownloadAsync(label, false);
                     onDownload?.Invoke(downloadSize, download);
-                    var downloadStartTime = Time.time;
-                    await AwaitableUtility.WaitWhile(() => !download.IsDone || Time.time - downloadStartTime < minimumDuration);
+                    await AwaitableUtility.WaitWhile(() => !download.IsDone);
                     
                     downloadIsSuccess = download.Status == AsyncOperationStatus.Succeeded;
                     Addressables.Release(download);
