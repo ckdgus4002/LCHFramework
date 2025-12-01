@@ -11,8 +11,11 @@ using UnityEditor;
 
 namespace LCHFramework.Editor
 {
-    public class AssetPostprocessorExceptTable<T> : ScriptableObject where T : Object
+    public abstract class AssetPostprocessorExceptTable<T> : ScriptableObject where T : Object
     {
+        public static readonly ExceptAssetPrefix[] GlobalExceptAssetPathPrefix = { new("Assets/Packages"), new("Assets/Plugins") };
+        
+        
         public static IEnumerable<T> Instances
         {
             get
@@ -55,17 +58,24 @@ namespace LCHFramework.Editor
         
         private bool IsExclude(string assetPath, string assetName)
         {
-            var globalExceptAssetPathPrefix = new[] { "Assets/Packages", "Assets/Plugins" };
-            if (!globalExceptAssetPathPrefix.IsEmpty() && globalExceptAssetPathPrefix.Any(t => t.Length <= assetPath.Length && assetPath[..t.Length] == t))
-                return true;
-                
-            if (!exceptAssetPathPrefix.IsEmpty() && exceptAssetPathPrefix.Any(t => t.Length <= assetPath.Length && assetPath[..t.Length] == t))
+            if (!exceptAssetPathPrefix.IsEmpty() && exceptAssetPathPrefix.Any(t => new ExceptAssetPrefix(t).IsExclude(assetPath)))
                 return true;
             
-            if (!exceptAssetNamePrefix.IsEmpty() && exceptAssetNamePrefix.Any(t => t.Length <= assetName.Length && assetName[..t.Length] == t))
+            if (!exceptAssetNamePrefix.IsEmpty() && exceptAssetNamePrefix.Any(t => new ExceptAssetPrefix(t).IsExclude(assetName)))
                 return true;
             
             return false;
+        }
+        
+        
+        
+        public class ExceptAssetPrefix
+        {
+            public ExceptAssetPrefix(string value) { t = value; }
+
+            private readonly string t;
+            
+            public bool IsExclude(string b) => t.Length <= b.Length && t == b[..t.Length];
         }
     }
 }

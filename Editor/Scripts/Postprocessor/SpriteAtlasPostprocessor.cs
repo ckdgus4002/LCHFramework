@@ -21,11 +21,12 @@ namespace LCHFramework.Editor
             }
         }
         
-        private static void OnPostprocessSpriteAtlas(SpriteAtlas spriteAtlas, string spriteAtlasPath, SpriteAtlasImporter spriteAtlasImporterOrNull)
+        private static void OnPostprocessSpriteAtlas(SpriteAtlas spriteAtlas, string assetPath, SpriteAtlasImporter spriteAtlasImporterOrNull)
         {
-            if (SpriteAtlasPostprocessorExceptTable.Instances.Any(t => t.IsExclude(spriteAtlasPath))) return;
+            if (SpriteAtlasPostprocessorExceptTable.GlobalExceptAssetPathPrefix.Any(t => t.IsExclude(assetPath))) return;
+            if (SpriteAtlasPostprocessorExceptTable.Instances.Any(t => t.IsExclude(assetPath))) return;
             
-            var includeInBuild = AddressableAssetSettingsDefaultObject.Settings?.FindAssetEntry(AssetDatabase.AssetPathToGUID(spriteAtlasPath)) == null;
+            var includeInBuild = AddressableAssetSettingsDefaultObject.Settings?.FindAssetEntry(AssetDatabase.AssetPathToGUID(assetPath)) == null;
             if (spriteAtlasImporterOrNull == null) spriteAtlas.SetIncludeInBuild(includeInBuild);
             else spriteAtlasImporterOrNull.includeInBuild = includeInBuild;
             
@@ -59,7 +60,7 @@ namespace LCHFramework.Editor
                 else spriteAtlasImporterOrNull.SetPlatformSettings(platformSettings);
             }
             
-            Debug.Log($"{nameof(OnPostprocessSpriteAtlas)}: {spriteAtlasPath}");
+            Debug.Log($"{nameof(OnPostprocessSpriteAtlas)}: {assetPath}");
         }
     }
 }

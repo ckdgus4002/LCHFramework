@@ -16,7 +16,8 @@ namespace LCHFramework.Editor
         
         private void OnPostprocessSprite(Texture2D sprite, TextureImporter spriteImporter)
         {
-            if (SpritePostprocessorExceptTable.Instances.Any(t => t.IsExclude(spriteImporter.assetPath))) return;
+            if (SpritePostprocessorExceptTable.GlobalExceptAssetPathPrefix.Any(t => t.IsExclude(assetPath))) return;
+            if (SpritePostprocessorExceptTable.Instances.Any(t => t.IsExclude(assetPath))) return;
             
             spriteImporter.spritePixelsPerUnit = 1;
             spriteImporter.textureCompression = TextureImporterCompression.Uncompressed;

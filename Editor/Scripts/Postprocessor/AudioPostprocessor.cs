@@ -9,14 +9,15 @@ namespace LCHFramework.Editor
     {
         private void OnPostprocessAudio(AudioClip audioClip)
         {
-            var audioImporter = (AudioImporter)assetImporter;
-            if (AudioPostprocessorExceptTable.Instances.Any(t => t.IsExclude(audioImporter.assetPath))) return;
+            if (AudioPostprocessorExceptTable.GlobalExceptAssetPathPrefix.Any(t => t.IsExclude(assetPath))) return;
+            if (AudioPostprocessorExceptTable.Instances.Any(t => t.IsExclude(assetPath))) return;
             
             const bool isMobile = true;
-            var isBgm = audioImporter.assetPath.Contains("bgm", StringComparison.OrdinalIgnoreCase);
-            var isSfx = audioImporter.assetPath.Contains("sfx", StringComparison.OrdinalIgnoreCase);
+            var isBgm = assetPath.Contains("bgm", StringComparison.OrdinalIgnoreCase);
+            var isSfx = assetPath.Contains("sfx", StringComparison.OrdinalIgnoreCase);
             var isShortSfx = isSfx && audioClip.length < 3;
             var isLongSfx = isSfx && !isShortSfx;
+            var audioImporter = (AudioImporter)assetImporter;
             audioImporter.forceToMono = isMobile;
             var serializedObject = new SerializedObject(audioImporter);
             serializedObject.FindProperty("m_Normalize").boolValue = true;
