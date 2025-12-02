@@ -164,16 +164,19 @@ namespace LCHFramework
                 Permission.RequestUserPermission(Permission.Camera);
                 await Awaitable.WaitForSecondsAsync(0.1f);
             }
-            var result = Permission.HasUserAuthorizedPermission(Permission.Camera); 
+            else
+                await Awaitable.NextFrameAsync();
+            
+            return Permission.HasUserAuthorizedPermission(Permission.Camera); 
 #else
             if (!UnityEngine.Application.HasUserAuthorization(UserAuthorization.WebCam))
             {
                 await UnityEngine.Application.RequestUserAuthorization(UserAuthorization.WebCam);
             }
-            var result = UnityEngine.Application.HasUserAuthorization(UserAuthorization.WebCam);
-#endif
             await Awaitable.NextFrameAsync();
-            return result;
+            
+            return UnityEngine.Application.HasUserAuthorization(UserAuthorization.WebCam);
+#endif
         }
         
 #if !UNITY_EDITOR && UNITY_IOS
