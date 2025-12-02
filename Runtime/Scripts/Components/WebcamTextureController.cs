@@ -18,6 +18,10 @@ namespace LCHFramework.Components
         public List<RawImage> rawImages;
         
         
+        public virtual int RequestedWidth => 0;
+        public virtual int RequestedHeight => 0;
+        public virtual int RequestedFPS => 0;
+        
         public async Awaitable<WebCamTexture> GetWebcamTextureOrNull()
         {
             if (_webcamTexture == null && await Application.RequestUserCameraPermissionAsync())
@@ -25,7 +29,7 @@ namespace LCHFramework.Components
                 var webCamDeviceExists = WebCamTexture.devices.TryFirstOrDefault(t => 
                     (webCamDeviceType & WebCamDeviceType.FrontFacing) != 0 && t.isFrontFacing,
                     out var webCamDevice);
-                _webcamTexture = !webCamDeviceExists ? null : new WebCamTexture(webCamDevice.name);
+                _webcamTexture = !webCamDeviceExists ? null : new WebCamTexture(webCamDevice.name, RequestedWidth, RequestedHeight, RequestedFPS);
             }
             
             return _webcamTexture;
