@@ -18,18 +18,15 @@ namespace LCHFramework.Components
         public List<RawImage> rawImages;
         
         
-        public virtual int RequestedWidth => 0;
-        public virtual int RequestedHeight => 0;
-        public virtual int RequestedFPS => 0;
         
-        public async Awaitable<WebCamTexture> GetWebcamTextureOrNull()
+        public async Awaitable<WebCamTexture> GetWebcamTextureOrNull(bool force = false)
         {
             if (_webcamTexture == null && await Application.RequestUserCameraPermissionAsync())
             {
                 var webCamDeviceExists = WebCamTexture.devices.TryFirstOrDefault(t => 
                     (webCamDeviceType & WebCamDeviceType.FrontFacing) != 0 && t.isFrontFacing,
                     out var webCamDevice);
-                _webcamTexture = !webCamDeviceExists ? null : new WebCamTexture(webCamDevice.name, RequestedWidth, RequestedHeight, RequestedFPS);
+                _webcamTexture = !webCamDeviceExists ? null : new WebCamTexture(webCamDevice.name, Screen.width, Screen.height);
             }
             
             return _webcamTexture;
@@ -40,12 +37,13 @@ namespace LCHFramework.Components
         
         private void OnEnable()
         {
-            if (playOnEnable) Play();
+            if (playOnEnable) Play().Forget();
         }
         
         protected virtual void Start()
         {
             OrientationManager.Instance.Orientation.Subscribe(OnOrientationChanged).AddTo(this);
+            MessageBroker.Default.Receive<ScreenSizeChangedMessage>().Subscribe(_ => OnScreenSizeChanged()).AddTo(this);
         }
         
         private void OnDisable()
@@ -58,12 +56,14 @@ namespace LCHFramework.Components
         private void OnOrientationChanged(Orientation orientation) => rawImages
             .Where(t => t != null)
             .ForEach(t => t.rectTransform.localEulerAngles = t.rectTransform.localEulerAngles.SetZ(orientation != Orientation.LandscapeRight ? 0 : 180));
+
+        private void OnScreenSizeChanged() => Play(true).Forget();
         
         
         
-        public async void Play()
+        public async Awaitable Play(bool restart = false)
         {
-            var webcamTextureOrNull = await GetWebcamTextureOrNull();
+            var webcamTextureOrNull = await GetWebcamTextureOrNull(restart);
             
             rawImages.Where(t => t != null).ForEach(t => t.texture = webcamTextureOrNull);
             if (webcamTextureOrNull != null) webcamTextureOrNull.Play();
