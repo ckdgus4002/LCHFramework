@@ -86,22 +86,24 @@ namespace LCHFramework.Managers
                 _ => null
             });
             if (loadSceneUIorNull != null) _ = loadSceneUIorNull.LoadAsync(
-                () =>
-                {
+                () => {
                     var isValid = (!isLoadInProcessing ? downloadAddressable : loadScene).IsValid();
+                    if (!isValid) return loadingMessage;
+                    
                     var operationException = (!isLoadInProcessing ? downloadAddressable : loadScene).OperationException;
                     var status = (!isLoadInProcessing ? downloadAddressable : loadScene).Status;
-                    return isValid && operationException != null ? $"{ErrorMessage} ({operationException})"
-                        : isValid && status == AsyncOperationStatus.Failed ? $"{ErrorMessage} Status is Failed."
+                    return operationException != null ? $"{ErrorMessage} ({operationException})"
+                        : status == AsyncOperationStatus.Failed ? $"{ErrorMessage} Status is Failed."
                         : loadingMessage;
                 },
                 fadeOutDuration,
                 fadeInDuration,
-                () =>
-                {
+                () => {
                     var isValid = (!isLoadInProcessing ? downloadAddressable : loadScene).IsValid();
+                    if (!isValid) return 0;
+                    
                     var percentComplete = (!isLoadInProcessing ? downloadAddressable : loadScene).PercentComplete;
-                    return Math.Min(Time.time - (startTime + fadeOutDuration), !isValid ? 0 : percentComplete);
+                    return Math.Min(Time.time - (startTime + fadeOutDuration), percentComplete);
                 },
                 () => uiIsDone);
             await Awaitable.WaitForSecondsAsync(fadeOutDuration);
