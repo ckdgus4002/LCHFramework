@@ -1,19 +1,16 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using LCHFramework.Data;
 using LCHFramework.Extensions;
 using LCHFramework.Managers;
-using LCHFramework.Utilities;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace LCHFramework.Components
 {
-    public class WebcamTextureController : LCHMonoBehaviour
+    public class WebcamTextureController : MonoBehaviour
     {
         [SerializeField] private bool playOnEnable = true;
         [SerializeField] private bool stopOnDisable = true;
@@ -21,12 +18,9 @@ namespace LCHFramework.Components
         public List<RawImage> rawImages;
         
         
-        private CancellationTokenSource _getWebcamTextureCts;
-        
-        
         public async Awaitable<WebCamTexture> GetWebcamTextureOrNull()
         {
-            if (_webcamTexture == null && await RequestUserCameraPermissionAsync())
+            if (_webcamTexture == null && await Application.RequestUserCameraPermissionAsync())
             {
                 var webCamDeviceExists = WebCamTexture.devices.TryFirstOrDefault(t => 
                     (webCamDeviceType & WebCamDeviceType.FrontFacing) != 0 && t.isFrontFacing,
@@ -40,29 +34,18 @@ namespace LCHFramework.Components
         
         
         
-#if UNITY_EDITOR
-        private void Reset()
+        private void OnEnable()
         {
-            rawImages = !gameObject.TryGetComponentsInChildren<RawImage>(true, out var result) ? new List<RawImage>() : result.ToList();
-        }
-#endif
-        protected override void OnEnable()
-        {
-            base.OnEnable();
             if (playOnEnable) Play();
         }
         
-        protected override IEnumerator Start()
+        protected virtual void Start()
         {
-            yield return base.Start();
-            
             OrientationManager.Instance.Orientation.Subscribe(OnOrientationChanged).AddTo(this);
         }
         
-        protected override void OnDisable()
+        private void OnDisable()
         {
-            base.OnDisable();
-            
             if (stopOnDisable) Stop();
         }
         
@@ -73,8 +56,6 @@ namespace LCHFramework.Components
             .ForEach(t => t.rectTransform.localEulerAngles = t.rectTransform.localEulerAngles.SetZ(orientation != Orientation.LandscapeRight ? 0 : 180));
         
         
-        
-        public virtual Awaitable<bool> RequestUserCameraPermissionAsync() => AwaitableUtility.FromResult(true);
         
         public async void Play()
         {

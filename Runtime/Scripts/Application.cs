@@ -1,14 +1,20 @@
-#if !UNITY_EDITOR && UNITY_IOS
-using System.Runtime.InteropServices;
-using UnityEngine.iOS;
-#elif !UNITY_EDITOR && UNITY_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
 using LCHFramework.Utilities;
+#elif !UNITY_EDITOR && UNITY_IOS
+using System.Runtime.InteropServices;
 #elif UNITY_EDITOR
+using System;
 using UnityEditor;
 #endif
-using System;
+
+#if UNITY_ANDROID
+using UnityEngine.Android;
 using UniRx;
 using UnityEngine;
+
+#elif UNITY_IOS
+using UnityEngine.iOS;
+#endif
 
 namespace LCHFramework
 {
@@ -127,6 +133,10 @@ namespace LCHFramework
             : _iOSVersion;
         private static Version _iOSVersion;
         
+        public static bool IsIPhone => UnityEngine.Application.platform == RuntimePlatform.IPhonePlayer && SystemInfo.deviceModel.Contains("iPhone", StringComparison.OrdinalIgnoreCase);
+        
+        public static bool IsIPad => UnityEngine.Application.platform == RuntimePlatform.IPhonePlayer && SystemInfo.deviceModel.Contains("iPad", StringComparison.OrdinalIgnoreCase);
+        
         
         
         [RuntimeInitializeOnLoadMethod]
@@ -147,6 +157,26 @@ namespace LCHFramework
 #else
             UnityEngine.Application.Quit();
 #endif
+        }
+
+        public static async Awaitable<bool> RequestUserCameraPermissionAsync()
+        {
+#if UNITY_ANDROID
+            if (!Permission.HasUserAuthorizedPermission(Permission.Camera))
+            {
+                Permission.RequestUserPermission(Permission.Camera);
+                await Awaitable.WaitForSecondsAsync(0.1f);
+            }
+            var result = Permission.HasUserAuthorizedPermission(Permission.Camera); 
+#else
+            if (!UnityEngine.Application.HasUserAuthorization(UserAuthorization.WebCam))
+            {
+                await UnityEngine.Application.RequestUserAuthorization(UserAuthorization.WebCam);
+            }
+            var result = UnityEngine.Application.HasUserAuthorization(UserAuthorization.WebCam);
+#endif
+            await Awaitable.NextFrameAsync();
+            return result;
         }
         
 #if !UNITY_EDITOR && UNITY_IOS
