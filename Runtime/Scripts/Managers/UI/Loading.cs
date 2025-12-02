@@ -57,7 +57,6 @@ namespace LCHFramework.Managers.UI
         {
             CancellationTokenSourceUtility.RestartTokenSource(ref cts);
             return Task();
-            
             async Awaitable Task()
             {
                 Wrapper.SetActive(true);
