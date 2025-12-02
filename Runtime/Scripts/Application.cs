@@ -2,18 +2,15 @@
 using LCHFramework.Utilities;
 #elif !UNITY_EDITOR && UNITY_IOS
 using System.Runtime.InteropServices;
+using UnityEngine.iOS;
 #elif UNITY_EDITOR
-using System;
 using UnityEditor;
 #endif
-
-#if UNITY_ANDROID
-using UnityEngine.Android;
+using System;
 using UniRx;
 using UnityEngine;
-
-#elif UNITY_IOS
-using UnityEngine.iOS;
+#if UNITY_ANDROID
+using UnityEngine.Android;
 #endif
 
 namespace LCHFramework
