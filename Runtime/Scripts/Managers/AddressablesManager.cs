@@ -21,7 +21,7 @@ namespace LCHFramework.Managers
             onDownloadSize?.Invoke(downloadSize);
             await AwaitableUtility.WaitWhile(() => !downloadSize.IsDone);
             
-            if (downloadSize.Status == AsyncOperationStatus.Succeeded)
+            if (downloadSize.IsValid() && downloadSize.Status == AsyncOperationStatus.Succeeded)
             {
                 if (downloadSize is { Result: > 0 })
                 {

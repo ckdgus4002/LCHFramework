@@ -1,6 +1,7 @@
 using System;
 using LCHFramework.Extensions;
 using LCHFramework.Managers.UI;
+using LCHFramework.Utilities;
 using UniRx;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -29,7 +30,7 @@ namespace LCHFramework.Managers
         
         private static bool isLoadingScene;
         private static bool uiIsDone;
-        private static bool isLoadInProcessing;
+        private static bool isLoadSceneProcess;
         private static AsyncOperationHandle downloadAddressable;
         private static AsyncOperationHandle<SceneInstance> loadScene;
         
@@ -73,11 +74,11 @@ namespace LCHFramework.Managers
             isLoadingScene = true;
             Message = !string.IsNullOrWhiteSpace(message) ? message : Message;
             MessageBroker.Default.Publish(new LoadSceneFadeOutMessage { sceneAddress = PrevSceneAddress, nextSceneAddress = sceneAddress });
-
-
+            
+            
             downloadAddressable = default;
             uiIsDone = false;
-            isLoadInProcessing = false;
+            isLoadSceneProcess = false;
             var startTime = Time.time;
             var loadSceneUIorNull = (ILoadSceneUI)(mode switch
             {
@@ -87,11 +88,11 @@ namespace LCHFramework.Managers
             });
             if (loadSceneUIorNull != null) _ = loadSceneUIorNull.LoadAsync(
                 () => {
-                    var isValid = (!isLoadInProcessing ? downloadAddressable : loadScene).IsValid();
+                    var isValid = (!isLoadSceneProcess ? downloadAddressable : loadScene).IsValid();
                     if (!isValid) return loadingMessage;
                     
-                    var operationException = (!isLoadInProcessing ? downloadAddressable : loadScene).OperationException;
-                    var status = (!isLoadInProcessing ? downloadAddressable : loadScene).Status;
+                    var operationException = (!isLoadSceneProcess ? downloadAddressable : loadScene).OperationException;
+                    var status = (!isLoadSceneProcess ? downloadAddressable : loadScene).Status;
                     return operationException != null ? $"{ErrorMessage} ({operationException})"
                         : status == AsyncOperationStatus.Failed ? $"{ErrorMessage} Status is Failed."
                         : loadingMessage;
@@ -99,25 +100,31 @@ namespace LCHFramework.Managers
                 fadeOutDuration,
                 fadeInDuration,
                 () => {
-                    var isValid = (!isLoadInProcessing ? downloadAddressable : loadScene).IsValid();
+                    var isValid = (!isLoadSceneProcess ? downloadAddressable : loadScene).IsValid();
                     if (!isValid) return 0;
                     
-                    var percentComplete = (!isLoadInProcessing ? downloadAddressable : loadScene).PercentComplete;
+                    var percentComplete = (!isLoadSceneProcess ? downloadAddressable : loadScene).PercentComplete;
                     return Math.Min(Time.time - (startTime + fadeOutDuration), percentComplete);
                 },
                 () => uiIsDone);
             await Awaitable.WaitForSecondsAsync(fadeOutDuration);
             
             
-            await AddressablesManager.DownloadAsync(addressLabel, null, null, (_, download) => downloadAddressable = download);
-
-
-            isLoadInProcessing = true;
+            await AddressablesManager.DownloadAsync(addressLabel, null, downloadSize =>
+            {
+                var readableDownloadSize = FileUtility.ToHumanReadableFileSize(downloadSize.Result);
+                Debug.Log($"Download Size : {readableDownloadSize}");
+                return AwaitableUtility.FromResult(true);
+                
+            }, (_, download) => downloadAddressable = download);
+            
+            
             UnityEngine.SceneManagement.SceneManager.LoadScene("LoadScene");
             
             
             PrevSceneAddress = SceneAddress;
             SceneAddress = sceneAddress;
+            isLoadSceneProcess = true;
             await (loadScene = Addressables.LoadSceneAsync(sceneAddress)).ToAwaitable();
             
             
