@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using LCHFramework.Extensions;
 using TMPro;
@@ -37,6 +38,15 @@ namespace LCHFramework.Managers.UI
         
         protected Image Image => _image == null ? _image = GetComponentInChildren<Image>(true) : _image;
         private Image _image;
+        
+        
+        
+#if UNITY_EDITOR
+        private void Reset()
+        {
+            messageText = GetComponentsInChildren<TMP_Text>().FirstOrDefault(t => t.name.Contains("Message", StringComparison.OrdinalIgnoreCase) && t.name.Contains("Text", StringComparison.OrdinalIgnoreCase));
+        }
+#endif
         
         
         
