@@ -72,13 +72,13 @@ namespace LCHFramework.Managers
             
             SoundManager.Instance.StopAll();
             isLoadingScene = true;
-            Message = !string.IsNullOrWhiteSpace(message) ? message : Message;
-            MessageBroker.Default.Publish(new LoadSceneFadeOutMessage { sceneAddress = PrevSceneAddress, nextSceneAddress = sceneAddress });
-            
-            
-            downloadAddressable = default;
             uiIsDone = false;
             isLoadSceneProcess = false;
+            downloadAddressable = default;
+            loadScene = default;
+            Message = !string.IsNullOrWhiteSpace(message) ? message : Message;
+            
+            
             var startTime = Time.time;
             var loadSceneUIorNull = (ILoadSceneUI)(mode switch
             {
@@ -107,6 +107,7 @@ namespace LCHFramework.Managers
                     return Math.Min(Time.time - (startTime + fadeOutDuration), percentComplete);
                 },
                 () => uiIsDone);
+            MessageBroker.Default.Publish(new LoadSceneFadeOutMessage { sceneAddress = PrevSceneAddress, nextSceneAddress = sceneAddress });
             await Awaitable.WaitForSecondsAsync(fadeOutDuration);
             
             
@@ -120,12 +121,14 @@ namespace LCHFramework.Managers
             
             
             UnityEngine.SceneManagement.SceneManager.LoadScene("LoadScene");
+            await Awaitable.NextFrameAsync();
             
             
             PrevSceneAddress = SceneAddress;
             SceneAddress = sceneAddress;
             isLoadSceneProcess = true;
-            await (loadScene = Addressables.LoadSceneAsync(sceneAddress)).ToAwaitable();
+            loadScene = Addressables.LoadSceneAsync(sceneAddress);
+            await AwaitableUtility.WaitUntil(() => !loadScene.IsValid() || loadScene.IsDone);
             
             
             SoundManager.Instance.ClearAll();
