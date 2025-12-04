@@ -88,7 +88,7 @@ namespace LCHFramework.Components.UI
         {
             base.Awake();
             
-            UnityEventUtility.AddPersistentListener(onEndDragComplete, Initialize);
+            UnityEventUtility.AddListener(onEndDragComplete, Initialize);
             
             if (Canvas.worldCamera == null) Canvas.worldCamera = Camera.main;
             

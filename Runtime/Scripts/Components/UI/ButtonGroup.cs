@@ -29,7 +29,7 @@ namespace LCHFramework.Components.UI
                     foreach (var button in GetComponentsInChildren<Button>(true))
                     {
                         var buttonInfo = new ButtonInfo(this, button);
-                        UnityEventUtility.AddObjectPersistentListener(button.onClick, OnButtonClick, button);
+                        UnityEventUtility.AddObjectListener(button.onClick, OnButtonClick, button);
                         _buttonInfos.Add(buttonInfo);
                     }
                 }
