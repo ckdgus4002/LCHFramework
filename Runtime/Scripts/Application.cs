@@ -1,16 +1,20 @@
-#if !UNITY_EDITOR && UNITY_ANDROID
+#if (!UNITY_EDITOR && UNITY_ANDROID) || UNITY_IOS || UNITY_WEBGL
 using LCHFramework.Utilities;
-#elif !UNITY_EDITOR && UNITY_IOS
-using System.Runtime.InteropServices;
-using UnityEngine.iOS;
-#elif UNITY_EDITOR
-using UnityEditor;
 #endif
 using System;
+#if !UNITY_EDITOR && UNITY_IOS
+using System.Runtime.InteropServices;
+#endif
 using UniRx;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 #if UNITY_ANDROID
 using UnityEngine.Android;
+#endif
+#if !UNITY_EDITOR && UNITY_IOS
+using UnityEngine.iOS;
 #endif
 
 namespace LCHFramework
@@ -162,20 +166,23 @@ namespace LCHFramework
             if (!Permission.HasUserAuthorizedPermission(Permission.Camera))
             {
                 Permission.RequestUserPermission(Permission.Camera);
+                if (!Permission.HasUserAuthorizedPermission(Permission.Camera)) return false;
+                
                 await Awaitable.WaitForSecondsAsync(0.1f);
+                return true;
             }
             else
-                await Awaitable.NextFrameAsync();
-            
-            return Permission.HasUserAuthorizedPermission(Permission.Camera); 
-#else
+                return true;
+#else // UNITY_IOS || UNITY_WEBGL
             if (!UnityEngine.Application.HasUserAuthorization(UserAuthorization.WebCam))
             {
                 await UnityEngine.Application.RequestUserAuthorization(UserAuthorization.WebCam);
+                if (!UnityEngine.Application.HasUserAuthorization(UserAuthorization.WebCam)) return false;
+ 
+                return true;
             }
-            await Awaitable.NextFrameAsync();
-            
-            return UnityEngine.Application.HasUserAuthorization(UserAuthorization.WebCam);
+            else
+                return true;
 #endif
         }
         
