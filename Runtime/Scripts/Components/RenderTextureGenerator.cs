@@ -8,7 +8,7 @@ namespace LCHFramework.Components
     {
         [SerializeField] private bool generateOnAwake = true;
         [SerializeField] private bool generateOnEnable;
-        [SerializeField] private UnityEvent<RenderTexture> onGenerate;
+        public UnityEvent<RenderTexture> onGenerate;
         
         
         public Dictionary<string, RenderTexture> RenderTextures { get; }= new();
