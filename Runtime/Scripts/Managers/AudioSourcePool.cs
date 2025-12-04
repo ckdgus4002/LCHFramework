@@ -37,8 +37,13 @@ namespace LCHFramework.Managers
                 if (!audioSourceDisposables.ContainsKey(audioSource))
                 {
                     audioSourceDisposables.Add(audioSource, new CompositeDisposable());
-                    audioSourceDisposables[audioSource].Add(SoundManager.MasterVolume.Subscribe(masterVolume => audioSource.volume *= masterVolume * SoundManager.LocalVolumes[name].Value));
-                    audioSourceDisposables[audioSource].Add(SoundManager.LocalVolumes[name].Subscribe(localVolume => audioSource.volume *= SoundManager.MasterVolume.Value * localVolume));
+                    audioSourceDisposables[audioSource].Add(SoundManager.MasterVolume.Subscribe(masterVolume => audioSource.volume = GetPlayVolume() * masterVolume * SoundManager.LocalVolumes[name].Value));
+                    audioSourceDisposables[audioSource].Add(SoundManager.LocalVolumes[name].Subscribe(localVolume => audioSource.volume = GetPlayVolume() * SoundManager.MasterVolume.Value * localVolume));
+                    float GetPlayVolume()
+                    {
+                        var split = audioSource.name.Split('|');
+                        return split.Length < 2 ? audioSource.volume : Convert.ToSingle(split[1]);
+                    }
                 }
                 SetAudioSourceTimeScale(audioSource, SoundManager.TimeScale);
                 audioSource.SetActive(true);
@@ -102,7 +107,7 @@ namespace LCHFramework.Managers
         
         private SoundPlayResult PlayAudioSource(AudioSource audioSource, AudioClip audioClip, float volume, bool loop, Vector3 position, bool canFadeAudioSourceVolume)
         {
-            audioSource.name = audioClip.name;
+            audioSource.name = $"{audioClip.name}|{volume}";
             audioSource.clip = audioClip;
             audioSource.loop = loop;
             audioSource.transform.position = position;
