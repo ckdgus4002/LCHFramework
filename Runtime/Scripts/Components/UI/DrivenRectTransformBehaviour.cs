@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace LCHFramework.Components.UI
@@ -14,7 +13,7 @@ namespace LCHFramework.Components.UI
         
 #if UNITY_EDITOR
         private void OnValidate() => OnReset();
-
+        
         private void Reset() => OnReset();
 #endif  
         private void Update()
@@ -30,13 +29,13 @@ namespace LCHFramework.Components.UI
             else if (ScaleXIsChanged()) SetScaleX();
             else if (ScaleYIsChanged()) SetScaleY();
         }
-
+        
         protected override void OnDisable()
         {
             base.OnDisable();
             
             Tracker.Clear();
-            if (GetComponent<UIBehaviour>() != null) LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
+            LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
         }
         
         
@@ -44,13 +43,13 @@ namespace LCHFramework.Components.UI
         public void SetLayoutHorizontal() => OnReset();
         
         public void SetLayoutVertical() => OnReset();
-
+        
         protected abstract void OnReset();
         
         
         
         protected virtual bool AllIsChanged() => false;
-
+        
         protected virtual void SetAll() { }
         
         
@@ -84,15 +83,15 @@ namespace LCHFramework.Components.UI
         
         
         protected virtual bool ScaleIsChanged() => false;
-
+        
         protected virtual void SetScale() { }
         
         protected virtual bool ScaleXIsChanged() => false;
         
         protected virtual void SetScaleX() { }
-
+        
         protected virtual bool ScaleYIsChanged() => false;
-
+        
         protected virtual void SetScaleY() { }
     }
 }
