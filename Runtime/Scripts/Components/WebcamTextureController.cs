@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using LCHFramework.Data;
 using LCHFramework.Extensions;
-using LCHFramework.Managers;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.Events;
 
 namespace LCHFramework.Components
 {
@@ -14,8 +11,8 @@ namespace LCHFramework.Components
     {
         [SerializeField] private bool playOnEnable = true;
         [SerializeField] private bool stopOnDisable = true;
-        public WebCamDeviceType webCamDeviceType = WebCamDeviceType.FrontFacing; 
-        public List<RawImage> rawImages;
+        public WebCamDeviceType webCamDeviceType = WebCamDeviceType.FrontFacing;
+        public UnityEvent<WebCamTexture> onPlay;
         
         
         
@@ -42,7 +39,6 @@ namespace LCHFramework.Components
         
         protected virtual void Start()
         {
-            OrientationManager.Instance.Orientation.Subscribe(OnOrientationChanged).AddTo(this);
             MessageBroker.Default.Receive<ScreenSizeChangedMessage>().Subscribe(_ => OnScreenSizeChanged()).AddTo(this);
         }
         
@@ -53,10 +49,6 @@ namespace LCHFramework.Components
         
         
         
-        private void OnOrientationChanged(Orientation orientation) => rawImages
-            .Where(t => t != null)
-            .ForEach(t => t.rectTransform.localEulerAngles = t.rectTransform.localEulerAngles.SetZ(orientation != Orientation.LandscapeRight ? 0 : 180));
-
         private void OnScreenSizeChanged() => Play(true).Forget();
         
         
@@ -65,7 +57,7 @@ namespace LCHFramework.Components
         {
             var webcamTextureOrNull = await GetWebcamTextureOrNull(restart);
             
-            rawImages.Where(t => t != null).ForEach(t => t.texture = webcamTextureOrNull);
+            onPlay?.Invoke(webcamTextureOrNull);
             
             while (webcamTextureOrNull != null && !webcamTextureOrNull.isPlaying)
             {
