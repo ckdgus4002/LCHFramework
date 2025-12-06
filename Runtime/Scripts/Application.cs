@@ -134,8 +134,6 @@ namespace LCHFramework
             : _iOSVersion;
         private static Version _iOSVersion;
         
-        public static bool IsIPhone => UnityEngine.Application.platform == RuntimePlatform.IPhonePlayer && SystemInfo.deviceModel.Contains("iPhone", StringComparison.OrdinalIgnoreCase);
-        
         public static bool IsIPad => UnityEngine.Application.platform == RuntimePlatform.IPhonePlayer && SystemInfo.deviceModel.Contains("iPad", StringComparison.OrdinalIgnoreCase);
         
         
