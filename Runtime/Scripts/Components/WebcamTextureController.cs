@@ -56,7 +56,7 @@ namespace LCHFramework.Components
         {
             var webcamTextureOrNull = await GetWebcamTextureOrNull(restart);
             
-            webcamTextureOrNull.Play();
+            if (webcamTextureOrNull != null) webcamTextureOrNull.Play();
             
             onPlay?.Invoke(webcamTextureOrNull);
         }

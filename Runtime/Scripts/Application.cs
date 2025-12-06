@@ -1,20 +1,18 @@
-#if (!UNITY_EDITOR && UNITY_ANDROID) || UNITY_IOS || UNITY_WEBGL
+using System;
+using UniRx;
+using UnityEngine;
+#if UNITY_ANDROID || UNITY_IOS || UNITY_WEBGL
 using LCHFramework.Utilities;
 #endif
-using System;
 #if !UNITY_EDITOR && UNITY_IOS
 using System.Runtime.InteropServices;
+using UnityEngine.iOS;
 #endif
-using UniRx;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-using UnityEngine;
 #if UNITY_ANDROID
 using UnityEngine.Android;
 #endif
-#if !UNITY_EDITOR && UNITY_IOS
-using UnityEngine.iOS;
+#if UNITY_EDITOR
+using UnityEditor;
 #endif
 
 namespace LCHFramework
@@ -163,11 +161,16 @@ namespace LCHFramework
 #if UNITY_ANDROID
             if (!Permission.HasUserAuthorizedPermission(Permission.Camera))
             {
-                Permission.RequestUserPermission(Permission.Camera);
-                if (!Permission.HasUserAuthorizedPermission(Permission.Camera)) return false;
+                var callbacks = new PermissionCallbacks();
+                var result = -1;
+                callbacks.PermissionGranted += _ => result = 1;
+                callbacks.PermissionDenied += _ => result = 2;
+                Permission.RequestUserPermission(Permission.Camera, callbacks);
+                await AwaitableUtility.WaitUntil(() => -1 < result);
                 
-                await Awaitable.WaitForSecondsAsync(0.1f);
-                return true;
+                var isGranted = result == 1;
+                if (isGranted) await Awaitable.NextFrameAsync();
+                return isGranted;
             }
             else
                 return true;
@@ -175,9 +178,7 @@ namespace LCHFramework
             if (!UnityEngine.Application.HasUserAuthorization(UserAuthorization.WebCam))
             {
                 await UnityEngine.Application.RequestUserAuthorization(UserAuthorization.WebCam);
-                if (!UnityEngine.Application.HasUserAuthorization(UserAuthorization.WebCam)) return false;
- 
-                return true;
+                return UnityEngine.Application.HasUserAuthorization(UserAuthorization.WebCam); 
             }
             else
                 return true;
