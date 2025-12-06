@@ -93,8 +93,8 @@ namespace LCHFramework.Managers
                     
                     var operationException = (!isLoadSceneProcess ? downloadAddressable : loadScene).OperationException;
                     var status = (!isLoadSceneProcess ? downloadAddressable : loadScene).Status;
-                    return operationException != null ? $"{ErrorMessage} ({operationException})"
-                        : status == AsyncOperationStatus.Failed ? $"{ErrorMessage} Status is Failed."
+                    return operationException != null ? $"{ErrorMessage}\n({operationException})"
+                        : status == AsyncOperationStatus.Failed ? $"{ErrorMessage}\nStatus is Failed."
                         : loadingMessage;
                 },
                 fadeOutDuration,
