@@ -10,6 +10,18 @@ using UnityEngine;
 
 namespace LCHFramework
 {
+    public struct OnScreenSizeChangedMessage
+    {
+        public Vector2 prev;
+        public Vector2 curret;
+    }
+    
+    public struct OnMainCameraAspectChangedMessage
+    {
+        public float prev;
+        public float curret;
+    }
+    
     public class LCHFramework : MonoSingleton<LCHFramework>
     {
 #if UNITY_EDITOR
@@ -70,12 +82,12 @@ namespace LCHFramework
         private void Update()
         {
             var screenSize = Screen.Size;
-            if (screenSize != PrevScreenSize) MessageBroker.Default.Publish(new ScreenSizeChangedMessage { prev = PrevScreenSize, curret = screenSize });
+            if (screenSize != PrevScreenSize) MessageBroker.Default.Publish(new OnScreenSizeChangedMessage { prev = PrevScreenSize, curret = screenSize });
             PrevScreenSize = screenSize;
             
             if (Camera.main == null) return;
             var mainCameraAspect = Camera.main.aspect;
-            if (!Mathf.Approximately(mainCameraAspect, PrevMainCameraAspect)) MessageBroker.Default.Publish(new MainCameraAspectChangedMessage { prev = PrevMainCameraAspect, curret = mainCameraAspect });
+            if (!Mathf.Approximately(mainCameraAspect, PrevMainCameraAspect)) MessageBroker.Default.Publish(new OnMainCameraAspectChangedMessage { prev = PrevMainCameraAspect, curret = mainCameraAspect });
             PrevMainCameraAspect = mainCameraAspect;
         }
     }

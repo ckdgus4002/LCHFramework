@@ -1,5 +1,4 @@
 using System;
-using LCHFramework.Data;
 using LCHFramework.Extensions;
 using UniRx;
 using UnityEngine;
@@ -39,7 +38,7 @@ namespace LCHFramework.Components
         
         protected virtual void Start()
         {
-            MessageBroker.Default.Receive<ScreenSizeChangedMessage>().Subscribe(_ => OnScreenSizeChanged()).AddTo(this);
+            MessageBroker.Default.Receive<OnScreenSizeChangedMessage>().Subscribe(_ => OnScreenSizeChanged()).AddTo(this);
         }
         
         private void OnDisable()

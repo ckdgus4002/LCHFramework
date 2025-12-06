@@ -1,4 +1,3 @@
-using LCHFramework.Data;
 using UniRx;
 
 namespace LCHFramework.Components
@@ -8,14 +7,13 @@ namespace LCHFramework.Components
         private readonly CompositeDisposable disposables = new();
         
         
-        
         protected override int GetRenderTextureWidth() => Screen.width;
         
         protected override int GetRenderTextureHeight() => Screen.height;
         
         
         
-        private void OnEnable() => disposables.Add(MessageBroker.Default.Receive<ScreenSizeChangedMessage>().Subscribe(_ => Generate()));
+        private void OnEnable() => disposables.Add(MessageBroker.Default.Receive<OnScreenSizeChangedMessage>().Subscribe(_ => Generate()));
         
         private void OnDisable() => disposables.Clear();
     }
