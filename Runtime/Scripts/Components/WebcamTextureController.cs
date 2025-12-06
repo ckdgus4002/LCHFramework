@@ -17,21 +17,21 @@ namespace LCHFramework.Components
         
         public async Awaitable<WebCamTexture> GetWebcamTextureOrNull(bool force = false)
         {
-            if ((_webcamTexture == null || force) && await Application.RequestUserCameraPermissionAsync())
+            if ((_webcamTextureOrNull == null || force) && await Application.RequestUserCameraPermissionAsync())
             {
                 var webCamDeviceExists = WebCamTexture.devices.TryFirstOrDefault(t => 
                     (webCamDeviceType & WebCamDeviceType.FrontFacing) != 0 && t.isFrontFacing,
                     out var webCamDevice);
-                _webcamTexture = !webCamDeviceExists ? null : new WebCamTexture(webCamDevice.name, Screen.width, Screen.height);
+                _webcamTextureOrNull = !webCamDeviceExists ? null : new WebCamTexture(webCamDevice.name, Screen.width, Screen.height);
             }
             
-            return _webcamTexture;
+            return _webcamTextureOrNull;
         }
-        private WebCamTexture _webcamTexture;
+        private WebCamTexture _webcamTextureOrNull;
         
         
         
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
             if (playOnEnable) Play().Forget();
         }
@@ -41,7 +41,7 @@ namespace LCHFramework.Components
             MessageBroker.Default.Receive<OnScreenSizeChangedMessage>().Subscribe(_ => OnScreenSizeChanged()).AddTo(this);
         }
         
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
             if (stopOnDisable) Stop();
         }
@@ -52,7 +52,7 @@ namespace LCHFramework.Components
         
         
         
-        public async Awaitable Play(bool restart = false)
+        public virtual async Awaitable Play(bool restart = false)
         {
             var webcamTextureOrNull = await GetWebcamTextureOrNull(restart);
             
@@ -61,14 +61,14 @@ namespace LCHFramework.Components
             onPlay?.Invoke(webcamTextureOrNull);
         }
         
-        public void Pause()
+        public virtual void Pause()
         {
-            if (_webcamTexture != null) _webcamTexture.Pause();
+            if (_webcamTextureOrNull != null) _webcamTextureOrNull.Pause();
         }
         
-        public void Stop()
+        public virtual void Stop()
         {
-            if (_webcamTexture != null) _webcamTexture.Stop();
+            if (_webcamTextureOrNull != null) _webcamTextureOrNull.Stop();
         }
         
         
