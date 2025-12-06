@@ -20,10 +20,10 @@ namespace LCHFramework.Components
         {
             yield return base.Start();
             
-            MessageBroker.Default.Receive<CurrentStepChangedMessage>().Subscribe(message =>
+            MessageBroker.Default.Receive<OnCurrentStepChangedMessage>().Subscribe(message =>
             {
-                var prevStepIndex = message.prevStepOrNull == null ? -1 : message.prevStepOrNull.Index;
-                OnCurrentStepIndexChanged(prevStepIndex, message.currentStep.Index);
+                var prevStepIndex = message.prevOrNull == null ? -1 : message.prevOrNull.Index;
+                OnCurrentStepIndexChanged(prevStepIndex, message.current.Index);
                 
             }).AddTo(gameObject);
         }

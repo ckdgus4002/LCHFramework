@@ -20,10 +20,10 @@ namespace LCHFramework.Managers.StepManager
     {
     }
     
-    public struct CurrentStepChangedMessage
+    public struct OnCurrentStepChangedMessage
     {
-        public Step prevStepOrNull;
-        public Step currentStep;
+        public Step prevOrNull;
+        public Step current;
     }
     
     public class StepManager : StepManager<StepManager, Step>
@@ -66,7 +66,7 @@ namespace LCHFramework.Managers.StepManager
                 _currentStep.Show();
                 
                 Debug.Log($"[{transform.GetPath()}] CurrentStep is changed. {(PrevStepOrNull == null ? "" : $"{PrevStepOrNull.name} -> ")}{_currentStep.name}");
-                MessageBroker.Default.Publish(new CurrentStepChangedMessage { prevStepOrNull = PrevStepOrNull, currentStep = _currentStep });
+                MessageBroker.Default.Publish(new OnCurrentStepChangedMessage { prevOrNull = PrevStepOrNull, current = _currentStep });
             }
         }
         private T2 _currentStep;
