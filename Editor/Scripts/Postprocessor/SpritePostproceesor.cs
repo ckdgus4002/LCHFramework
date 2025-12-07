@@ -6,23 +6,18 @@ namespace LCHFramework.Editor
 {
     public class SpritePostprocessor : AssetPostprocessor
     {
-        private void OnPostprocessTexture(Texture2D texture)
-        {
-            var textureImporter = assetImporter as TextureImporter;
-            if (textureImporter == null || textureImporter.textureType != TextureImporterType.Sprite) return;
-            
-            OnPostprocessSprite(texture, textureImporter);
-        }
-        
-        private void OnPostprocessSprite(Texture2D sprite, TextureImporter spriteImporter)
+        private void OnPostprocessSprites(Texture2D texture, Sprite[] sprites)
         {
             if (SpritePostprocessorExceptTable.GlobalExceptAssetPathPrefix.Any(t => t.IsExclude(assetPath))) return;
             if (SpritePostprocessorExceptTable.Instances.Any(t => t.IsExclude(assetPath))) return;
+
+            var spriteImporter = assetImporter as TextureImporter;
+            if (spriteImporter == null || spriteImporter.textureType != TextureImporterType.Sprite) return;
             
             spriteImporter.spritePixelsPerUnit = 1;
             spriteImporter.textureCompression = TextureImporterCompression.Uncompressed;
             
-            Debug.Log($"{nameof(OnPostprocessSprite)}: {assetPath}");
+            Debug.Log($"{nameof(OnPostprocessSprites)}: {assetPath}");
         }
     }
 }
