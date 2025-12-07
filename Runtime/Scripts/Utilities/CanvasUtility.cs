@@ -1,5 +1,3 @@
-using LCHFramework.Data;
-using LCHFramework.Managers;
 using UnityEngine;
 
 namespace LCHFramework.Utilities
@@ -10,16 +8,8 @@ namespace LCHFramework.Utilities
         
         public static float GetScaleFactor(Vector2 screenSize)
         {
-            var orientation 
-                = OrientationManager.InstanceIsNull && screenSize.x <= screenSize.y ? Orientation.Portrait
-                : OrientationManager.InstanceIsNull && screenSize.y < screenSize.x ? Orientation.LandscapeLeft
-                : OrientationManager.Instance.Orientation.Value;
-            return orientation switch
-            {
-                >= Orientation.Portrait and <= Orientation.PortraitUpsideDown => Screen.width / screenSize.x,
-                >= Orientation.LandscapeLeft and <= Orientation.LandscapeRight => Screen.height / screenSize.y,
-                _ => -1
-            };
+            var screenAspectRatio = screenSize.x / screenSize.y;
+            return screenAspectRatio < 1 || (Mathf.Approximately(screenAspectRatio, 1) && !LCHFramework.Instance.isPreferredLandOrientation) ? Screen.width / screenSize.x : Screen.height / screenSize.y;
         }
     }
 }
