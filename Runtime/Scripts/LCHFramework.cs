@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using LCHFramework.Data;
 using LCHFramework.Extensions;
 using LCHFramework.Managers;
 using UniRx;
@@ -67,6 +66,7 @@ namespace LCHFramework
         
         
         public Vector2 targetScreenResolution = new(1920, 1920);
+        public bool isPreferredLandOrientation;
         
         
         
