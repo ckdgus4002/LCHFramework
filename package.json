@@ -9,6 +9,7 @@
     "url": "git+https://github.com/ckdgus4002/LCHFramework.git"
   },
   "dependencies": {
+    "com.unity.2d.psdimporter": "11.0.2",
     "com.unity.addressables": "1.25.0",
     "com.unity.nuget.newtonsoft-json": "3.2.1",
     "com.unity.ugui": "2.0.0",
