@@ -23,10 +23,10 @@ namespace LCHFramework.Editor
             psdImporter.spritePixelsPerUnit = 1;
             
             var defaultPlatformSettings = psdImporter.GetImporterPlatformSettings(BuildTarget.NoTarget);
-            defaultPlatformSettings.textureCompression = TextureImporterCompression.Compressed;
+            defaultPlatformSettings.textureCompression = TextureImporterCompression.Uncompressed;
             psdImporter.SetImporterPlatformSettings(defaultPlatformSettings);
             
-            Debug.Log($"{nameof(OnPostprocessSprites)}: {assetPath}");
+            Debug.Log($"{nameof(OnPostprocessPSD)}: {assetPath}");
         }
     }
 }
