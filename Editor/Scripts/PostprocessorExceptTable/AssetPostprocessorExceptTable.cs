@@ -3,7 +3,6 @@ using System.Linq;
 using LCHFramework.Editor.Utilities;
 using LCHFramework.Extensions;
 using UnityEngine;
-using Object = UnityEngine.Object;
 #if UNITY_EDITOR
 using System.IO;
 using UnityEditor;
@@ -11,25 +10,25 @@ using UnityEditor;
 
 namespace LCHFramework.Editor
 {
-    public abstract class AssetPostprocessorExceptTable<T> : ScriptableObject where T : Object
+    public class AssetPostprocessorExceptTable : ScriptableObject
     {
-        public static readonly ExceptAssetPrefix[] GlobalExceptAssetPathPrefix = { new("Assets/Packages"), new("Assets/Plugins") };
+        public static readonly ExceptAssetPrefix[] GlobalExceptAssetPathPrefix = { new("Assets/Editor Default Resources"), new("Assets/Packages"), new("Assets/Plugins") };
         
         
-        public static IEnumerable<T> Instances
+        public static IEnumerable<AssetPostprocessorExceptTable> Instances
         {
             get
             {
                 if (_instances == null || _instancesTime != Time.frameCount)
                 {
-                    _instances = AssetDatabaseUtility.LoadAssetsByType<T>($"{typeof(T).Name}");
+                    _instances = AssetDatabaseUtility.LoadAssetsByType<AssetPostprocessorExceptTable>(nameof(AssetPostprocessorExceptTable));
                     _instancesTime = Time.frameCount;
                 }
                 
                 return _instances;
             }
         }
-        private static IEnumerable<T> _instances;
+        private static IEnumerable<AssetPostprocessorExceptTable> _instances;
         private static int _instancesTime;
         
         

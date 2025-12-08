@@ -9,8 +9,8 @@ namespace LCHFramework.Editor
     {
         private void OnPostprocessAudio(AudioClip audioClip)
         {
-            if (AudioPostprocessorExceptTable.GlobalExceptAssetPathPrefix.Any(t => t.IsExclude(assetPath))) return;
-            if (AudioPostprocessorExceptTable.Instances.Any(t => t.IsExclude(assetPath))) return;
+            if (AssetPostprocessorExceptTable.GlobalExceptAssetPathPrefix.Any(t => t.IsExclude(assetPath))) return;
+            if (AssetPostprocessorExceptTable.Instances.Any(t => t.IsExclude(assetPath))) return;
             
             const bool isMobile = true;
             var isBgm = assetPath.Contains("bgm", StringComparison.OrdinalIgnoreCase);

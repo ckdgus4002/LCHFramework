@@ -8,8 +8,8 @@ namespace LCHFramework.Editor
     {
         private void OnPostprocessSprites(Texture2D texture, Sprite[] sprites)
         {
-            if (SpritePostprocessorExceptTable.GlobalExceptAssetPathPrefix.Any(t => t.IsExclude(assetPath))) return;
-            if (SpritePostprocessorExceptTable.Instances.Any(t => t.IsExclude(assetPath))) return;
+            if (AssetPostprocessorExceptTable.GlobalExceptAssetPathPrefix.Any(t => t.IsExclude(assetPath))) return;
+            if (AssetPostprocessorExceptTable.Instances.Any(t => t.IsExclude(assetPath))) return;
 
             var spriteImporter = assetImporter as TextureImporter;
             if (spriteImporter == null || spriteImporter.textureType != TextureImporterType.Sprite) return;
