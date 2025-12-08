@@ -9,7 +9,7 @@ namespace LCHFramework.Utilities
         public static float GetScaleFactor(Vector2 screenSize)
         {
             var screenAspectRatio = screenSize.x / screenSize.y;
-            return screenAspectRatio < 1 || (Mathf.Approximately(screenAspectRatio, 1) && !LCHFramework.Instance.isPreferredLandOrientation) ? Screen.width / screenSize.x : Screen.height / screenSize.y;
+            return screenAspectRatio < 1 || (Mathf.Approximately(screenAspectRatio, 1) && !LCHFramework.Instance.isPreferredLandscapeOrientation) ? Screen.width / screenSize.x : Screen.height / screenSize.y;
         }
     }
 }

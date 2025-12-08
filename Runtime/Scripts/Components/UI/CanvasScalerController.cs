@@ -16,7 +16,7 @@ namespace LCHFramework.Components.UI
         {
             CanvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             CanvasScaler.referenceResolution = LCHFramework.Instance.targetScreenResolution;
-            CanvasScaler.matchWidthOrHeight = Screen.AspectRatio < 1 || (Mathf.Approximately(Screen.AspectRatio, 1) && !LCHFramework.Instance.isPreferredLandOrientation) ? 0 : 1;
+            CanvasScaler.matchWidthOrHeight = Screen.AspectRatio < 1 || (Mathf.Approximately(Screen.AspectRatio, 1) && !LCHFramework.Instance.isPreferredLandscapeOrientation) ? 0 : 1;
         }
     }
 }

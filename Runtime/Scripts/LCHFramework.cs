@@ -6,6 +6,7 @@ using LCHFramework.Extensions;
 using LCHFramework.Managers;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace LCHFramework
 {
@@ -66,7 +67,7 @@ namespace LCHFramework
         
         
         public Vector2 targetScreenResolution = new(1920, 1920);
-        public bool isPreferredLandOrientation;
+        public bool isPreferredLandscapeOrientation;
         
         
         
