@@ -60,7 +60,7 @@ namespace LCHFramework.Components
         
         public Vector3 BeginPosition { get; private set; }
         public Vector3 BeginMousePosition { get; private set; }
-        public virtual bool IsDragging { get; set; }
+        public bool IsDragging { get; set; }
         
         
         public virtual int SortingOrder
@@ -78,6 +78,8 @@ namespace LCHFramework.Components
                 else if (RendererOrNull != null) RendererOrNull.sortingOrder = value;
             }
         }
+        
+        public bool IsDragged => 1 < Vector2.Distance(defaultLocalTRS.GetPosition(), RectTransform.localPosition);
 
         public virtual Canvas CanvasOrNull => GetComponent<Canvas>();
 
