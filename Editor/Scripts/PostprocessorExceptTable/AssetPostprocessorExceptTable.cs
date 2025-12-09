@@ -39,22 +39,8 @@ namespace LCHFramework.Editor
         
         
         
-#if UNITY_EDITOR
-        private void Reset()
-        {
-            var assetPath = AssetDatabase.GetAssetPath(this);
-            if (string.IsNullOrEmpty(assetPath) && Selection.assetGUIDs.Exists()) assetPath = AssetDatabase.GUIDToAssetPath(Selection.assetGUIDs[0]);
-            if (string.IsNullOrEmpty(assetPath)) return;
-
-            assetPath = !Path.HasExtension(assetPath) ? assetPath : assetPath[..assetPath.LastIndexOf('/')];
-            if (!exceptAssetPathPrefix.Contains(assetPath)) exceptAssetPathPrefix.Add(assetPath);
-        }
-#endif
-        
-        
-        
         public bool IsExclude(string assetPath)
-            => IsExclude(assetPath, assetPath[(assetPath.LastIndexOf('/') + 1)..assetPath.LastIndexOf('.')]);
+            => IsExclude(assetPath, assetPath[(assetPath.LastIndexOf('/') + 1)..]);
         
         private bool IsExclude(string assetPath, string assetName)
         {
