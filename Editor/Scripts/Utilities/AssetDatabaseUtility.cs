@@ -14,7 +14,6 @@ namespace LCHFramework.Editor.Utilities
             => _LoadAssetsByType<T>(filter, searchInFolders).FirstOrDefault(t => t != null);
 
         private static IEnumerable<T> _LoadAssetsByType<T>(string filter, string[] searchInFolders = null) where T : Object
-            => AssetDatabase.FindAssets(filter, searchInFolders)
-                .Select(guid => AssetDatabase.LoadAssetByGUID<T>(new GUID(guid)));
+            => AssetDatabase.FindAssetGUIDs(filter, searchInFolders).SelectMany(t => AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GUIDToAssetPath(t))).Where(t => t is T).Cast<T>();
     }
 }
