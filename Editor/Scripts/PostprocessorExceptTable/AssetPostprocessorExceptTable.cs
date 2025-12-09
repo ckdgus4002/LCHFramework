@@ -3,10 +3,6 @@ using System.Linq;
 using LCHFramework.Editor.Utilities;
 using LCHFramework.Extensions;
 using UnityEngine;
-#if UNITY_EDITOR
-using System.IO;
-using UnityEditor;
-#endif
 
 namespace LCHFramework.Editor
 {
@@ -35,23 +31,10 @@ namespace LCHFramework.Editor
         
         
         public List<string> exceptAssetPathPrefix = new();
-        public List<string> exceptAssetNamePrefix = new();
         
         
         
-        public bool IsExclude(string assetPath)
-            => IsExclude(assetPath, assetPath[(assetPath.LastIndexOf('/') + 1)..]);
-        
-        private bool IsExclude(string assetPath, string assetName)
-        {
-            if (!exceptAssetPathPrefix.IsEmpty() && exceptAssetPathPrefix.Any(t => new ExceptAssetPrefix(t).IsExclude(assetPath)))
-                return true;
-            
-            if (!exceptAssetNamePrefix.IsEmpty() && exceptAssetNamePrefix.Any(t => new ExceptAssetPrefix(t).IsExclude(assetName)))
-                return true;
-            
-            return false;
-        }
+        public bool IsExclude(string assetPath) => !exceptAssetPathPrefix.IsEmpty() && exceptAssetPathPrefix.Any(t => new ExceptAssetPrefix(t).IsExclude(assetPath));
         
         
         
