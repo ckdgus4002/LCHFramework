@@ -10,6 +10,7 @@ using UnityEditor;
 
 namespace LCHFramework.Editor
 {
+    [CreateAssetMenu(fileName = nameof(AssetPostprocessorExceptTable), menuName = "Scriptable Objects/LCHFramework/Asset Postprocessor Except Table")]
     public class AssetPostprocessorExceptTable : ScriptableObject
     {
         public static readonly ExceptAssetPrefix[] GlobalExceptAssetPathPrefix = { new("Assets/Editor Default Resources"), new("Assets/Packages"), new("Assets/Plugins") };
