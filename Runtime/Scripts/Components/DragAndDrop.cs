@@ -22,7 +22,7 @@ namespace LCHFramework.Components
         
         public static bool OverlapsAtWorld(Vector3[] corners, Vector3[] other) => OverlapsAtWorld(GetWorldRect(corners), GetWorldRect(other));
         
-        private static bool OverlapsAtWorld(Rect rect, Rect other) => rect.Overlaps(other);
+        public static bool OverlapsAtWorld(Rect worldRect, Rect other) => worldRect.Overlaps(other);
         
         private static Rect GetWorldRect(Vector3[] corners) => new(corners[0].x, corners[0].y, corners[2].x - corners[0].x, corners[2].y - corners[0].y);
         
