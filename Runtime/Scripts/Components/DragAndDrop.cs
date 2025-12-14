@@ -18,31 +18,32 @@ namespace LCHFramework.Components
     
     public class DragAndDrop : LCHMonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
-        public static Vector3[] GetCornerAtWorld(Transform target)
+        public static bool OverlapsAtWorld(Transform transform, Transform other) => OverlapsAtWorld(GetWorldCorners(transform), GetWorldCorners(other));
+        
+        public static bool OverlapsAtWorld(Vector3[] corners, Vector3[] other) => OverlapsAtWorld(GetWorldRect(corners), GetWorldRect(other));
+        
+        private static bool OverlapsAtWorld(Rect rect, Rect other) => rect.Overlaps(other);
+        
+        private static Rect GetWorldRect(Vector3[] corners) => new(corners[0].x, corners[0].y, corners[2].x - corners[0].x, corners[2].y - corners[0].y);
+        
+        private static Vector3[] GetWorldCorners(Transform target)
         {
             var result = new Vector3[4];
-            if (target is RectTransform targetRectTransform)
-                targetRectTransform.GetWorldCorners(result);
+            if (target is RectTransform targetRt)
+                targetRt.GetWorldCorners(result);
             else
             {
                 var bounds = target.TryGetComponent<Collider2D>(out var result0) ? result0.bounds
-                        : target.TryGetComponent<Renderer>(out var result1) ? result1.bounds
-                        : throw new OutOfRangeException("bounds");
-                var targetPosition = target.position;
-                result[0] = targetPosition + bounds.min;
-                result[1] = targetPosition + new Vector3(bounds.min.x, bounds.max.y, 0);
-                result[2] = targetPosition + bounds.max;
-                result[3] = targetPosition + new Vector3(bounds.max.x, bounds.min.y, 0);
+                    : target.TryGetComponent<Renderer>(out var result1) ? result1.bounds
+                    : throw new OutOfRangeException("bounds");
+                var position = target.position;
+                result[0] = position + bounds.min;
+                result[1] = position + new Vector3(bounds.min.x, bounds.max.y, 0);
+                result[2] = position + bounds.max;
+                result[3] = position + new Vector3(bounds.max.x, bounds.min.y, 0);
             }
             return result;
         }
-        
-        public static bool OverlapsAtWorld(Vector3[] corner, Vector3[] other) => OverlapsAtWorld(
-            new Rect(corner[0].x, corner[0].y, corner[2].x - corner[0].x, corner[2].y - corner[0].y)
-            , new Rect(other[0].x, other[0].y, other[2].x - other[0].x, other[2].y - other[0].y)
-        );
-        
-        public static bool OverlapsAtWorld(Rect rect, Rect other) => rect.Overlaps(other);
         
         
         
@@ -129,11 +130,10 @@ namespace LCHFramework.Components
         
         private int GetOverlapsInteractionAreaIndex()
         {
-            var corner = GetCornerAtWorld(GetOverlapsTarget());
-            foreach (var interactionArea in interactionAreas.OrderByDescending(item => item.overlapsPriority))
-                if (interactionArea.areas.Any(interactionAreaArea => interactionAreaArea.gameObject.activeSelf
-                                                                     && OverlapsAtWorld(corner, GetCornerAtWorld(interactionAreaArea))))
-                    return interactionAreas.IndexOf(interactionArea);
+            var cornersRect = GetWorldRect(GetWorldCorners(GetOverlapsTarget()));
+            foreach (var ia in interactionAreas.OrderByDescending(item => item.overlapsPriority))
+                if (ia.areas.Any(iaa => iaa.gameObject.activeSelf && OverlapsAtWorld(cornersRect, GetWorldRect(GetWorldCorners(iaa)))))
+                    return interactionAreas.IndexOf(ia);
             
             return -1;
         }
