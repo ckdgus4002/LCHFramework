@@ -25,7 +25,7 @@ namespace LCHFramework.Managers
             Orientation.Value = Screen.AspectRatio < 1 || (Mathf.Approximately(Screen.AspectRatio, 1) && !LCHFramework.Instance.isPreferredLandscapeOrientation) ? Screen.Orientation.Portrait : Screen.Orientation.LandscapeLeft;
 #else
             var orientationIndex = UnityEngine.Screen.orientation != ScreenOrientation.AutoRotation ? (int)UnityEngine.Screen.orientation : (int)Input.deviceOrientation;
-            Orientation.Value = orientationIndex is < 1 or > 4 ? Orientation.Value : (Orientation)orientationIndex;
+            Orientation.Value = orientationIndex is < 1 or > 4 ? Orientation.Value : (Screen.Orientation)orientationIndex;
 #endif
         }
     }
