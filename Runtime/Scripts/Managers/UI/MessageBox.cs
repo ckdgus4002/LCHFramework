@@ -22,7 +22,7 @@ namespace LCHFramework.Managers.UI
             Items.ForEach(t =>
             {
                 if (t == item) t.Show(objects);
-                else t.Hide();
+                else if (t.IsShown) t.Hide();
             });
         }
         

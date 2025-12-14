@@ -36,12 +36,12 @@ namespace LCHFramework.Components
             }
             return result;
         }
-
+        
         public static bool OverlapsAtWorld(Vector3[] corner, Vector3[] other) => OverlapsAtWorld(
             new Rect(corner[0].x, corner[0].y, corner[2].x - corner[0].x, corner[2].y - corner[0].y)
             , new Rect(other[0].x, other[0].y, other[2].x - other[0].x, other[2].y - other[0].y)
         );
-
+        
         public static bool OverlapsAtWorld(Rect rect, Rect other) => rect.Overlaps(other);
         
         
@@ -79,10 +79,8 @@ namespace LCHFramework.Components
             }
         }
         
-        public bool IsDragged => 1 < Vector2.Distance(defaultLocalTRS.GetPosition(), RectTransform.localPosition);
-
         public virtual Canvas CanvasOrNull => GetComponent<Canvas>();
-
+        
         public virtual Renderer RendererOrNull => GetComponent<Renderer>();
         
         
@@ -102,10 +100,10 @@ namespace LCHFramework.Components
             BeginPosition = transform.position;
             BeginMousePosition = GetMousePosition(eventData);
             SortingOrder = GetDragSortingOrder();
-
+            
             onBeginDrag?.Invoke(eventData);
         }
-
+        
         public virtual int GetDragSortingOrder() => DefaultSortingOrder + 1;
         
         public void OnDrag(PointerEventData eventData)
@@ -114,9 +112,9 @@ namespace LCHFramework.Components
             
             onDrag?.Invoke(eventData);
         }
-
+        
         public virtual Vector3 GetDragPosition(PointerEventData eventData) => GetMousePosition(eventData) + (BeginPosition - BeginMousePosition);
-
+        
         public void OnEndDrag(PointerEventData eventData)
         {
             IsDragging = false;
@@ -127,9 +125,8 @@ namespace LCHFramework.Components
         
         public virtual Vector3 GetMousePosition(PointerEventData eventData)
             => RootCanvasOrNull == null || RootCanvasOrNull.renderMode == RenderMode.ScreenSpaceOverlay ? Input.mousePosition
-            : RootCanvasOrNull.worldCamera.ScreenToWorldPoint(eventData.position)
-            ;
-
+            : RootCanvasOrNull.worldCamera.ScreenToWorldPoint(eventData.position);
+        
         private int GetOverlapsInteractionAreaIndex()
         {
             var corner = GetCornerAtWorld(GetOverlapsTarget());
@@ -137,10 +134,10 @@ namespace LCHFramework.Components
                 if (interactionArea.areas.Any(interactionAreaArea => interactionAreaArea.gameObject.activeSelf
                                                                      && OverlapsAtWorld(corner, GetCornerAtWorld(interactionAreaArea))))
                     return interactionAreas.IndexOf(interactionArea);
-
+            
             return -1;
         }
-
+        
         protected virtual Transform GetOverlapsTarget() => transform;
     }
 }
