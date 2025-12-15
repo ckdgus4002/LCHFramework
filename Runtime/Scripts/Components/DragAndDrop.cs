@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using LCHFramework.Attributes;
 using LCHFramework.Data;
 using LCHFramework.Extensions;
 using UnityEngine;
@@ -46,7 +47,7 @@ namespace LCHFramework.Components
         
         
         [Header("DragAndDrop")]
-        public InteractionAreas[] interactionAreas = Array.Empty<InteractionAreas>();
+        [ShowInInspector(nameof(IsSerializedInteractionAreas))] public InteractionAreas[] interactionAreas = Array.Empty<InteractionAreas>();
         
         
         public int DefaultSortingOrder { get; private set; }
@@ -77,6 +78,10 @@ namespace LCHFramework.Components
                 else if (RendererOrNull != null) RendererOrNull.sortingOrder = value;
             }
         }
+        
+        // public bool IsDragged => 1 < Vector2.Distance(defaultLocalTRS.GetPosition(), RectTransform.localPosition);
+        
+        protected virtual bool IsSerializedInteractionAreas => true;
         
         public virtual Canvas CanvasOrNull => GetComponent<Canvas>();
         
