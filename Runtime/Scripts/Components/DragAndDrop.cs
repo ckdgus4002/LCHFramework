@@ -50,7 +50,7 @@ namespace LCHFramework.Components
         [ShowInInspector(nameof(IsSerializedInteractionAreas))] public InteractionAreas[] interactionAreas = Array.Empty<InteractionAreas>();
         
         
-        public int DefaultSortingOrder { get; private set; }
+        private int beginDragSortingOrder;
         
         
         public event Action<PointerEventData> onBeginDrag;
@@ -89,43 +89,37 @@ namespace LCHFramework.Components
         
         
         
-        protected override void Awake()
-        {
-            base.Awake();
-            
-            DefaultSortingOrder = SortingOrder;
-        }
-        
-        
-        
         public virtual void OnBeginDrag(PointerEventData eventData)
         {
             IsDragging = true;
             BeginPosition = transform.position;
             BeginMousePosition = GetMousePosition(eventData);
-            SortingOrder = GetDragSortingOrder();
+            beginDragSortingOrder = SortingOrder;
             
             onBeginDrag?.Invoke(eventData);
         }
         
-        public virtual int GetDragSortingOrder() => DefaultSortingOrder + 1;
-        
         public virtual void OnDrag(PointerEventData eventData)
         {
+            SortingOrder = GetDragSortingOrder();
             transform.position = GetDragPosition(eventData);
             
             onDrag?.Invoke(eventData, GetOverlapsInteractionAreaIndex());
         }
+        
+        public virtual int GetDragSortingOrder() => beginDragSortingOrder + 1;
         
         public virtual Vector3 GetDragPosition(PointerEventData eventData) => GetMousePosition(eventData) + (BeginPosition - BeginMousePosition);
         
         public virtual void OnEndDrag(PointerEventData eventData)
         {
             IsDragging = false;
-            SortingOrder = DefaultSortingOrder;
+            SortingOrder = GetEndDragSortingOrder();
             
             onEndDrag?.Invoke(eventData, GetOverlapsInteractionAreaIndex());
         }
+        
+        public virtual int GetEndDragSortingOrder() => beginDragSortingOrder;
         
         public virtual Vector3 GetMousePosition(PointerEventData eventData)
             => RootCanvasOrNull == null || RootCanvasOrNull.renderMode == RenderMode.ScreenSpaceOverlay ? Input.mousePosition
