@@ -36,6 +36,7 @@ namespace LCHFramework.Components.UI
 
         protected override void SetAll()
         {
+            Tracker.Clear();
             Tracker.Add(this, RectTransform, DrivenTransformProperties.All);
 
             RectTransform.anchorMin = Vector2Utility.Half;
