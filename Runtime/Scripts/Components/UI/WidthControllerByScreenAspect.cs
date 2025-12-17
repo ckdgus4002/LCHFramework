@@ -27,8 +27,8 @@ namespace LCHFramework.Components.UI
         
         protected override void SetSizeX()
         {
-            Tracker.Clear();
-            Tracker.Add(this, RectTransform, DrivenTransformProperties.SizeDeltaX);
+            tracker.Clear();
+            tracker.Add(this, RectTransform, DrivenTransformProperties.SizeDeltaX);
             
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Screen.AspectRatio * Height);
             

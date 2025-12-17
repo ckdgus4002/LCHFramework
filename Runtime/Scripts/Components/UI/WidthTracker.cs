@@ -41,8 +41,8 @@ namespace LCHFramework.Components.UI
 
         protected override void SetAll()
         {
-            Tracker.Clear();
-            Tracker.Add(this, RectTransform, DrivenTransformProperties.SizeDeltaX | DrivenTransformProperties.Rotation | DrivenTransformProperties.Scale);
+            tracker.Clear();
+            tracker.Add(this, RectTransform, DrivenTransformProperties.SizeDeltaX | DrivenTransformProperties.Rotation | DrivenTransformProperties.Scale);
 
             RectTransform.rotation = target.rotation;
             RectTransform.localScale = new Vector3(1, isReverseScale ? -1 : 1, 1);

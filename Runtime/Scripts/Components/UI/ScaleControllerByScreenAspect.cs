@@ -42,8 +42,8 @@ namespace LCHFramework.Components.UI
         
         protected override void SetScale()
         {
-            Tracker.Clear();
-            Tracker.Add(this, RectTransform, DrivenTransformProperties.Scale);
+            tracker.Clear();
+            tracker.Add(this, RectTransform, DrivenTransformProperties.Scale);
             
             var scale = Screen.AspectRatio / aspectRatio;
             RectTransform.localScale = useMinScale switch

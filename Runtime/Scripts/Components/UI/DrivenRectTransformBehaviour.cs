@@ -7,7 +7,7 @@ namespace LCHFramework.Components.UI
     [DisallowMultipleComponent]
     public abstract class DrivenRectTransformBehaviour : LCHMonoBehaviour, ILayoutSelfController
     {
-        protected DrivenRectTransformTracker Tracker { get; } = new();
+        protected DrivenRectTransformTracker tracker;
         
         
         
@@ -34,7 +34,7 @@ namespace LCHFramework.Components.UI
         {
             base.OnDisable();
             
-            Tracker.Clear();
+            tracker.Clear();
             LayoutRebuilder.MarkLayoutForRebuild(RectTransform);
         }
         

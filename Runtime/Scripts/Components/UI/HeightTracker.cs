@@ -41,8 +41,8 @@ namespace LCHFramework.Components.UI
 
         protected override void SetAll()
         {
-            Tracker.Clear();
-            Tracker.Add(this, RectTransform, DrivenTransformProperties.AnchorMinY | DrivenTransformProperties.AnchorMaxY | DrivenTransformProperties.SizeDeltaY | DrivenTransformProperties.Rotation | DrivenTransformProperties.Scale);
+            tracker.Clear();
+            tracker.Add(this, RectTransform, DrivenTransformProperties.AnchorMinY | DrivenTransformProperties.AnchorMaxY | DrivenTransformProperties.SizeDeltaY | DrivenTransformProperties.Rotation | DrivenTransformProperties.Scale);
 
             RectTransform.anchorMin = RectTransform.anchorMin.SetY(0.5f);
             RectTransform.anchorMax = RectTransform.anchorMin.SetY(0.5f);

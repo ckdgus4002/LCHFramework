@@ -42,8 +42,8 @@ namespace LCHFramework.Components.UI
         
         protected override void SetAll()
         {
-            Tracker.Clear();
-            Tracker.Add(this, RectTransform, DrivenTransformProperties.All);
+            tracker.Clear();
+            tracker.Add(this, RectTransform, DrivenTransformProperties.All);
             
             switch (aspectMode)
             {
