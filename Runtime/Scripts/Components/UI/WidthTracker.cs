@@ -41,10 +41,8 @@ namespace LCHFramework.Components.UI
 
         protected override void SetAll()
         {
-            Tracker.Add(this, RectTransform, DrivenTransformProperties.AnchorMinX | DrivenTransformProperties.AnchorMaxX | DrivenTransformProperties.SizeDeltaX | DrivenTransformProperties.Rotation | DrivenTransformProperties.Scale);
+            Tracker.Add(this, RectTransform, DrivenTransformProperties.SizeDeltaX | DrivenTransformProperties.Rotation | DrivenTransformProperties.Scale);
 
-            RectTransform.anchorMin = RectTransform.anchorMin.SetX(0.5f);
-            RectTransform.anchorMax = RectTransform.anchorMin.SetX(0.5f);
             RectTransform.rotation = target.rotation;
             RectTransform.localScale = new Vector3(1, isReverseScale ? -1 : 1, 1);
             var scaleFactor = RectTransform.parent.lossyScale.x;
