@@ -107,7 +107,7 @@ namespace LCHFramework.Managers
         
         private SoundPlayResult PlayAudioSource(AudioSource audioSource, AudioClip audioClip, float volume, bool loop, Vector3 position, bool canFadeAudioSourceVolume)
         {
-            audioSource.name = $"{audioClip.name}|{volume}";
+            audioSource.name = $"{audioClip.name}|{volume:F4}";
             audioSource.clip = audioClip;
             audioSource.loop = loop;
             audioSource.transform.position = position;
