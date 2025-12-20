@@ -31,7 +31,7 @@ namespace LCHFramework.Extensions
             
             return default;
         }
-
+        
         public static bool TryGetComponentsInSibling<T>(this GameObject gameObject, out T[] result)
             => gameObject.TryGetComponentsInSibling(false, out result);
         

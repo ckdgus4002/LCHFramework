@@ -33,7 +33,7 @@ namespace LCHFramework.Managers
                 return _currentState;    
             }
         }
-
+        
         public virtual void SetState(IState value)
         {
             if (_currentState == (value ??= StartState)) return;

@@ -40,7 +40,7 @@ namespace LCHFramework.Components
             handle.Completed += t => IsLoaded = t.Status == AsyncOperationStatus.Succeeded;
             return handle;
         }
-
+        
         private void Release() => AddressablesLoadManager<Object>.ReleaseAsset(asset.GetAddress());
     }
 }

@@ -24,7 +24,7 @@ namespace LCHFramework.Editor
 
             Debug.Log($"Searched {_gameObjectNumber} GameObjects, {_componentNumber} components, found {_missingScriptNumber} missing");
         }
-
+        
         private static void FindAll()
         {
             _componentNumber = 0;
@@ -39,8 +39,7 @@ namespace LCHFramework.Editor
             
             Debug.Log($"Searched {_gameObjectNumber} GameObjects, {_componentNumber} components, found {_missingScriptNumber} missing");
         }
-
-
+        
         private static void FindInGameObject(GameObject gameObject)
         {
             _gameObjectNumber++;
@@ -54,7 +53,7 @@ namespace LCHFramework.Editor
                     Debug.Log($"{gameObject.transform.GetPath()} has an empty script attached in position: {i}", gameObject);
                 }
             }
-
+            
             // Now recurse through each child GO (if there are any):
             foreach (Transform childTransform in gameObject.transform) FindInGameObject(childTransform.gameObject);
         }

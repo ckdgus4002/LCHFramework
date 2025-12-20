@@ -38,7 +38,7 @@ namespace LCHFramework.Components.UI
             _prevScale = target.lossyScale;
             return result;
         }
-
+        
         protected override void SetAll()
         {
             tracker.Clear();

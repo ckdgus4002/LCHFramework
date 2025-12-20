@@ -73,7 +73,7 @@ namespace LCHFramework.Managers
                     return remoteException.WebRequestResult.Error;
                 e = e.InnerException;
             }
-
+            
             return null;
         }
         

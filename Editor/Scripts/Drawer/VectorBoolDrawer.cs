@@ -56,7 +56,7 @@ public abstract class VectorBoolDrawer : PropertyDrawer
             // 다음 항목 x 위치로 이동
             x += totalW + spaceBetweenItems;
         }
-
+        
         // 복원
         EditorGUI.showMixedValue = prevMixed;
         EditorGUI.indentLevel = prevIndent;

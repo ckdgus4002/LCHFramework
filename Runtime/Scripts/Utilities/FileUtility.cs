@@ -1,7 +1,7 @@
 namespace LCHFramework.Utilities
 {
     public enum FileUnit { B, KB, MB, GB, TB, PB, EB, }
-
+    
     public static class FileUtility
     {
         public static string ToHumanReadableFileSize(long @byte, int? decimalNumberOrNull = null)
@@ -23,5 +23,4 @@ namespace LCHFramework.Utilities
             return (fileSize, fileUnit);
         }
     }
-
 }

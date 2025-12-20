@@ -28,7 +28,7 @@ namespace LCHFramework.Extensions
             }
             return result.ToArray();
         }
-
+        
         public static Transform[] GetSiblings(this Transform transform, bool includeInactive = false)
         {
             var result = new List<Transform>();

@@ -6,7 +6,6 @@ using LCHFramework.Extensions;
 using LCHFramework.Managers;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace LCHFramework
 {
@@ -36,7 +35,7 @@ namespace LCHFramework
             if (lchFrameworkOrNull == null) CreateGameObjectIfInstanceIsNull();
             else InstantiateIfInstanceIsNull(() => lchFrameworkOrNull);
         }
-
+        
         public static Coroutine PlayAnimations<T>(IEnumerable<(float, T)> animations, Action<int, T> action, bool loop = false) => PlayAnimations(Instance, animations, action, loop);
         
         public static Coroutine PlayAnimations<T>(MonoBehaviour monoBehaviour, IEnumerable<(float, T)> animations, Action<int, T> action, bool loop = false)

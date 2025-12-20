@@ -1,6 +1,5 @@
 using System;
 using LCHFramework.Attributes;
-using LCHFramework.Extensions;
 using LCHFramework.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
@@ -38,7 +37,7 @@ namespace LCHFramework.Components.UI
             _prevScale = target.lossyScale;
             return result;
         }
-
+        
         protected override void SetAll()
         {
             tracker.Clear();

@@ -33,9 +33,9 @@ namespace LCHFramework.Components
         {
             if (generateOnEnable) Generate();
         }
-
-
-
+        
+        
+        
         protected void Generate() => Generate($"{GetRenderTextureWidth()};{GetRenderTextureHeight()};{GetRenderTextureDepth()}");
         
         protected void Generate(string key)

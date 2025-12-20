@@ -20,28 +20,28 @@ namespace LCHFramework.Editor
         private static bool Enabled { get => EditorPrefs.GetBool(EnabledPrefsKey, false); set => EditorPrefs.SetBool(EnabledPrefsKey, value); }
         private static bool ShowActiveToggle { get => EditorPrefs.GetBool(ShowActiveTogglePrefsKey, true); set => EditorPrefs.SetBool(ShowActiveTogglePrefsKey, value); }
         private static bool SqueezeWhenOverflow { get => EditorPrefs.GetBool(SqueezeWhenOverflowPrefsKey); set => EditorPrefs.SetBool(SqueezeWhenOverflowPrefsKey, value); }
-
-
-
+        
+        
+        
         [MenuItem(EnabledMenuItemPath, true)] private static bool ValidateEnabledMenuItem() { Menu.SetChecked(EnabledMenuItemPath, Enabled); return true; }
         
         [MenuItem(EnabledMenuItemPath)] private static void EnabledMenuItem() { Enabled = !Enabled; EditorApplication.RepaintHierarchyWindow(); }
-
+        
         [MenuItem(ShowActiveToggleMenuItemPath, true)] private static bool ValidateShowActiveToggleMenuItem() { Menu.SetChecked(ShowActiveToggleMenuItemPath, ShowActiveToggle); return true; }
         
         [MenuItem(ShowActiveToggleMenuItemPath)] private static void ShowActiveToggleMenuItem() { ShowActiveToggle = !ShowActiveToggle; EditorApplication.RepaintHierarchyWindow(); }
-
+        
         [MenuItem(SqueezeWhenOverflowMenuItemPath, true)] private static bool ValidateSqueezeWhenOverflowMenuItem() { Menu.SetChecked(SqueezeWhenOverflowMenuItemPath, SqueezeWhenOverflow); return true; }
         
         [MenuItem(SqueezeWhenOverflowMenuItemPath)] private static void SqueezeWhenOverflowMenuItem() { SqueezeWhenOverflow = !SqueezeWhenOverflow; EditorApplication.RepaintHierarchyWindow(); }
-
+        
         [InitializeOnLoadMethod]
         public static void InitializeOnLoad()
         {
             EditorApplication.hierarchyWindowItemOnGUI -= HierarchyWindowItemOnGUI;
             EditorApplication.hierarchyWindowItemOnGUI += HierarchyWindowItemOnGUI;
         }
-
+        
         private static Transform _offsetTransform;
         private static int _offset;
         private static void HierarchyWindowItemOnGUI(int instanceID, Rect selectionRect)
@@ -76,7 +76,7 @@ namespace LCHFramework.Editor
                 globalOffsetX -= iconSize + 1;
                 maxIconNumber--;
             }
-
+            
             // Has "..." Button
             var hasMoreButton = !SqueezeWhenOverflow && maxIconNumber < components.Length;
             if (hasMoreButton) maxIconNumber--;
@@ -109,7 +109,7 @@ namespace LCHFramework.Editor
                     _offsetTransform = gameObjectOrNull.transform;    
                 }
             }
-
+            
             // Active Toggle.
             if (ShowActiveToggle)
             {

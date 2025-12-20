@@ -33,7 +33,7 @@ namespace LCHFramework.Components.UI
             _prevSize = UnityEngine.Screen.safeArea.size;
             return result;
         }
-
+        
         protected override void SetAll()
         {
             tracker.Clear();

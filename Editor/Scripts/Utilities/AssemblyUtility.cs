@@ -19,7 +19,7 @@ namespace LCHFramework.Editor.Utilities
                 var typeOrNull = assembly.GetType(typeName); 
                 if (typeOrNull != null) resultOrNull = typeOrNull.GetMethod(methodName, methodBindingAttr)!.Invoke(invokeObj, invokeParameters);
             }
-
+            
             return resultOrNull;
         }
     }

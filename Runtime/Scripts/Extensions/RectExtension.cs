@@ -8,7 +8,7 @@ namespace LCHFramework.Extensions
         {
             return new Rect(x, rect.y, rect.width, rect.height);
         }
-
+        
         public static Rect SetY(this Rect rect, float y)
         {
             return new Rect(rect.x, y, rect.width, rect.height);

@@ -1,5 +1,4 @@
 using System;
-using LCHFramework.Extensions;
 using LCHFramework.Managers.UI;
 using LCHFramework.Utilities;
 using UniRx;

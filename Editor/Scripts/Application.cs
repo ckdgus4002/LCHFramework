@@ -22,7 +22,7 @@ namespace LCHFramework.Editor
                         if (Convert.ToBoolean(isPlatformSupportLoaded?.Invoke(null, new object[] { (string)getTargetStringFromBuildTargetGroup?.Invoke(null, new[] { value }) })))
                             _platformGroups.Add((BuildTargetGroup)value);                        
                 }
-
+                
                 return _platformGroups;
             }
         }

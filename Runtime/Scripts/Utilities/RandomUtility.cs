@@ -21,7 +21,7 @@ namespace LCHFramework.Utilities
                     result = i;
                     break;
                 }
-
+            
             return result;
         }
     }

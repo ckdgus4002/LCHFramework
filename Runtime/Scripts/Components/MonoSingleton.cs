@@ -54,7 +54,7 @@ namespace LCHFramework.Components
                 DestroyNotMonoSingletonByType();
                 SceneManager.sceneLoaded += OnSceneLoaded;
             }
-
+            
             if (instance == this && IsDontDestroyOnLoad)
             {
                 DontDestroyOnLoad(gameObject);
@@ -85,7 +85,7 @@ namespace LCHFramework.Components
                     Destroy(t.gameObject);
                 });
     }
-
+    
 #if UNITY_EDITOR
     [CustomEditor(typeof(MonoSingleton), true)]
     public class MonoSingletonEditor : Editor

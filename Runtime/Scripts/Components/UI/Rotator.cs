@@ -38,7 +38,7 @@ namespace LCHFramework.Components.UI
         public Vector3 PrevVelocity { get; private set; }
         public Vector3 Velocity { get; private set; }
         public Vector3 TotalVelocity { get; private set; }
-
+        
         private float CanvasHeight => 1080f;
 
         public bool Interactable
@@ -51,7 +51,7 @@ namespace LCHFramework.Components.UI
                 }
             }
         }
-
+        
         public Gesture.Type GestureType
         {
             get => _gesture.value;
@@ -101,7 +101,7 @@ namespace LCHFramework.Components.UI
             
             Initialize();
         }
-
+        
         // private void LateUpdate()
         // {
         //     if (Input.touchCount != 2) return;
@@ -165,7 +165,7 @@ namespace LCHFramework.Components.UI
                 }    
             }
         }
-
+        
         // public void OnDrag(params Touch[] touches)
         // {
         //     var pointerPositionDelta = GetPointerPositionDelta(2, touches.Select(item => item.position).ToArray(), touches.Select(item => item.deltaPosition).ToArray()); 
@@ -192,7 +192,7 @@ namespace LCHFramework.Components.UI
             }
             return result;
         }
-
+        
         private bool InViewPort(params Vector3[] screenPositions) => screenPositions.All(item =>
         {
             var viewportPosition = Camera.main.ScreenToViewportPoint(item);
@@ -222,17 +222,17 @@ namespace LCHFramework.Components.UI
 
             PrevVelocity = Velocity;
         }
-
+        
         public void OnEndDrag(PointerEventData eventData)
         {
             if (Input.touchCount < 2) _OnEndDrag();
         }
-
+        
         // public void OnEndDrag()
         // {
         //     if (2 <= Input.touchCount) _OnEndDrag();
         // }
-
+        
         private Coroutine _onEndDrag;
         private void _OnEndDrag()
         {
@@ -267,7 +267,7 @@ namespace LCHFramework.Components.UI
                     target.Rotate(snappedEulerAnglesDelta, Space.World);
 #endif
                 }
-
+                
                 onEndDragComplete?.Invoke();
             }
         }
@@ -295,7 +295,7 @@ namespace LCHFramework.Components.UI
             v.z = Mathf.Approximately(v.z, 0) ? v.z : v.z.Truncate(dist);
             return v;
         }
-
+        
         private void Initialize()
         {
             GestureType = Gesture.Type.None;
@@ -306,7 +306,7 @@ namespace LCHFramework.Components.UI
             if (_onEndDrag != null) StopCoroutine(_onEndDrag);
             _onEndDrag = null;
         }
-
+        
         private void RotateTarget(Vector3 eulers)
         {
             if (target != null) target.Rotate(eulers, Space.World);

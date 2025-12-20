@@ -17,7 +17,7 @@ namespace LCHFramework.Editor.Attributes
             base.OnInspectorGUI();
             DrawButtonsInspector(serializedObject.targetObjects);
         }
-
+        
         private void DrawButtonsInspector(Object[] objects)
         {
             if (objects[0] == null) return;

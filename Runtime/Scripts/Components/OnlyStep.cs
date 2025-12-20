@@ -41,7 +41,7 @@ namespace LCHFramework.Components
             
             (isShow ? onShow : onHide)?.Invoke(prevStepIndex.Invoke(), currentStepIndex.Invoke());
         }
-
+        
         private void Show() => gameObject.SetActive(true);
         
         private void Hide() => gameObject.SetActive(false);

@@ -13,12 +13,12 @@ namespace LCHFramework.Components
             GetComponent<Rigidbody>().linearVelocity = velocity;
 #endif
         }
-
+        
         public void SetForce(Vector3 force)
         {
             GetComponent<Rigidbody>().AddForce(force, ForceMode.Impulse);
         }
-
+        
         public Vector3 GetVelocity(Vector3 currentPos, Vector3 targetPos, float initialAngle)
         {
             float gravity = Physics.gravity.magnitude;
@@ -41,4 +41,3 @@ namespace LCHFramework.Components
         }
     }
 }
-

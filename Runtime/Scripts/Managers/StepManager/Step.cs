@@ -9,4 +9,3 @@ namespace LCHFramework.Managers.StepManager
         public virtual void Hide() => gameObject.SetActive(false);
     }
 }
-

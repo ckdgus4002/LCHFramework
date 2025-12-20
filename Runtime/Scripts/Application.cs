@@ -155,7 +155,7 @@ namespace LCHFramework
             UnityEngine.Application.Quit();
 #endif
         }
-
+        
         public static async Awaitable<bool> RequestUserCameraPermissionAsync()
         {
 #if UNITY_ANDROID

@@ -41,7 +41,7 @@ namespace LCHFramework.Editor
         public class ExceptAssetPrefix
         {
             public ExceptAssetPrefix(string value) { t = value; }
-
+            
             private readonly string t;
             
             public bool IsExclude(string b) => t.Length <= b.Length && t == b[..t.Length];

@@ -1,5 +1,4 @@
 ﻿#if UNITY_IOS
-using LCHFramework.Utilities;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.iOS.Xcode;

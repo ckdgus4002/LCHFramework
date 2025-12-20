@@ -11,7 +11,7 @@ namespace LCHFramework.Attributes
         {
             labelName = "";
         }
-
+        
         public ButtonAttribute(string labelName)
         {
             this.labelName = labelName;
