@@ -19,6 +19,7 @@ namespace LCHFramework.Editor
             var spriteImporterSettings = new TextureImporterSettings();
             spriteImporter.ReadTextureSettings(spriteImporterSettings);
             if (spriteImporter.spriteBorder != Vector4.zero) spriteImporterSettings.spriteMeshType = SpriteMeshType.FullRect;
+            spriteImporter.SetTextureSettings(spriteImporterSettings);
 
             spriteImporter.textureCompression = TextureImporterCompression.Uncompressed;
             
