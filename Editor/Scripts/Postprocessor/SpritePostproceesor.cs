@@ -15,6 +15,11 @@ namespace LCHFramework.Editor
             if (spriteImporter == null || spriteImporter.textureType != TextureImporterType.Sprite) return;
             
             spriteImporter.spritePixelsPerUnit = 1;
+            
+            var spriteImporterSettings = new TextureImporterSettings();
+            spriteImporter.ReadTextureSettings(spriteImporterSettings);
+            if (spriteImporter.spriteBorder != Vector4.zero) spriteImporterSettings.spriteMeshType = SpriteMeshType.FullRect;
+
             spriteImporter.textureCompression = TextureImporterCompression.Uncompressed;
             
             Debug.Log($"{nameof(OnPostprocessSprites)}: {assetPath}");
