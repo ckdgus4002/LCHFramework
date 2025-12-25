@@ -110,6 +110,12 @@ namespace LCHFramework.Managers
             await Awaitable.WaitForSecondsAsync(fadeOutDuration);
             
             
+            UnityEngine.SceneManagement.SceneManager.LoadScene("LoadScene");
+            await Awaitable.NextFrameAsync();
+            
+            
+            SoundManager.Instance.ClearAll();
+            GC.Collect();
             await AddressablesManager.DownloadAsync(addressLabel, null, downloadSize =>
             {
                 var readableDownloadSize = FileUtility.ToHumanReadableFileSize(downloadSize.Result);
@@ -119,10 +125,6 @@ namespace LCHFramework.Managers
             }, (_, download) => downloadAddressable = download);
             
             
-            UnityEngine.SceneManagement.SceneManager.LoadScene("LoadScene");
-            await Awaitable.NextFrameAsync();
-            
-            
             PrevSceneAddress = SceneAddress;
             SceneAddress = sceneAddress;
             isLoadSceneProcess = true;
@@ -130,8 +132,6 @@ namespace LCHFramework.Managers
             await AwaitableUtility.WaitUntil(() => !loadScene.IsValid() || loadScene.IsDone);
             
             
-            SoundManager.Instance.ClearAll();
-            GC.Collect();
             await MessageBroker.Default.Receive<LoadSceneFadeInMessage>().Where(t => t.sceneAddress == sceneAddress).First();
             
             
