@@ -46,7 +46,6 @@ namespace LCHFramework.Components
         
         
         
-        [Header("DragAndDrop")]
         [ShowInInspector(nameof(IsSerializedInteractionAreas))] public InteractionAreas[] interactionAreas = Array.Empty<InteractionAreas>();
         
         
