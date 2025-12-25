@@ -10,6 +10,10 @@ namespace LCHFramework.Utilities
         
         public static async Awaitable WaitWhile(Func<bool> predicate, CancellationToken cancellationToken = default) { while (predicate.Invoke()) await Awaitable.NextFrameAsync(cancellationToken); }
         
+        public static Awaitable CompletedTask => FromResult();
+        
+        public static Awaitable FromResult() => new AwaitableCompletionSource().Awaitable;
+        
         public static Awaitable<T> FromResult<T>(T result)
         {
             var completionSource = new AwaitableCompletionSource<T>();
