@@ -6,15 +6,13 @@ namespace LCHFramework.Utilities
 {
     public static class AwaitableUtility
     {
-        public static Awaitable CompletedTask => FromResult();
+        public static Awaitable CompletedTask => new AwaitableCompletionSource().Awaitable;
         
         
         
         public static async Awaitable WaitUntil(Func<bool> predicate, CancellationToken cancellationToken = default) { while (!predicate.Invoke()) await Awaitable.NextFrameAsync(cancellationToken); }
         
         public static async Awaitable WaitWhile(Func<bool> predicate, CancellationToken cancellationToken = default) { while (predicate.Invoke()) await Awaitable.NextFrameAsync(cancellationToken); }
-        
-        public static Awaitable FromResult() => new AwaitableCompletionSource().Awaitable;
         
         public static Awaitable<T> FromResult<T>(T result)
         {

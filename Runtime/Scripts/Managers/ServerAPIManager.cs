@@ -28,21 +28,25 @@ namespace LCHFramework.Managers
     
     public static class ServerAPIManager
     {
+        public static readonly Color LogColor = Color.cyan;
+        
+        
+        
         public static async Awaitable<ServerAPIResult<Texture>> DownloadTextureAsync(Uri uri, Action<float> progress = null, IEnumerable<KeyValuePair<string, string>> header = null, int timeout = 0, int retryCount = 2, CancellationToken cancellationToken = default)
         {
-            Debug.Log($"DownloadTextureAsync: {uri}", Color.cyan);
+            Debug.Log($"DownloadTextureAsync: {uri}", LogColor);
             return await _DownloadFileAsync<Texture>(uri, DownloadHandlerType.Texture, progress, header, timeout, retryCount, cancellationToken);
         }
         
         public static async Awaitable<ServerAPIResult<AudioClip>> DownloadAudioClipAsync(Uri uri, Action<float> progress = null, IEnumerable<KeyValuePair<string, string>> header = null, int timeout = 0, int retryCount = 2, CancellationToken cancellationToken = default)
         {
-            Debug.Log($"DownloadAudioClipAsync: {uri}", Color.cyan);
+            Debug.Log($"DownloadAudioClipAsync: {uri}", LogColor);
             return await _DownloadFileAsync<AudioClip>(uri, DownloadHandlerType.AudioClip, progress, header, timeout, retryCount, cancellationToken);
         }
         
         public static async Awaitable<ServerAPIResult<byte[]>> DownloadFileAsync(Uri uri, Action<float> progress = null, IEnumerable<KeyValuePair<string, string>> header = null, int timeout = 0, int retryCount = 2, CancellationToken cancellationToken = default)
         {
-            Debug.Log($"DownloadFileAsync: {uri}", Color.cyan);
+            Debug.Log($"DownloadFileAsync: {uri}", LogColor);
             return await _DownloadFileAsync<byte[]>(uri, DownloadHandlerType.Data, progress, header, timeout, retryCount, cancellationToken);
         }
         
@@ -57,7 +61,7 @@ namespace LCHFramework.Managers
         
         public static async Awaitable<ServerAPIResult> UploadFileAsync(Uri uri, List<IMultipartFormSection> multipartFormSections, Action<float> progress = null, IEnumerable<KeyValuePair<string, string>> header = null, int timeout = 0, int retryCount = 2, CancellationToken cancellationToken = default)
         {
-            Debug.Log($"UploadFileAsync: {uri}", Color.cyan);
+            Debug.Log($"UploadFileAsync: {uri}", LogColor);
             
             using var request = UnityWebRequest.Post(uri, multipartFormSections);
             header?.ForEach(t => request.SetRequestHeader(t.Key, t.Value));
@@ -70,7 +74,7 @@ namespace LCHFramework.Managers
         
         public static async Awaitable<ServerAPIResult<T>> GetAsync<T>(Uri uri, IEnumerable<KeyValuePair<string, string>> header = null, int timeout = 0, int retryCount = 2, CancellationToken cancellationToken = default)
         {
-            Debug.Log($"GetAsync: {uri}", Color.cyan);
+            Debug.Log($"GetAsync: {uri}", LogColor);
             
             using var request = UnityWebRequest.Get(uri);
             header?.ForEach(t => request.SetRequestHeader(t.Key, t.Value));
@@ -84,7 +88,7 @@ namespace LCHFramework.Managers
         
         public static async Awaitable<ServerAPIResult> PostAsync(Uri uri, object body, IEnumerable<KeyValuePair<string, string>> header, int timeout = 0, int retryCount = 2, CancellationToken cancellationToken = default)
         {
-            Debug.Log($"PostAsync: {uri}", Color.cyan);
+            Debug.Log($"PostAsync: {uri}", LogColor);
             
             using var request = UnityWebRequest.PostWwwForm(uri, JsonConvert.SerializeObject(body));
             header?.ForEach(t => request.SetRequestHeader(t.Key, t.Value));
@@ -98,7 +102,7 @@ namespace LCHFramework.Managers
         
         public static async Awaitable<ServerAPIResult> PutAsync(Uri uri, object body, IEnumerable<KeyValuePair<string, string>> header = null, int timeout = 0, int retryCount = 2, CancellationToken cancellationToken = default)
         {
-            Debug.Log($"PutAsync: {uri}", Color.cyan);
+            Debug.Log($"PutAsync: {uri}", LogColor);
             
             using var request = UnityWebRequest.Put(uri, JsonConvert.SerializeObject(body));
             header?.ForEach(t => request.SetRequestHeader(t.Key, t.Value));
@@ -109,7 +113,7 @@ namespace LCHFramework.Managers
         
         public static async Awaitable<ServerAPIResult> DeleteAsync(Uri uri, IEnumerable<KeyValuePair<string, string>> header = null, int timeout = 0, int retryCount = 2, CancellationToken cancellationToken = default)
         {
-            Debug.Log($"DeleteAsync: {uri}", Color.cyan);
+            Debug.Log($"DeleteAsync: {uri}", LogColor);
             
             using var request = UnityWebRequest.Delete(uri);
             header?.ForEach(t => request.SetRequestHeader(t.Key, t.Value));
@@ -152,7 +156,7 @@ namespace LCHFramework.Managers
                         Debug.LogError($"Request ({i + 1}/{retryCount}) {request.result}: {request.error}");
                     else
                     {
-                        Debug.Log($"Request Success: {(downloadHandlerType == DownloadHandlerType.Text ? $"text: {request.downloadHandler.text}" : $"data: {string.Join("", request.downloadHandler.data)}", Color.green)}");
+                        Debug.Log($"Request Success: {(downloadHandlerType == DownloadHandlerType.Text ? $"text: {request.downloadHandler.text}" : $"data: {string.Join("", request.downloadHandler.data)}", LogColor)}");
                         return new ServerAPIResult(null);
                     }
                 }
