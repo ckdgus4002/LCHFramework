@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using LCHFramework.Attributes;
 using LCHFramework.Data;
 using LCHFramework.Extensions;
 using UnityEngine;
@@ -46,7 +45,9 @@ namespace LCHFramework.Components
         
         
         
-        [ShowInInspector(nameof(IsSerializedInteractionAreas))] public InteractionAreas[] interactionAreas = Array.Empty<InteractionAreas>();
+        public Canvas canvasOrNull;
+        public Renderer rendererOrNull;
+        public InteractionAreas[] interactionAreas = Array.Empty<InteractionAreas>();
         
         
         private int beginDragSortingOrder;
@@ -64,27 +65,24 @@ namespace LCHFramework.Components
         
         public virtual int SortingOrder
         {
-            get
-            {
-                return CanvasOrNull != null ? CanvasOrNull.sortingOrder
-                    : RendererOrNull != null ? RendererOrNull.sortingOrder
-                    : RootCanvasOrNull != null ? RootCanvasOrNull.sortingOrder
-                    : -1;
-            }
+            get => canvasOrNull != null ? canvasOrNull.sortingOrder
+                : rendererOrNull != null ? rendererOrNull.sortingOrder
+                : RootCanvasOrNull != null ? RootCanvasOrNull.sortingOrder
+                : -1;
             set
             {
-                if (CanvasOrNull != null) CanvasOrNull.sortingOrder = value;
-                else if (RendererOrNull != null) RendererOrNull.sortingOrder = value;
+                if (canvasOrNull != null) canvasOrNull.sortingOrder = value;
+                else if (rendererOrNull != null) rendererOrNull.sortingOrder = value;
             }
         }
         
-        // public bool IsDragged => 1 < Vector2.Distance(defaultLocalTRS.GetPosition(), RectTransform.localPosition);
         
-        protected virtual bool IsSerializedInteractionAreas => true;
         
-        public virtual Canvas CanvasOrNull => GetComponent<Canvas>();
-        
-        public virtual Renderer RendererOrNull => GetComponent<Renderer>();
+        protected virtual void Reset()
+        {
+            canvasOrNull = GetComponent<Canvas>();
+            rendererOrNull = GetComponent<Renderer>();
+        }
         
         
         
