@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using LCHFramework.Extensions;
 using LCHFramework.Managers.UI;
 using LCHFramework.Utilities;
 using UniRx;
@@ -6,6 +8,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
+using UnityEngine.U2D;
 
 namespace LCHFramework.Managers
 {
@@ -61,10 +64,10 @@ namespace LCHFramework.Managers
             _ => ""
         };
         
-        public static async Awaitable LoadSceneAsync(string sceneAddress, string addressLabel, LoadSceneMode mode, string message = "")
-            => await LoadSceneAsync(sceneAddress, addressLabel, mode, DefaultFadeOutDuration(mode), DefaultFadeInDuration(mode), DefaultLoadingMessage(mode), message);
+        public static async Awaitable LoadSceneAsync(string sceneAddress, string addressLabel, string[] atlasAddresses, LoadSceneMode mode, string message = "")
+            => await LoadSceneAsync(sceneAddress, addressLabel, atlasAddresses, mode, DefaultFadeOutDuration(mode), DefaultFadeInDuration(mode), DefaultLoadingMessage(mode), message);
         
-        public static async Awaitable LoadSceneAsync(string sceneAddress, string addressLabel, LoadSceneMode mode, float fadeOutDuration, float fadeInDuration, string loadingMessage, string message = "")
+        public static async Awaitable LoadSceneAsync(string sceneAddress, string addressLabel, string[] atlasAddresses, LoadSceneMode mode, float fadeOutDuration, float fadeInDuration, string loadingMessage, string message = "")
         {
             if (isLoadingScene) { Debug.Log($"{nameof(isLoadingScene)} is True!"); return; }
             
@@ -125,11 +128,16 @@ namespace LCHFramework.Managers
             }, (_, download) => downloadAddressable = download);
             
             
+            var loadAtlases = new AsyncOperationHandle<SpriteAtlas>[atlasAddresses.Length];
+            atlasAddresses.ForEach((t, i) => loadAtlases[i] = AddressablesLoadManager<SpriteAtlas>.LoadAssetAsync(t));
+            await AwaitableUtility.WaitUntil(() => loadAtlases.All(loadAtlas => loadAtlas.IsValid() && loadAtlas.IsDone));
+            
+            
             PrevSceneAddress = SceneAddress;
             SceneAddress = sceneAddress;
             isLoadSceneProcess = true;
             loadScene = Addressables.LoadSceneAsync(sceneAddress);
-            await AwaitableUtility.WaitUntil(() => !loadScene.IsValid() || loadScene.IsDone);
+            await AwaitableUtility.WaitUntil(() => loadScene.IsValid() && loadScene.IsDone);
             
             
             await MessageBroker.Default.Receive<LoadSceneFadeInMessage>().Where(t => t.sceneAddress == sceneAddress).First();
