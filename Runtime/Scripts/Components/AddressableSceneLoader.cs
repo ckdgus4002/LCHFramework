@@ -13,6 +13,8 @@ namespace LCHFramework.Components
         
         [SerializeField] private AssetLabelReference addressLabel;
         
+        [SerializeField] private string[] atlasAddresses;
+        
         [ShowInInspector(nameof(loadSceneMode), ComparisonOperator.NotEquals, LoadSceneMode.None)]
         [SerializeField] private float fadeOutDuration = 0.5f;
         
@@ -38,6 +40,6 @@ namespace LCHFramework.Components
         
         
         
-        public Awaitable LoadAsync() => SceneManager.LoadSceneAsync(asset.GetAddress(), addressLabel.labelString, loadSceneMode, fadeOutDuration, fadeInDuration, loadingMessage, message);
+        public Awaitable LoadAsync() => SceneManager.LoadSceneAsync(asset.GetAddress(), addressLabel.labelString, atlasAddresses, loadSceneMode, fadeOutDuration, fadeInDuration, loadingMessage, message);
     }
 }
