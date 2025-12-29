@@ -35,7 +35,7 @@ namespace LCHFramework.Managers.StepManager
         where T1 : MonoSingleton<T1>
         where T2 : Step
     {
-        public T2 startStep;
+        private T2 startStep;
         public bool loop;
         [SerializeField] private bool playOnStart = true;
         
@@ -51,10 +51,10 @@ namespace LCHFramework.Managers.StepManager
         
         public T2 CurrentStep
         {
-            get => _currentStep == null ? CurrentStep = startStep : _currentStep;
+            get => _currentStep == null ? CurrentStep = StartStep : _currentStep;
             set
             {
-                if (_currentStep == (value ??= startStep)) return;
+                if (_currentStep == (value ??= StartStep)) return;
                 
                 IsPlayed = true;
                 PrevStepOrNull = _currentStep;
@@ -71,11 +71,13 @@ namespace LCHFramework.Managers.StepManager
         }
         private T2 _currentStep;
         
+        public T2 StartStep => startStep == null ? startStep = FirstStep : startStep;
+        
         public T2 FirstStep => Steps[0];
         
         public T2 LastStep => Steps[^1];
         
-        public List<T2> Steps => _steps.IsEmpty() ? _steps = GetComponentsInChildren<T2>(true).ToList() : _steps;
+        public List<T2> Steps => _steps.IsEmpty() ? _steps = GetComponentsInChildren<T2>(true).Where(t => t.enabled).ToList() : _steps;
         private List<T2> _steps;
         
         
@@ -94,7 +96,7 @@ namespace LCHFramework.Managers.StepManager
                 PassCurrentStep();
             }));
             
-            if (playOnStart) CurrentStep = startStep;
+            if (playOnStart) CurrentStep = StartStep;
         }
         
         protected override void OnDestroy()
@@ -116,7 +118,7 @@ namespace LCHFramework.Managers.StepManager
             else if (IsPlayed)
                 CurrentStep = RightStepOrNull;
             else
-                CurrentStep = startStep;
+                CurrentStep = StartStep;
         }
     }
 }

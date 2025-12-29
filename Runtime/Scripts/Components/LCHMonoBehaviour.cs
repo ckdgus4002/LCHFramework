@@ -76,10 +76,9 @@ namespace LCHFramework.Components
         [NonSerialized] public string defaultName;
         
         
-        
-        public bool TRSIsInitialized { get; private set; }
-        public int EnableCount { get; private set; }
-        public int DisableCount { get; private set; }
+        [field: NonSerialized] public bool TRSIsInitialized { get; private set; }
+        [field: NonSerialized] public int EnableCount { get; private set; }
+        [field: NonSerialized] public int DisableCount { get; private set; }
         
         
         public bool IsDestroyed => this == null;
