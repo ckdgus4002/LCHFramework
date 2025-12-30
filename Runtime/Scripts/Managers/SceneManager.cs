@@ -69,7 +69,9 @@ namespace LCHFramework.Managers
         
         public static async Awaitable LoadSceneAsync(string sceneAddress, string addressLabel, string[] atlasAddresses, LoadSceneMode mode, float fadeOutDuration, float fadeInDuration, string loadingMessage, string message = "")
         {
-            if (isLoadingScene) { Debug.Log($"{nameof(isLoadingScene)} is True!"); return; }
+            var log = $"[{nameof(SceneManager)}] {nameof(LoadSceneAsync)}: {sceneAddress}, {nameof(message)}: {message}";
+            if (!isLoadingScene) Debug.Log($"{log}.");
+            else { Debug.LogWarning($"{log}, {nameof(isLoadingScene)}: {isLoadingScene}!"); return; }
             
             
             SoundManager.Instance.StopAll();
