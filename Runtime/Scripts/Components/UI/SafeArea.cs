@@ -1,4 +1,6 @@
 ﻿using System;
+using LCHFramework.Attributes;
+using LCHFramework.Data;
 using LCHFramework.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,7 +10,9 @@ namespace LCHFramework.Components.UI
     public class SafeArea : DrivenRectTransformBehaviour
     {
         public SizeMode sizeModeX = SizeMode.SafeArea;
+        [ShowInInspector(nameof(sizeModeX), ComparisonOperator.Equals, SizeMode.SafeArea)] public bool alwaysXZero;
         public SizeMode sizeModeY = SizeMode.SafeArea;
+        [ShowInInspector(nameof(sizeModeY), ComparisonOperator.Equals, SizeMode.SafeArea)] public bool alwaysYZero;
         
         
         [NonSerialized] private Vector2 _prevPosition;
@@ -46,10 +50,15 @@ namespace LCHFramework.Components.UI
             RectTransform.localScale = Vector3.one;
             var scaleFactor = CanvasUtility.GetScaleFactor(RootCanvasOrNull);
             if (scaleFactor == 0) return;
+            
             var insetAverage = new Vector2(UnityEngine.Screen.width - UnityEngine.Screen.safeArea.width, UnityEngine.Screen.height - UnityEngine.Screen.safeArea.height) * 0.5f;
-            var position = new Vector2((sizeModeX == SizeMode.SafeArea ? (UnityEngine.Screen.safeArea.position.x - insetAverage.x) : 0 ) / scaleFactor, (sizeModeY == SizeMode.SafeArea ? (UnityEngine.Screen.safeArea.position.y - insetAverage.y) : 0 ) / scaleFactor);
-            RectTransform.localPosition = new Vector2(float.IsInfinity(position.x) ? 0 : position.x, float.IsInfinity(position.y) ? 0 : position.y);
-            var size = new Vector2((sizeModeX == SizeMode.SafeArea ? UnityEngine.Screen.safeArea.size.x : UnityEngine.Screen.width) / scaleFactor, (sizeModeY == SizeMode.SafeArea ? UnityEngine.Screen.safeArea.size.y : UnityEngine.Screen.height) / scaleFactor);
+            var position = new Vector2(sizeModeX == SizeMode.SafeArea ? (UnityEngine.Screen.safeArea.position.x - insetAverage.x) / scaleFactor : 0, sizeModeY == SizeMode.SafeArea ? (UnityEngine.Screen.safeArea.position.y - insetAverage.y) / scaleFactor : 0);
+            RectTransform.localPosition = new Vector2(
+                float.IsInfinity(position.x) || (sizeModeX == SizeMode.SafeArea && alwaysXZero) ? 0 : position.x,
+                float.IsInfinity(position.y) || (sizeModeY == SizeMode.SafeArea && alwaysYZero) ? 0 : position.y);
+            var size = new Vector2(
+                (sizeModeX == SizeMode.SafeArea ? UnityEngine.Screen.safeArea.size.x - (!alwaysXZero ? 0 : Mathf.Abs(position.x) * 2) : UnityEngine.Screen.width) / scaleFactor,
+                (sizeModeY == SizeMode.SafeArea ? UnityEngine.Screen.safeArea.size.y - (!alwaysYZero ? 0 : Mathf.Abs(position.y) * 2) : UnityEngine.Screen.height) / scaleFactor);
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, float.IsInfinity(size.x) ? Width : size.x);
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, float.IsInfinity(size.y) ? Height : size.y);
             
