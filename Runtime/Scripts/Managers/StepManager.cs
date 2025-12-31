@@ -35,7 +35,7 @@ namespace LCHFramework.Managers.StepManager
         where T1 : MonoSingleton<T1>
         where T2 : Step
     {
-        private T2 startStep;
+        [SerializeField] private T2 startStep;
         public bool loop;
         [SerializeField] private bool playOnStart = true;
         
@@ -63,15 +63,18 @@ namespace LCHFramework.Managers.StepManager
                 RightStepOrNull = _currentStep.Index < Steps.Count - 1 ? Steps[_currentStep.Index + 1] : loop ? FirstStep : null;
                 
                 Steps.Where(t => t.IsShown).ForEach(t => t.Hide());
-                _currentStep.Show();
-                
                 Debug.Log($"[{transform.GetPath()}] CurrentStep is changed. {(PrevStepOrNull == null ? "" : $"{PrevStepOrNull.name} -> ")}{_currentStep.name}");
+                _currentStep.Show();
                 MessageBroker.Default.Publish(new OnCurrentStepChangedMessage { prevOrNull = PrevStepOrNull, current = _currentStep });
             }
         }
         private T2 _currentStep;
         
-        public T2 StartStep => startStep == null ? startStep = FirstStep : startStep;
+        public T2 StartStep
+        {
+            get => startStep == null ? startStep = FirstStep : startStep;
+            set => startStep = value;
+        }
         
         public T2 FirstStep => Steps[0];
         
