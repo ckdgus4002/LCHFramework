@@ -21,6 +21,7 @@ namespace LCHFramework.Editor
             audioImporter.forceToMono = isMobile;
             var serializedObject = new SerializedObject(audioImporter);
             serializedObject.FindProperty("m_Normalize").boolValue = true;
+            serializedObject.ApplyModifiedProperties();
             audioImporter.loadInBackground = false;
             audioImporter.ambisonic = false;
             
@@ -29,7 +30,6 @@ namespace LCHFramework.Editor
             defaultSampleSettings.loadType = AudioClipLoadType.DecompressOnLoad;
             var preloadAudioData = true;
             defaultSampleSettings.preloadAudioData = preloadAudioData;
-            serializedObject.ApplyModifiedProperties();
             // defaultSampleSettings.compressionFormat = isNoiseSfx ? AudioCompressionFormat.ADPCM : isShortSfx ? AudioCompressionFormat.PCM : AudioCompressionFormat.Vorbis;
             defaultSampleSettings.compressionFormat = AudioCompressionFormat.Vorbis;
             defaultSampleSettings.quality = 1f;
