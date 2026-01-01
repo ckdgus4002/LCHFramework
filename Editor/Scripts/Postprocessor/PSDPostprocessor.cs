@@ -22,9 +22,9 @@ namespace LCHFramework.Editor
             
             psdImporter.spritePixelsPerUnit = 1;
             
-            // var serializedObject = new SerializedObject(psdImporter);
-            // serializedObject.FindProperty("documentAlignment").enumValueIndex = (int)SpriteAlignment.Center;
-            // serializedObject.ApplyModifiedProperties();
+            var serializedObject = new SerializedObject(psdImporter);
+            serializedObject.FindProperty("m_DocumentAlignment").enumValueIndex = (int)SpriteAlignment.Center;
+            serializedObject.ApplyModifiedProperties();
             
             var defaultPlatformSettings = psdImporter.GetImporterPlatformSettings(BuildTarget.NoTarget);
             defaultPlatformSettings.textureCompression = TextureImporterCompression.Uncompressed;
