@@ -8,20 +8,10 @@ namespace LCHFramework.Managers.StepManager
 {
     public class DelayStep : Step
     {
-        [SerializeField] private float delay;
+        public float delay;
         
         
-        private float _defaultDelay;
         private CancellationTokenSource _showCts;
-        
-        
-        
-        protected override void Awake()
-        {
-            base.Awake();
-            
-            _defaultDelay = delay;
-        }
         
         
         
@@ -30,7 +20,6 @@ namespace LCHFramework.Managers.StepManager
             base.Show();
             
             CancellationTokenSourceUtility.RestartTokenSource(ref _showCts);
-            delay = _defaultDelay;
             await Awaitable.WaitForSecondsAsync(delay, _showCts.Token).SuppressCancellationThrow();
             if (_showCts.IsCancellationRequested) return;
 
