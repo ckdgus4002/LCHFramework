@@ -64,7 +64,9 @@ namespace LCHFramework.Managers.UI
                 while (true)
                 {
                     CanvasGroup.alpha = (Time.time - startTime) / fadeInDuration;
-                    messageText.text = getMessage.Invoke();
+                    var message = getMessage.Invoke();
+                    messageText.SetActive(!string.IsNullOrEmpty(message));
+                    messageText.text = message;
                     var isDone = getIsDone.Invoke();
                     slider.value = isDone ? 1 
                         : getPercentOrNull != null && startTime + fadeInDuration <= Time.time ? getPercentOrNull.Invoke() 
@@ -82,7 +84,9 @@ namespace LCHFramework.Managers.UI
                 while (true)
                 {
                     CanvasGroup.alpha = 1 - (Time.time - endTime) / fadeOutDuration;
-                    messageText.text = getMessage.Invoke();
+                    var message = getMessage.Invoke();
+                    messageText.SetActive(!string.IsNullOrEmpty(message));
+                    messageText.text = message;
                     slider.value = 1;
                     if (Time.time - endTime <= fadeOutDuration)
                     {
