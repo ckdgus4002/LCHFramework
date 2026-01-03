@@ -3,6 +3,15 @@ using UnityEngine;
 
 namespace LCHFramework
 {
+    public enum ScreenOrientation
+    {
+        Unknown,
+        Portrait,
+        PortraitUpsideDown,
+        LandscapeLeft,
+        LandscapeRight,
+    }
+    
     public static class Screen
     {
         public static float AspectRatio => (float)width / height;
@@ -33,17 +42,6 @@ namespace LCHFramework
                 return UnityEngine.Screen.height;
 #endif
             }
-        }
-        
-        
-        
-        public enum Orientation
-        {
-            Unknown,
-            Portrait,
-            PortraitUpsideDown,
-            LandscapeLeft,
-            LandscapeRight,
         }
     }
 }
