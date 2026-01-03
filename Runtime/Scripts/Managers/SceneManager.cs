@@ -115,8 +115,7 @@ namespace LCHFramework.Managers
             await Awaitable.WaitForSecondsAsync(fadeOutDuration);
             
             
-            UnityEngine.SceneManagement.SceneManager.LoadScene("LoadScene");
-            await Awaitable.NextFrameAsync();
+            await UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("LoadScene");
             
             
             SoundManager.Instance.ClearAll();
