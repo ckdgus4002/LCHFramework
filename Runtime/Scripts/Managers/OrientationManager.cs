@@ -19,7 +19,7 @@ namespace LCHFramework.Managers
         
         
         
-        private void Update()
+        protected virtual void Update()
         {
 #if UNITY_EDITOR
             Orientation.Value = Screen.AspectRatio < 1 || (Mathf.Approximately(Screen.AspectRatio, 1) && !LCHFramework.Instance.isPreferredLandscapeOrientation) ? ScreenOrientation.Portrait : ScreenOrientation.LandscapeLeft;
