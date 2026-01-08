@@ -1,5 +1,5 @@
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using LCHFramework.Extensions;
 using LCHFramework.Managers.UI;
 using LCHFramework.Utilities;
@@ -131,14 +131,13 @@ namespace LCHFramework.Managers
             
             var loadAtlases = new AsyncOperationHandle<SpriteAtlas>[atlasAddresses.Length];
             atlasAddresses.ForEach((t, i) => loadAtlases[i] = AddressablesLoadManager<SpriteAtlas>.LoadAssetAsync(t));
-            await AwaitableUtility.WaitUntil(() => loadAtlases.All(loadAtlas => loadAtlas.IsValid() && loadAtlas.IsDone));
+            await loadAtlases.ForEachAsync(async loadAtlas => await loadAtlas.ToAwaitable());
             
             
             PrevSceneAddress = SceneAddress;
             SceneAddress = sceneAddress;
             isLoadSceneProcess = true;
-            loadScene = Addressables.LoadSceneAsync(sceneAddress);
-            await AwaitableUtility.WaitUntil(() => loadScene.IsValid() && loadScene.IsDone);
+            await (loadScene = Addressables.LoadSceneAsync(sceneAddress)).ToAwaitable();
             
             
             await MessageBroker.Default.Receive<LoadSceneFadeInMessage>().Where(t => t.sceneAddress == sceneAddress).First();
