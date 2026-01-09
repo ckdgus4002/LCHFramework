@@ -122,7 +122,7 @@ namespace LCHFramework.Managers
             GC.Collect();
             await AddressablesManager.DownloadAsync(addressLabel, null, downloadSize =>
             {
-                var readableDownloadSize = FileUtility.ToHumanReadableFileSize(downloadSize.Result);
+                var readableDownloadSize = FileUtility.ToHumanReadableFileSize(!downloadSize.IsValid() ? -1 : downloadSize.Result);
                 Debug.Log($"Download Size : {readableDownloadSize}");
                 return AwaitableUtility.FromResult(true);
                 
