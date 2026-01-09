@@ -95,9 +95,9 @@ namespace LCHFramework.Managers
                     var isValid = (!isLoadSceneProcess ? downloadAddressable : loadScene).IsValid();
                     if (!isValid) return loadingMessage;
                     
-                    var operationException = (!isLoadSceneProcess ? downloadAddressable : loadScene).OperationException;
+                    var operationException = !isLoadSceneProcess ? AddressablesManager.GetDownloadError(downloadAddressable) : $"{loadScene.OperationException}";
                     var status = (!isLoadSceneProcess ? downloadAddressable : loadScene).Status;
-                    return operationException != null ? $"{ErrorMessage}\n({operationException})"
+                    return !string.IsNullOrEmpty(operationException) ? $"{ErrorMessage}\n{operationException}"
                         : status == AsyncOperationStatus.Failed ? $"{ErrorMessage}\nStatus is Failed."
                         : loadingMessage;
                 },
