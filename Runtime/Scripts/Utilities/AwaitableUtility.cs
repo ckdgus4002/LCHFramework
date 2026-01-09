@@ -10,7 +10,7 @@ namespace LCHFramework.Utilities
         
         
         
-        public static async Awaitable WaitUntil(Func<bool> predicate, CancellationToken cancellationToken = default) { while (!predicate.Invoke()) await Awaitable.NextFrameAsync(cancellationToken); }
+        public static Awaitable WaitUntil(Func<bool> predicate, CancellationToken cancellationToken = default) => WaitWhile(() => !predicate.Invoke(), cancellationToken);
         
         public static async Awaitable WaitWhile(Func<bool> predicate, CancellationToken cancellationToken = default) { while (predicate.Invoke()) await Awaitable.NextFrameAsync(cancellationToken); }
         
