@@ -9,12 +9,12 @@ namespace LCHFramework.Extensions
     {
         public static async Awaitable ToAwaitable(this AsyncOperationHandle handle, CancellationToken cancellationToken = default)
         {
-            await AwaitableUtility.WaitUntil(() => cancellationToken.IsCancellationRequested || handle.IsDone);
+            await AwaitableUtility.WaitUntil(() => handle.IsDone, cancellationToken);
         }
         
         public static async Awaitable<T> ToAwaitable<T>(this AsyncOperationHandle<T> handle, CancellationToken cancellationToken = default)
         {
-            await AwaitableUtility.WaitUntil(() => cancellationToken.IsCancellationRequested || handle.IsDone);
+            await AwaitableUtility.WaitUntil(() => handle.IsDone, cancellationToken);
 
             return handle.Result;
         }
