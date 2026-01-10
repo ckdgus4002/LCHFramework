@@ -26,12 +26,19 @@ namespace LCHFramework.Managers.StepManager
         public Step current;
     }
     
+    public interface IStepManager
+    {
+        public bool IsPlayed { get; }
+        
+        public void PassCurrentStep();
+    }
+    
     public class StepManager : StepManager<StepManager, Step>
     {
     }
     
     [DefaultExecutionOrder(1)]
-    public class StepManager<T1, T2> : MonoSingleton<T1>
+    public class StepManager<T1, T2> : MonoSingleton<T1>, IStepManager
         where T1 : MonoSingleton<T1>
         where T2 : Step
     {

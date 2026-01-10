@@ -10,9 +10,6 @@ namespace LCHFramework.Managers.StepManager
         protected CancellationTokenSource showCts;
         
         
-        public override int Index => StepManager.Instance.Steps.IndexOf(this);
-        
-        
         
         public async Awaitable ShowAsync()
         {
