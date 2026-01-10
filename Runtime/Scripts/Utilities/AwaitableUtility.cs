@@ -6,7 +6,15 @@ namespace LCHFramework.Utilities
 {
     public static class AwaitableUtility
     {
-        public static Awaitable CompletedTask => new AwaitableCompletionSource().Awaitable;
+        public static Awaitable CompletedTask
+        {
+            get
+            {
+                var completionSource = new AwaitableCompletionSource();
+                completionSource.SetResult();
+                return completionSource.Awaitable;
+            }
+        }
         
         
         
