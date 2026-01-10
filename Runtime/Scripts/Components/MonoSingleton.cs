@@ -51,7 +51,6 @@ namespace LCHFramework.Components
             var instance = instances.GetValueOrDefault(SingletonType);
             if (instance == this && IsDestroyNotMonoSingletonByType)
             {
-                DestroyNotMonoSingletonByType();
                 SceneManager.sceneLoaded += OnSceneLoaded;
             }
             
