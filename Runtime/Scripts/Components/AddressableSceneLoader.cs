@@ -9,11 +9,9 @@ namespace LCHFramework.Components
 {
     public class AddressableSceneLoader : AddressableLoader<Object>
     {
-        [SerializeField] private LoadSceneMode loadSceneMode;
-        
         [SerializeField] private AssetLabelReference addressLabel;
-        
         [SerializeField] private string[] atlasAddresses;
+        [SerializeField] private LoadSceneMode loadSceneMode;
         
         [ShowInInspector(nameof(loadSceneMode), ComparisonOperator.NotEquals, LoadSceneMode.None)]
         [SerializeField] private float fadeOutDuration = 0.5f;
@@ -30,7 +28,7 @@ namespace LCHFramework.Components
         
         private void Start()
         {
-            if (LoadOnStart) LoadAsync().Forget();
+            if (loadOnStart) LoadAsync().Forget();
         }
         
         

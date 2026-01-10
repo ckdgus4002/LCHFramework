@@ -1,4 +1,5 @@
 using LCHFramework.Components;
+using LCHFramework.Extensions;
 using UnityEngine;
 
 namespace LCHFramework.Managers.StepManager
@@ -11,11 +12,17 @@ namespace LCHFramework.Managers.StepManager
         
         
         
-        public override void Show()
+#if UNITY_EDITOR
+        private void OnValidate() => AddressableSceneLoader.loadOnStart = false;
+#endif
+        
+        
+        
+        protected override async Awaitable StartShowAsync()
         {
-            base.Show();
+            await base.StartShowAsync();
 
-            if (!AddressableSceneLoader.LoadOnStart) AddressableSceneLoader.LoadAsync();
+            AddressableSceneLoader.LoadAsync().Forget();
         }
     }
 }

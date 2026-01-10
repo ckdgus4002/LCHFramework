@@ -1,6 +1,4 @@
-using System.Threading;
 using LCHFramework.Extensions;
-using LCHFramework.Utilities;
 using UniRx;
 using UnityEngine;
 
@@ -11,18 +9,18 @@ namespace LCHFramework.Managers.StepManager
         public float delay;
         
         
-        private CancellationTokenSource _showCts;
         
-        
-        
-        public override async void Show()
+        protected override async Awaitable StartShowAsync()
         {
-            base.Show();
+            await base.StartShowAsync();
             
-            CancellationTokenSourceUtility.RestartTokenSource(ref _showCts);
-            await Awaitable.WaitForSecondsAsync(delay, _showCts.Token).SuppressCancellationThrow();
-            if (_showCts.IsCancellationRequested) return;
-
+            await Awaitable.WaitForSecondsAsync(delay, showCts.Token).SuppressCancellationThrow();
+        }
+        
+        protected override async Awaitable EndShowAsync()
+        {
+            await base.EndShowAsync();
+            
             MessageBroker.Default.Publish(new PassCurrentStepMessage());
         }
     }

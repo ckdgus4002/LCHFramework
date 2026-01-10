@@ -1,28 +1,34 @@
-using System;
+using System.Threading;
 using LCHFramework.Components;
+using LCHFramework.Utilities;
+using UnityEngine;
 
 namespace LCHFramework.Managers.StepManager
 {
     public class Step : LCHMonoBehaviour
     {
-        public event Action onShow;
-        public event Action onHide;
+        protected CancellationTokenSource showCts;
         
         
-        public override int Index => StepManager.Instance.Steps.IndexOf(this);  
+        public override int Index => StepManager.Instance.Steps.IndexOf(this);
         
         
         
-        public virtual void Show()
+        public async Awaitable ShowAsync()
         {
             gameObject.SetActive(true);
-            onShow?.Invoke();
+            CancellationTokenSourceUtility.RestartTokenSource(ref showCts);
+            
+            await StartShowAsync();
+            if (showCts.IsCancellationRequested) return;
+            
+            await EndShowAsync();
         }
+        
+        protected virtual Awaitable StartShowAsync() => AwaitableUtility.CompletedTask;
 
-        public virtual void Hide()
-        {
-            onHide?.Invoke();
-            gameObject.SetActive(false);
-        }
+        protected virtual Awaitable EndShowAsync() => AwaitableUtility.CompletedTask;
+        
+        public virtual void Hide() => gameObject.SetActive(false);
     }
 }
