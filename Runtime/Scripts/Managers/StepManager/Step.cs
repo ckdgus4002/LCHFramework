@@ -26,7 +26,7 @@ namespace LCHFramework.Managers.StepManager
         }
         
         protected virtual Awaitable StartShowAsync() => AwaitableUtility.CompletedTask;
-
+        
         protected virtual Awaitable EndShowAsync() => AwaitableUtility.CompletedTask;
         
         public virtual void Hide() => gameObject.SetActive(false);

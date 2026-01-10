@@ -1,11 +1,10 @@
 using LCHFramework.Components;
-using LCHFramework.Extensions;
 using UnityEngine;
 
 namespace LCHFramework.Managers.StepManager
 {
     [RequireComponent(typeof(AddressableSceneLoader))]
-    public class AddressableSceneLoadStep : Step
+    public class AddressableSceneLoadStep : EndStep
     {
         private AddressableSceneLoader AddressableSceneLoader => _addressableSceneLoader == null ? _addressableSceneLoader = GetComponent<AddressableSceneLoader>() : _addressableSceneLoader;
         private AddressableSceneLoader _addressableSceneLoader;
@@ -21,8 +20,8 @@ namespace LCHFramework.Managers.StepManager
         protected override async Awaitable StartShowAsync()
         {
             await base.StartShowAsync();
-
-            AddressableSceneLoader.LoadAsync().Forget();
+            
+            await AddressableSceneLoader.LoadAsync();
         }
     }
 }
