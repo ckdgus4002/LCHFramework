@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LCHFramework.Extensions;
 using LCHFramework.Utilities;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.Exceptions;
 
@@ -11,6 +13,12 @@ namespace LCHFramework.Managers
 {
     public static class AddressablesManager
     {
+        public static async Awaitable<AsyncOperationHandle<List<IResourceLocator>>> UpdateCatalogs(bool autoCleanBundleCache = false, List<string> catalogs = null, bool autoReleaseHandle = true)
+        {
+            if (autoCleanBundleCache) await AwaitableUtility.WaitUntil(() => Caching.ready);
+            return Addressables.UpdateCatalogs(autoCleanBundleCache, catalogs, autoReleaseHandle);
+        }
+        
         public static async Awaitable<bool> DownloadAsync(string label,
             Action<AsyncOperationHandle<long>> onDownloadSize,
             Func<AsyncOperationHandle<long>, Awaitable<bool>> getCanDownload,
