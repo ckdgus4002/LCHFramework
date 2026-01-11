@@ -48,13 +48,16 @@ namespace LCHFramework.Components
         
         
         
-        private void OnScreenSizeChanged() => Play(true).Forget();
-        
-        
-        
-        public virtual async Awaitable Play(bool restart = false)
+        private void OnScreenSizeChanged()
         {
-            var webcamTextureOrNull = await GetWebcamTextureOrNull(restart);
+            if (_webcamTextureOrNull != null && _webcamTextureOrNull.isPlaying) Play(true).Forget();
+        }
+        
+        
+        
+        public virtual async Awaitable Play(bool replay = false)
+        {
+            var webcamTextureOrNull = await GetWebcamTextureOrNull(replay);
             
             if (webcamTextureOrNull != null) webcamTextureOrNull.Play();
             
