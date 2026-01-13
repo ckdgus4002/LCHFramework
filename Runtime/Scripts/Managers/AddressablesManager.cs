@@ -13,10 +13,14 @@ namespace LCHFramework.Managers
 {
     public static class AddressablesManager
     {
-        public static async Awaitable<AsyncOperationHandle<List<IResourceLocator>>> UpdateCatalogs(bool autoCleanBundleCache = false, List<string> catalogs = null, bool autoReleaseHandle = true)
+        public static async Awaitable<List<IResourceLocator>> UpdateCatalogsAsync(bool autoCleanBundleCache = false)
         {
-            if (autoCleanBundleCache) await AwaitableUtility.WaitUntil(() => Caching.ready);
-            return Addressables.UpdateCatalogs(autoCleanBundleCache, catalogs, autoReleaseHandle);
+            var catalogs = await Addressables.CheckForCatalogUpdates().ToAwaitable();
+            if (catalogs.IsEmpty()) return new List<IResourceLocator>();
+            
+            await AwaitableUtility.WaitUntil(() => !autoCleanBundleCache || Caching.ready);
+            
+            return await Addressables.UpdateCatalogs(autoCleanBundleCache, catalogs).ToAwaitable();
         }
         
         public static async Awaitable<bool> DownloadAsync(string label,
