@@ -16,6 +16,7 @@ namespace LCHFramework.Managers
         public static async Awaitable<List<IResourceLocator>> UpdateCatalogsAsync(bool autoCleanBundleCache = false)
         {
             var catalogs = await Addressables.CheckForCatalogUpdates().ToAwaitable();
+            Debug.Log($"Check For Catalog Updates: {catalogs.Count}, {string.Join(", ", catalogs)}");
             if (catalogs.IsEmpty()) return new List<IResourceLocator>();
             
             await AwaitableUtility.WaitUntil(() => !autoCleanBundleCache || Caching.ready);
