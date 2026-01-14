@@ -10,9 +10,9 @@ namespace LCHFramework.Components.UI
     public class SafeArea : DrivenRectTransformBehaviour
     {
         public SizeMode sizeModeX = SizeMode.SafeArea;
-        [ShowInInspector(nameof(sizeModeX), ComparisonOperator.Equals, SizeMode.SafeArea)] public bool alwaysXZero;
+        [ShowInInspector(nameof(sizeModeX), ComparisonOperator.Equals, SizeMode.SafeArea)] public bool alwaysXZero = true;
         public SizeMode sizeModeY = SizeMode.SafeArea;
-        [ShowInInspector(nameof(sizeModeY), ComparisonOperator.Equals, SizeMode.SafeArea)] public bool alwaysYZero;
+        [ShowInInspector(nameof(sizeModeY), ComparisonOperator.Equals, SizeMode.SafeArea)] public bool alwaysYZero = true;
         
         
         [NonSerialized] private Vector2 _prevPosition;
