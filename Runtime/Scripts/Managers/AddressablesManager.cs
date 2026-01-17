@@ -15,13 +15,17 @@ namespace LCHFramework.Managers
     {
         public static async Awaitable<List<IResourceLocator>> UpdateCatalogsAsync(bool autoCleanBundleCache = false)
         {
+            var result = new List<IResourceLocator>();
+            if (UnityEngine.Application.internetReachability == NetworkReachability.NotReachable) return result;
+            
             var catalogs = await Addressables.CheckForCatalogUpdates().ToAwaitable();
-            Debug.Log($"Check For Catalog Updates: {catalogs.Count}, {string.Join(", ", catalogs)}");
-            if (catalogs.IsEmpty()) return new List<IResourceLocator>();
+            if (catalogs.IsEmpty()) return result;
             
             await AwaitableUtility.WaitUntil(() => !autoCleanBundleCache || Caching.ready);
+            result = await Addressables.UpdateCatalogs(autoCleanBundleCache, catalogs).ToAwaitable();
+            result.ForEach((t, i) => Debug.Log($"Update Catalogs({i}): {t}.\n- {string.Join("\n- ", t.Keys)}"));
             
-            return await Addressables.UpdateCatalogs(autoCleanBundleCache, catalogs).ToAwaitable();
+            return result;
         }
         
         public static async Awaitable<bool> DownloadAsync(string label,
