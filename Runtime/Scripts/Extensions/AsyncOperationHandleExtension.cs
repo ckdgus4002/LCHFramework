@@ -16,7 +16,7 @@ namespace LCHFramework.Extensions
         {
             await AwaitableUtility.WaitUntil(() => handle.IsDone, cancellationToken);
 
-            return handle.Result;
+            return !handle.IsValid() ? default : handle.Result;
         }
     }
 }
