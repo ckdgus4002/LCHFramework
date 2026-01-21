@@ -153,7 +153,7 @@ namespace LCHFramework.Managers
                     }
                     
                     if (request.result != UnityWebRequest.Result.Success)
-                        Debug.LogError($"Request ({i + 1}/{retryCount}) {request.result}: {request.error}");
+                        UnityEngine.Debug.LogError($"Request ({i + 1}/{retryCount}) {request.result}: {request.error}");
                     else
                     {
                         Debug.Log($"Request Success: {(downloadHandlerType == DownloadHandlerType.Text ? $"text: {request.downloadHandler.text}" : $"data: {string.Join("", request.downloadHandler.data)}", LogColor)}");
@@ -165,22 +165,22 @@ namespace LCHFramework.Managers
             }
             catch (OperationCanceledException e)
             {
-                Debug.LogError($"Request Canceled: {e}");
+                UnityEngine.Debug.LogError($"Request Canceled: {e}");
                 return new ServerAPIResult(e);
             }
             catch (UnityException e)
             {
-                Debug.LogError($"Request Unity exception: {e}");
+                UnityEngine.Debug.LogError($"Request Unity exception: {e}");
                 return new ServerAPIResult(e);
             }
             catch (InvalidOperationException e)
             {
-                Debug.LogError($"Request Invalid operation exception: {e}");
+                UnityEngine.Debug.LogError($"Request Invalid operation exception: {e}");
                 return new ServerAPIResult(e);
             }
             catch (Exception e)
             {
-                Debug.LogError($"Request Unexpected exception: {e}");
+                UnityEngine.Debug.LogError($"Request Unexpected exception: {e}");
                 return new ServerAPIResult(e);
             }
         }

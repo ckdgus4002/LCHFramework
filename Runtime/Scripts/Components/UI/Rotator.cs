@@ -262,7 +262,7 @@ namespace LCHFramework.Components.UI
                     target.DORotate(snappedEulerAnglesDelta, snapDuration, RotateMode.WorldAxisAdd);
                     yield return new WaitForSeconds(snapDuration);
 #else
-                    Debug.LogError("NotImplementedException. Please use DOTween.");
+                    UnityEngine.Debug.LogError("NotImplementedException. Please use DOTween.");
                     yield return new WaitForSeconds(snapDuration);
                     target.Rotate(snappedEulerAnglesDelta, Space.World);
 #endif

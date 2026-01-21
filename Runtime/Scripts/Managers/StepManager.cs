@@ -122,7 +122,7 @@ namespace LCHFramework.Managers.StepManager
         public void PassCurrentStep()
         {
             if (UnityEngine.Application.isEditor && !UnityEngine.Application.isPlaying) 
-                Debug.LogError("Can't execute when edit mode in editor. because cache variables is cached.");
+                UnityEngine.Debug.LogError("Can't execute when edit mode in editor. because cache variables is cached.");
             else if (IsPlayed && CurrentStep == LastStep && RightStepOrNull == null)
                 Debug.Log($"[{transform.GetPath()}/{nameof(PassCurrentStep)}()] Step is end.");
             else if (IsPlayed)

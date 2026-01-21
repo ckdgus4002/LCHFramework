@@ -31,7 +31,7 @@ namespace LCHFramework.Managers
                     if (!string.IsNullOrEmpty(dlError))
                     {
                         // handle what error
-                        Debug.LogError(dlError);
+                        UnityEngine.Debug.LogError(dlError);
                     }
                     else if (handle.Result is SpriteAtlas spriteAtlas)
                     {

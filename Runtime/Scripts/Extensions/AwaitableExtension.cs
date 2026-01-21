@@ -13,7 +13,7 @@ namespace LCHFramework.Extensions
             }
             catch (Exception e)
             {
-                if (logException) Debug.LogException(e);
+                if (logException) UnityEngine.Debug.LogException(e);
             }
         }
         
@@ -25,7 +25,7 @@ namespace LCHFramework.Extensions
             }
             catch (Exception e)
             {
-                if (logException) Debug.LogException(e);
+                if (logException) UnityEngine.Debug.LogException(e);
             }
         }
         
