@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using LCHFramework.Extensions;
 using LCHFramework.Managers.UI;
 using LCHFramework.Utilities;
 using UniRx;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.U2D;
@@ -26,19 +28,21 @@ namespace LCHFramework.Managers
     
     public static class SceneManager
     {
-        private const string ErrorMessage = "문제가 발생하였습니다. 앱을 재시작해주세요.";
+        private static string GetErrorMessage(params object[] args) => string.Format("{0} (이)가 발생하였습니다. 앱을 재시작해주세요.", args);
         
         
         
         private static bool isLoadingScene;
         private static bool uiIsDone;
-        private static bool isLoadSceneProcess;
+        private static int loadSceneProcess;
+        private static AsyncOperationHandle<List<IResourceLocator>> updateAddressableCatalogs;
         private static AsyncOperationHandle downloadAddressable;
         private static AsyncOperationHandle<SceneInstance> loadScene;
         
         
         public static string SceneAddress { get; private set; } = "";
         public static string PrevSceneAddress { get; private set; } = "";
+        private static string[] PrevAtlasAddresses { get; set; } = Array.Empty<string>();
         public static string Message { get; private set; } = "";
         
         
@@ -64,10 +68,17 @@ namespace LCHFramework.Managers
             _ => ""
         };
         
-        public static async Awaitable LoadSceneAsync(string sceneAddress, string addressLabel, string[] atlasAddresses, LoadSceneMode mode, string message = "")
-            => await LoadSceneAsync(sceneAddress, addressLabel, atlasAddresses, mode, DefaultFadeOutDuration(mode), DefaultFadeInDuration(mode), DefaultLoadingMessage(mode), message);
+        public static string DefaultErrorMessage(int errorCode, string error) => GetErrorMessage($"{error}{errorCode}");
         
-        public static async Awaitable LoadSceneAsync(string sceneAddress, string addressLabel, string[] atlasAddresses, LoadSceneMode mode, float fadeOutDuration, float fadeInDuration, string loadingMessage, string message = "")
+        
+        
+        public static Awaitable LoadSceneAsync(string sceneAddress, string addressLabel, string[] atlasAddresses, LoadSceneMode mode, string message = "")
+            => LoadSceneAsync(sceneAddress, addressLabel, atlasAddresses, mode, DefaultFadeOutDuration(mode), DefaultFadeInDuration(mode), DefaultLoadingMessage(mode), message);
+        
+        public static Awaitable LoadSceneAsync(string sceneAddress, string addressLabel, string[] atlasAddresses, LoadSceneMode mode, float fadeOutDuration, float fadeInDuration, string loadingMessage, string message = "")
+            => LoadSceneAsync(sceneAddress, addressLabel, atlasAddresses, mode, fadeOutDuration, fadeInDuration, loadingMessage, DefaultErrorMessage, message);
+        
+        public static async Awaitable LoadSceneAsync(string sceneAddress, string addressLabel, string[] atlasAddresses, LoadSceneMode mode, float fadeOutDuration, float fadeInDuration, string loadingMessage, Func<int, string, string> getErrorMessage, string message = "")
         {
             var log = $"[{nameof(SceneManager)}] {nameof(LoadSceneAsync)}: {sceneAddress}, {nameof(message)}: {message}";
             if (!isLoadingScene) Debug.Log($"{log}.");
@@ -77,7 +88,8 @@ namespace LCHFramework.Managers
             SoundManager.Instance.StopAll();
             isLoadingScene = true;
             uiIsDone = false;
-            isLoadSceneProcess = false;
+            loadSceneProcess = -1;
+            updateAddressableCatalogs = default;
             downloadAddressable = default;
             loadScene = default;
             Message = !string.IsNullOrWhiteSpace(message) ? message : Message;
@@ -92,22 +104,22 @@ namespace LCHFramework.Managers
             });
             if (loadSceneUIorNull != null) _ = loadSceneUIorNull.LoadAsync(
                 () => {
-                    var isValid = (!isLoadSceneProcess ? downloadAddressable : loadScene).IsValid();
+                    var isValid = (loadSceneProcess < 1 ? updateAddressableCatalogs : loadSceneProcess < 2 ? downloadAddressable : loadScene).IsValid();
                     if (!isValid) return loadingMessage;
                     
-                    var operationException = !isLoadSceneProcess ? AddressablesManager.GetDownloadError(downloadAddressable) : $"{loadScene.OperationException}";
-                    var status = (!isLoadSceneProcess ? downloadAddressable : loadScene).Status;
-                    return !string.IsNullOrEmpty(operationException) ? $"{ErrorMessage}\n{operationException}"
-                        : status == AsyncOperationStatus.Failed ? $"{ErrorMessage}\nStatus is Failed."
-                        : loadingMessage;
+                    var operationException = loadSceneProcess < 1 ? $"{updateAddressableCatalogs.OperationException}" : loadSceneProcess < 2 ? AddressablesManager.GetDownloadError(downloadAddressable) : $"{loadScene.OperationException}";
+                    var status = (loadSceneProcess < 1 ? updateAddressableCatalogs : loadSceneProcess < 2 ? downloadAddressable : loadScene).Status;
+                    var hasOperationException = !string.IsNullOrEmpty(operationException);
+                    if (hasOperationException) UnityEngine.Debug.LogError(operationException);
+                    return hasOperationException ? getErrorMessage(loadSceneProcess, "오류") : status == AsyncOperationStatus.Failed ? getErrorMessage(loadSceneProcess, "실패") : loadingMessage;
                 },
                 fadeOutDuration,
                 fadeInDuration,
                 () => {
-                    var isValid = (!isLoadSceneProcess ? downloadAddressable : loadScene).IsValid();
+                    var isValid = (loadSceneProcess < 1 ? updateAddressableCatalogs : loadSceneProcess < 2 ? downloadAddressable : loadScene).IsValid();
                     if (!isValid) return 0;
                     
-                    var percentComplete = (!isLoadSceneProcess ? downloadAddressable : loadScene).PercentComplete;
+                    var percentComplete = (loadSceneProcess < 1 ? updateAddressableCatalogs : loadSceneProcess < 2 ? downloadAddressable : loadScene).PercentComplete;
                     return Math.Min(Time.time - (startTime + fadeOutDuration), percentComplete);
                 },
                 () => uiIsDone);
@@ -119,24 +131,34 @@ namespace LCHFramework.Managers
             
             
             SoundManager.Instance.ClearAll();
+            PrevAtlasAddresses.ForEach(AddressablesLoadManager<SpriteAtlas>.ReleaseAsset);
             GC.Collect();
-            await AddressablesManager.DownloadAsync(addressLabel, null, downloadSize =>
-            {
-                var readableDownloadSize = FileUtility.ToHumanReadableFileSize(!downloadSize.IsValid() ? -1 : downloadSize.Result);
-                Debug.Log($"Download Size : {readableDownloadSize}");
-                return AwaitableUtility.FromResult(true);
-                
-            }, (_, download) => downloadAddressable = download);
+            loadSceneProcess = 0;
+            await AddressablesManager.UpdateCatalogsAsync(true, 
+                null, 
+                updateCatalogs => updateAddressableCatalogs = updateCatalogs,
+                result => result?.ForEach((t, i) => Debug.Log($"Update Catalogs({i}): {t}. {string.Join(", ", t)}"))
+            );
             
             
-            var loadAtlases = new AsyncOperationHandle<SpriteAtlas>[atlasAddresses.Length];
-            atlasAddresses.ForEach((t, i) => loadAtlases[i] = AddressablesLoadManager<SpriteAtlas>.LoadAssetAsync(t));
-            await loadAtlases.ForEachAsync(async loadAtlas => await loadAtlas.ToAwaitable());
+            loadSceneProcess = 1;
+            await AddressablesManager.DownloadAsync(addressLabel,
+                null, 
+                downloadSizeByte => {
+                    Debug.Log($"Download Size: {FileUtility.ToHumanReadableFileSize(downloadSizeByte)}");
+                    return AwaitableUtility.FromResult(true);
+                },
+                download => downloadAddressable = download
+            );
             
             
+            PrevAtlasAddresses = atlasAddresses;
+            await atlasAddresses.Select(AddressablesLoadManager<SpriteAtlas>.LoadAssetAsync).ForEachAsync(async loadAtlas => await loadAtlas.ToAwaitable());
+            
+            
+            loadSceneProcess = 2;
             PrevSceneAddress = SceneAddress;
             SceneAddress = sceneAddress;
-            isLoadSceneProcess = true;
             await (loadScene = Addressables.LoadSceneAsync(sceneAddress)).ToAwaitable();
             
             

@@ -13,51 +13,88 @@ namespace LCHFramework.Managers
 {
     public static class AddressablesManager
     {
-        public static async Awaitable<List<IResourceLocator>> UpdateCatalogsAsync(bool autoCleanBundleCache = false)
+        private static bool CanRemoteProcess => !IsRemoteCatalog || NetworkReachability.NotReachable != UnityEngine.Application.internetReachability;
+        
+        private static bool IsRemoteCatalog => _isRemoteCatalog ??= Addressables.ResourceLocators.Any(t => t.LocatorId.StartsWith("http")); 
+        private static bool? _isRemoteCatalog;
+        
+        
+        
+        public static async Awaitable<bool> UpdateCatalogsAsync(bool autoCleanBundleCache = false,
+            Action<AsyncOperationHandle<List<string>>> onCheckForCatalogUpdates = null,
+            Action<AsyncOperationHandle<List<IResourceLocator>>> onUpdateCatalogs = null,
+            Action<List<IResourceLocator>> onEndUpdateCatalogs = null)
         {
-            var result = new List<IResourceLocator>();
-            if (UnityEngine.Application.internetReachability == NetworkReachability.NotReachable) return result;
+            var canCheckForCatalogUpdates = CanRemoteProcess;
+            if (!canCheckForCatalogUpdates) return false;
             
-            var catalogs = await Addressables.CheckForCatalogUpdates().ToAwaitable();
-            if (catalogs.IsEmpty()) return result;
-            
-            await AwaitableUtility.WaitUntil(() => !autoCleanBundleCache || Caching.ready);
-            result = await Addressables.UpdateCatalogs(autoCleanBundleCache, catalogs).ToAwaitable();
-            result.ForEach((t, i) => Debug.Log($"Update Catalogs({i}): {t}.\n- {string.Join("\n- ", t.Keys)}"));
-            
+            var checkForCatalogUpdates = Addressables.CheckForCatalogUpdates(false);
+            onCheckForCatalogUpdates?.Invoke(checkForCatalogUpdates);
+            await checkForCatalogUpdates.ToAwaitable();
+
+            var result = false;
+            if (checkForCatalogUpdates.Status == AsyncOperationStatus.Succeeded)
+            {
+                var catalogs = checkForCatalogUpdates.Result;
+                if (catalogs.Exists())
+                {
+                    await AwaitableUtility.WaitUntil(() => !autoCleanBundleCache || Caching.ready);
+                    
+                    var canUpdateCatalogs = CanRemoteProcess;
+                    if (canUpdateCatalogs)
+                    {
+                        var updateCatalogs = Addressables.UpdateCatalogs(autoCleanBundleCache, catalogs, false);
+                        onUpdateCatalogs?.Invoke(updateCatalogs);
+                        var catalogLocators = await updateCatalogs.ToAwaitable();
+
+                        onEndUpdateCatalogs?.Invoke(catalogLocators);
+                        result = updateCatalogs.Status == AsyncOperationStatus.Succeeded;
+                        Addressables.Release(updateCatalogs);
+                    }
+                }
+                else
+                    result = true;
+            }
+            Addressables.Release(checkForCatalogUpdates);
+
             return result;
         }
         
         public static async Awaitable<bool> DownloadAsync(string label,
-            Action<AsyncOperationHandle<long>> onDownloadSize,
-            Func<AsyncOperationHandle<long>, Awaitable<bool>> getCanDownload,
-            Action<AsyncOperationHandle<long>, AsyncOperationHandle> onDownload)
+            Action<AsyncOperationHandle<long>> onDownloadSize = null,
+            Func<long, Awaitable<bool>> getCanDownload = null,
+            Action<AsyncOperationHandle> onDownload = null)
         {
-            var downloadIsSuccess = false;
+            var canDownloadSize = CanRemoteProcess;
+            if (!canDownloadSize) return false;
+            
             var downloadSize = Addressables.GetDownloadSizeAsync(label);
             onDownloadSize?.Invoke(downloadSize);
-            await AwaitableUtility.WaitWhile(() => !downloadSize.IsDone);
+            await downloadSize.ToAwaitable();
             
-            if (downloadSize.IsValid() && downloadSize.Status == AsyncOperationStatus.Succeeded)
+            var result = false;
+            if (downloadSize.Status == AsyncOperationStatus.Succeeded)
             {
-                if (downloadSize is { Result: > 0 })
+                var downloadSizeByte = downloadSize.Result;
+                if (downloadSizeByte > 0)
                 {
-                    var canDownload = getCanDownload == null || await getCanDownload.Invoke(downloadSize);
-                    if (!canDownload) return false;
-                
-                    var download = DownloadAsync(label, false);
-                    onDownload?.Invoke(downloadSize, download);
-                    await AwaitableUtility.WaitWhile(() => !download.IsDone);
+                    var canDownload = CanRemoteProcess && (getCanDownload == null || await getCanDownload.Invoke(downloadSizeByte));
+                    if (canDownload)
+                    {
+                        var download = DownloadAsync(label, false);
+                        onDownload?.Invoke(download);
+                        await download.ToAwaitable();
                     
-                    downloadIsSuccess = download.Status == AsyncOperationStatus.Succeeded;
-                    Addressables.Release(download);
+                        result = download.Status == AsyncOperationStatus.Succeeded;
+                        Addressables.Release(download);   
+                    }
                 }
                 else
-                    downloadIsSuccess = true;
+                    result = true;
             }
             Addressables.Release(downloadSize);   
 
-            return downloadIsSuccess;
+            return result;
         }
         
         public static AsyncOperationHandle DownloadAsync(string label, bool autoReleaseHandle = true)
@@ -69,13 +106,13 @@ namespace LCHFramework.Managers
                 if (!string.IsNullOrEmpty(dlError))
                 {
                     // handle what error
-                    Debug.LogError(dlError);
+                    UnityEngine.Debug.LogError(dlError);
                 }
             };
             return operationHandle;
         }
         
-        // https://docs.unity3d.com/Packages/com.unity.addressables@2.6/manual/LoadingAssetBundles.html
+        // https://docs.unity3d.com/Packages/com.unity.addressables@2.8/manual/LoadingAssetBundles.html#handle-download-errors
         public static string GetDownloadError(AsyncOperationHandle fromHandle)
         {
             if (fromHandle.Status != AsyncOperationStatus.Failed)
@@ -93,8 +130,6 @@ namespace LCHFramework.Managers
             
             return null;
         }
-        
-        
         
         public static List<string> GetAddresses<T>(string label)
         {
