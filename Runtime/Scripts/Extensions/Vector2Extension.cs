@@ -32,5 +32,9 @@ namespace LCHFramework.Extensions
         public static Vector2 SetX(this Vector2 v, float x) { v.x = x; return v; }
         
         public static Vector2 SetY(this Vector2 v, float y) { v.y = y; return v; }
+        
+        public static Vector3 ToVector3(this Vector2 v) => v;
+        
+        public static Vector4 ToVector4(this Vector2 v) => v;
     }
 }
