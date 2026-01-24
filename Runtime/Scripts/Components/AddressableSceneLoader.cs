@@ -22,6 +22,7 @@ namespace LCHFramework.Components
         [ShowInInspector(nameof(loadSceneMode), ComparisonOperator.NotEquals, LoadSceneMode.None)]
         [SerializeField] private string loadingMessage = "";
         
+        [SerializeField] private bool isUpdateCatalogs = true;
         [SerializeField] private string message = "";
         
         
@@ -38,6 +39,6 @@ namespace LCHFramework.Components
         
         
         
-        public Awaitable LoadAsync() => SceneManager.LoadSceneAsync(asset.GetAddress(), addressLabel.labelString, atlasAddresses, loadSceneMode, fadeOutDuration, fadeInDuration, loadingMessage, message);
+        public Awaitable LoadAsync() => SceneManager.LoadSceneAsync(asset.GetAddress(), addressLabel.labelString, atlasAddresses, loadSceneMode, fadeOutDuration, fadeInDuration, loadingMessage, isUpdateCatalogs, message);
     }
 }

@@ -47,21 +47,21 @@ namespace LCHFramework.Managers
         
         
         
-        public static float DefaultFadeOutDuration(LoadSceneMode mode) => mode switch
+        public static float DefaultFadeOutDuration(LoadSceneMode loadSceneMode) => loadSceneMode switch
         {
             LoadSceneMode.LoadingUI => Loading.DefaultFadeInDuration,
             LoadSceneMode.ScreenFadeUI => ScreenFader.DefaultFadeInDuration,
             _ => 0
         };
         
-        public static float DefaultFadeInDuration(LoadSceneMode mode) => mode switch
+        public static float DefaultFadeInDuration(LoadSceneMode loadSceneMode) => loadSceneMode switch
         {
             LoadSceneMode.LoadingUI => Loading.DefaultFadeOutDuration,
             LoadSceneMode.ScreenFadeUI => ScreenFader.DefaultFadeOutDuration,
             _ => 0
         };
         
-        public static string DefaultLoadingMessage(LoadSceneMode mode) => mode switch
+        public static string DefaultLoadingMessage(LoadSceneMode loadSceneMode) => loadSceneMode switch
         {
             LoadSceneMode.LoadingUI => Loading.DefaultLoadingMessage,
             LoadSceneMode.ScreenFadeUI => ScreenFader.DefaultFadeMessage,
@@ -72,13 +72,13 @@ namespace LCHFramework.Managers
         
         
         
-        public static Awaitable LoadSceneAsync(string sceneAddress, string addressLabel, string[] atlasAddresses, LoadSceneMode mode, string message = "")
-            => LoadSceneAsync(sceneAddress, addressLabel, atlasAddresses, mode, DefaultFadeOutDuration(mode), DefaultFadeInDuration(mode), DefaultLoadingMessage(mode), message);
+        public static Awaitable LoadSceneAsync(string sceneAddress, string addressLabel, string[] atlasAddresses, LoadSceneMode loadSceneMode, bool isUpdateCatalogs = true, string message = "")
+            => LoadSceneAsync(sceneAddress, addressLabel, atlasAddresses, loadSceneMode, DefaultFadeOutDuration(loadSceneMode), DefaultFadeInDuration(loadSceneMode), DefaultLoadingMessage(loadSceneMode), isUpdateCatalogs, message);
         
-        public static Awaitable LoadSceneAsync(string sceneAddress, string addressLabel, string[] atlasAddresses, LoadSceneMode mode, float fadeOutDuration, float fadeInDuration, string loadingMessage, string message = "")
-            => LoadSceneAsync(sceneAddress, addressLabel, atlasAddresses, mode, fadeOutDuration, fadeInDuration, loadingMessage, DefaultErrorMessage, message);
+        public static Awaitable LoadSceneAsync(string sceneAddress, string addressLabel, string[] atlasAddresses, LoadSceneMode loadSceneMode, float fadeOutDuration, float fadeInDuration, string loadingMessage, bool isUpdateCatalogs = true, string message = "")
+            => LoadSceneAsync(sceneAddress, addressLabel, atlasAddresses, loadSceneMode, fadeOutDuration, fadeInDuration, loadingMessage, DefaultErrorMessage, isUpdateCatalogs, message);
         
-        public static async Awaitable LoadSceneAsync(string sceneAddress, string addressLabel, string[] atlasAddresses, LoadSceneMode mode, float fadeOutDuration, float fadeInDuration, string loadingMessage, Func<int, string, string> getErrorMessage, string message = "")
+        public static async Awaitable LoadSceneAsync(string sceneAddress, string addressLabel, string[] atlasAddresses, LoadSceneMode loadSceneMode, float fadeOutDuration, float fadeInDuration, string loadingMessage, Func<int, string, string> getErrorMessage, bool isUpdateCatalogs = true, string message = "")
         {
             var log = $"[{nameof(SceneManager)}] {nameof(LoadSceneAsync)}: {sceneAddress}, {nameof(message)}: {message}";
             if (!isLoadingScene) Debug.Log($"{log}.");
@@ -96,7 +96,7 @@ namespace LCHFramework.Managers
             
             
             var startTime = Time.time;
-            var loadSceneUIorNull = (ILoadSceneUI)(mode switch
+            var loadSceneUIorNull = (ILoadSceneUI)(loadSceneMode switch
             {
                 LoadSceneMode.LoadingUI => Loading.Instance,
                 LoadSceneMode.ScreenFadeUI => ScreenFader.Instance,
@@ -134,7 +134,7 @@ namespace LCHFramework.Managers
             PrevAtlasAddresses.ForEach(AddressablesLoadManager<SpriteAtlas>.ReleaseAsset);
             GC.Collect();
             loadSceneProcess = 0;
-            await AddressablesManager.UpdateCatalogsAsync(true, 
+            if (isUpdateCatalogs) await AddressablesManager.UpdateCatalogsAsync(true, 
                 null, 
                 updateCatalogs => updateAddressableCatalogs = updateCatalogs,
                 result => result?.ForEach((t, i) => Debug.Log($"Update Catalogs({i}): {t}. {string.Join(", ", t)}"))
