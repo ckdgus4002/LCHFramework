@@ -49,7 +49,11 @@ namespace LCHFramework.Editor
             if (!Enabled) return;
             
             // Check.
+#if !UNITY_6000_3_OR_NEWER
             var gameObjectOrNull = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
+#else
+            var gameObjectOrNull = EditorUtility.EntityIdToObject(instanceID) as GameObject;
+#endif
             if (gameObjectOrNull == null) return;
 
             // Fix Rectangle.
