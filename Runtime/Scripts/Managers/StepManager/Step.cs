@@ -1,5 +1,6 @@
 using System.Threading;
 using LCHFramework.Components;
+using LCHFramework.Extensions;
 using LCHFramework.Utilities;
 using UnityEngine;
 
@@ -16,7 +17,7 @@ namespace LCHFramework.Managers.StepManager
             gameObject.SetActive(true);
             CancellationTokenSourceUtility.RestartTokenSource(ref showCts);
             
-            await StartShowAsync();
+            await StartShowAsync().SuppressCancellationThrow();
             if (showCts.IsCancellationRequested) return;
             
             await EndShowAsync();
