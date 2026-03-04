@@ -38,8 +38,9 @@ namespace LCHFramework.Managers
                 var catalogs = checkForCatalogUpdates.Result;
                 if (catalogs.Exists())
                 {
+#if !UNITY_6000_3_OR_NEWER || !UNITY_WEBGL
                     await AwaitableUtility.WaitUntil(() => !autoCleanBundleCache || Caching.ready);
-                    
+#endif
                     var canUpdateCatalogs = CanRemoteProcess;
                     if (canUpdateCatalogs)
                     {
