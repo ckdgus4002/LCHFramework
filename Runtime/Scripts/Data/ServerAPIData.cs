@@ -1,17 +1,20 @@
-using System.Collections.Generic;
-
 namespace LCHFramework.Data
 {
     public static class ServerAPIData
     {
-        public static class ContentType
+        public const string ContentTypeName = "Content-Type";
+        
+        public static class ContentTypeValue
         {
-            public static KeyValuePair<string, string> All = new("Content-Type", "*/*");
-            public static KeyValuePair<string, string> ApplicationJson = new("Content-Type", "application/json");
-            public static KeyValuePair<string, string> AudioWav = new("Content-Type", "audio/wav");
-            public static KeyValuePair<string, string> ImageJpeg = new("Content-Type", "image/jpeg");
-            public static KeyValuePair<string, string> TextPlain = new("Content-Type", "text/plain");
-            public static KeyValuePair<string, string> VideoMp4 = new("Content-Type", "video/mp4");
+            public const string All = "*/*";
+            public const string ApplicationJson = "application/json";
+            public const string ApplicationOctetStream = "application/octet-stream";
+            public const string AudioMp3 = "audio/mp3";
+            public const string AudioWav = "audio/wav";
+            public const string ImageJpeg = "image/jpeg";
+            public const string ImagePng = "image/png";
+            public const string TextPlain = "text/plain";
+            public const string VideoMp4 = "video/mp4";
         }
     }
 }
