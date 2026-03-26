@@ -9,7 +9,7 @@ namespace LCHFramework.Managers.UI.MessageBoxItems
         
         
         
-        internal virtual void Show(params object[] objects) => gameObject.SetActive(true);
+        public virtual void Show(params object[] objects) => gameObject.SetActive(true);
         
         public virtual void Hide()
         {

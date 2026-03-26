@@ -28,8 +28,8 @@ namespace LCHFramework.Managers
     
     public static class ServerAPIManager
     {
-        private const int RetryCount = 3;
-        private static readonly Color LogColor = Color.cyan;
+        public const int RetryCount = 3;
+        public static readonly Color LogColor = Color.cyan;
         
         
         
