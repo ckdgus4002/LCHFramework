@@ -45,6 +45,8 @@ namespace LCHFramework.Components
         protected override void Awake()
         {
             base.Awake();
+
+            if (!UnityEngine.Application.isPlaying) return;
             
             Singleton.EnsureInstance(this, instances.GetValueOrDefault(SingletonType), t => instances[SingletonType] = t, t => Destroy(t.DestroyTarget));
             
@@ -62,6 +64,8 @@ namespace LCHFramework.Components
         
         private void OnDestroy()
         {
+            if (!UnityEngine.Application.isPlaying) return;
+            
             var instance = instances.GetValueOrDefault(SingletonType);
             if (instance == this)
             {

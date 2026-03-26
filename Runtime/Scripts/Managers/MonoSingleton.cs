@@ -62,10 +62,12 @@ namespace LCHFramework.Managers
         protected override void Awake()
         {
             base.Awake();
+
+            if (!UnityEngine.Application.isPlaying) return;
             
             Instance = (object)this as T;
             
-            if (Instance == this && IsDontDestroyOnLoad && UnityEngine.Application.isPlaying)
+            if (Instance == this && IsDontDestroyOnLoad)
             {
                 DontDestroyOnLoad(gameObject);
             }
@@ -73,6 +75,8 @@ namespace LCHFramework.Managers
         
         protected virtual void OnDestroy()
         {
+            if (!UnityEngine.Application.isPlaying) return;
+            
             if (Instance == this)
             {
                 Instance = null;
