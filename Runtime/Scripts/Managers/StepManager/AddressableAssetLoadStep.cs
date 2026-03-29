@@ -1,3 +1,4 @@
+using System.Threading;
 using LCHFramework.Components;
 using LCHFramework.Extensions;
 using UniRx;
@@ -20,18 +21,18 @@ namespace LCHFramework.Managers.StepManager
         
         
         
-        protected override async Awaitable StartShowAsync()
+        protected override async Awaitable StartShowAsync(CancellationToken cancellationToken)
         {
-            await base.StartShowAsync();
+            await base.StartShowAsync(cancellationToken);
             
             var loadAssets = new AsyncOperationHandle<Object>[AssetLoaders.Length];
             AssetLoaders.ForEach((t, i) => loadAssets[i] = t.LoadAsync());
-            await loadAssets.ForEachAsync(async loadAsset => await loadAsset.ToAwaitable(showCts.Token).SuppressCancellationThrow());
+            await loadAssets.ForEachAsync(async loadAsset => await loadAsset.ToAwaitable(cancellationToken).SuppressCancellationThrow());
         }
 
-        protected override async Awaitable EndShowAsync()
+        protected override void EndShow()
         {
-            await base.EndShowAsync();
+            base.EndShow();
             
             MessageBroker.Default.Publish(new PassCurrentStepMessage());
         }

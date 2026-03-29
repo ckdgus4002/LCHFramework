@@ -8,24 +8,29 @@ namespace LCHFramework.Managers.StepManager
 {
     public class Step : LCHMonoBehaviour
     {
-        protected CancellationTokenSource showCts;
+        public CancellationTokenSource showCancellationTokenSource;
+        
+        
+        
+        private void OnDestroy() => CancellationTokenSourceUtility.ClearTokenSource(ref showCancellationTokenSource);
         
         
         
         public async Awaitable ShowAsync()
         {
             gameObject.SetActive(true);
-            CancellationTokenSourceUtility.RestartTokenSource(ref showCts);
+
+            CancellationTokenSourceUtility.RestartTokenSource(ref showCancellationTokenSource);
             
-            await StartShowAsync().SuppressCancellationThrow();
-            if (showCts.IsCancellationRequested) return;
+            await StartShowAsync(showCancellationTokenSource.Token).SuppressCancellationThrow();
+            if (showCancellationTokenSource.IsCancellationRequested) return;
             
-            await EndShowAsync();
+            EndShow();
         }
         
-        protected virtual Awaitable StartShowAsync() => AwaitableUtility.CompletedTask;
+        protected virtual Awaitable StartShowAsync(CancellationToken cancellationToken) => AwaitableUtility.CompletedTask;
         
-        protected virtual Awaitable EndShowAsync() => AwaitableUtility.CompletedTask;
+        protected virtual void EndShow() { }
         
         public virtual void Hide() => gameObject.SetActive(false);
     }

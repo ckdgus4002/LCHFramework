@@ -1,3 +1,4 @@
+using System.Threading;
 using LCHFramework.Extensions;
 using UniRx;
 using UnityEngine;
@@ -10,16 +11,16 @@ namespace LCHFramework.Managers.StepManager
         
         
         
-        protected override async Awaitable StartShowAsync()
+        protected override async Awaitable StartShowAsync(CancellationToken cancellationToken)
         {
-            await base.StartShowAsync();
+            await base.StartShowAsync(cancellationToken);
             
-            await Awaitable.WaitForSecondsAsync(delay, showCts.Token).SuppressCancellationThrow();
+            await Awaitable.WaitForSecondsAsync(delay, cancellationToken).SuppressCancellationThrow();
         }
         
-        protected override async Awaitable EndShowAsync()
+        protected override void EndShow()
         {
-            await base.EndShowAsync();
+            base.EndShow();
             
             MessageBroker.Default.Publish(new PassCurrentStepMessage());
         }

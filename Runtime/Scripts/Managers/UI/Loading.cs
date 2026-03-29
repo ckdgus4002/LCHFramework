@@ -22,7 +22,7 @@ namespace LCHFramework.Managers.UI
         public Slider slider;
         
         
-        private CancellationTokenSource cts;
+        private CancellationTokenSource cancellationTokenSource;
         
         
         public override bool IsShown => Wrapper.activeInHierarchy;
@@ -55,7 +55,7 @@ namespace LCHFramework.Managers.UI
         
         public async Awaitable LoadAsync(Func<string> getMessage, float fadeInDuration, float fadeOutDuration, Func<float> getPercentOrNull, Func<bool> getIsDone)
         {
-            CancellationTokenSourceUtility.RestartTokenSource(ref cts);
+            CancellationTokenSourceUtility.RestartTokenSource(ref cancellationTokenSource);
             
             Wrapper.SetActive(true);
             var startTime = Time.time;
@@ -71,8 +71,8 @@ namespace LCHFramework.Managers.UI
                     : 0;
                 if (!isDone)
                 {
-                    await Awaitable.NextFrameAsync(cts.Token).SuppressCancellationThrow();
-                    if (cts.IsCancellationRequested) return;
+                    await Awaitable.NextFrameAsync(cancellationTokenSource.Token).SuppressCancellationThrow();
+                    if (cancellationTokenSource.IsCancellationRequested) return;
                 }
                 else
                     break;
@@ -88,8 +88,8 @@ namespace LCHFramework.Managers.UI
                 slider.value = 1;
                 if (Time.time - endTime <= fadeOutDuration)
                 {
-                    await Awaitable.NextFrameAsync(cts.Token).SuppressCancellationThrow();
-                    if (cts.IsCancellationRequested) return;
+                    await Awaitable.NextFrameAsync(cancellationTokenSource.Token).SuppressCancellationThrow();
+                    if (cancellationTokenSource.IsCancellationRequested) return;
                 }
                 else
                     break;

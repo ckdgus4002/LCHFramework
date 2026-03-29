@@ -1,3 +1,4 @@
+using System.Threading;
 using LCHFramework.Components;
 using UnityEngine;
 
@@ -17,9 +18,9 @@ namespace LCHFramework.Managers.StepManager
         
         
         
-        protected override async Awaitable StartShowAsync()
+        protected override async Awaitable StartShowAsync(CancellationToken cancellationToken)
         {
-            await base.StartShowAsync();
+            await base.StartShowAsync(cancellationToken);
             
             await AddressableSceneLoader.LoadAsync();
         }

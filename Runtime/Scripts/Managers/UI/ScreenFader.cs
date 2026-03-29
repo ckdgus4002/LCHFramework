@@ -20,7 +20,7 @@ namespace LCHFramework.Managers.UI
         public TMP_Text messageText;
         
         
-        protected CancellationTokenSource cts;
+        protected CancellationTokenSource cancellationTokenSource;
         
         
         public override bool IsShown => Wrapper.activeInHierarchy;
