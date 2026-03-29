@@ -12,7 +12,7 @@ namespace LCHFramework.Managers.StepManager
         
         
         
-        private void OnDestroy() => CancellationTokenSourceUtility.ClearTokenSource(ref showCancellationTokenSource);
+        protected virtual void OnDestroy() => CancellationTokenSourceUtility.ClearTokenSource(ref showCancellationTokenSource);
         
         
         
