@@ -23,7 +23,7 @@ namespace LCHFramework.Managers.StepManager
             CancellationTokenSourceUtility.RestartTokenSource(ref showCancellationTokenSource);
             
             await StartShowAsync(showCancellationTokenSource.Token).SuppressCancellationThrow();
-            if (showCancellationTokenSource.IsCancellationRequested) return;
+            if (showCancellationTokenSource == null || showCancellationTokenSource.IsCancellationRequested) return;
             
             EndShow();
         }
