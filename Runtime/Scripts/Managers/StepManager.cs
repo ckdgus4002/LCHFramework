@@ -11,13 +11,17 @@ namespace LCHFramework.Managers.StepManager
 {
     public struct SetCurrentStepMessage
     {
-        public SetCurrentStepMessage(Func<Step, bool> predicate) => Predicate = predicate;
+        public SetCurrentStepMessage(Func<Step, bool> predicate, Func<IStepManager, bool> validate = null) { Predicate = predicate; Validate = validate ?? (_ => true); }
         
         public Func<Step, bool> Predicate { get; }
+        public Func<IStepManager, bool> Validate { get; }
     }
     
     public struct PassCurrentStepMessage
     {
+        public PassCurrentStepMessage(Func<IStepManager, bool> validate = null) { Validate = validate ?? (_ => true); }
+        
+        public Func<IStepManager, bool> Validate { get; }
     }
     
     public struct OnCurrentStepChangedMessage
@@ -28,6 +32,9 @@ namespace LCHFramework.Managers.StepManager
     
     public interface IStepManager
     {
+        public string name { get; }
+        public Transform transform { get; }
+        public GameObject gameObject { get; }
         public bool IsPlayed { get; }
         
         public void PassCurrentStep();
@@ -98,11 +105,15 @@ namespace LCHFramework.Managers.StepManager
             
             disposables.Add(MessageBroker.Default.Receive<SetCurrentStepMessage>().Subscribe(message =>
             {
+                if (!message.Validate(this)) return;
+                
                 CurrentStep = Steps.FirstOrDefault(step => message.Predicate != null && message.Predicate.Invoke(step));
             }));
             
-            disposables.Add(MessageBroker.Default.Receive<PassCurrentStepMessage>().Subscribe(_ =>
+            disposables.Add(MessageBroker.Default.Receive<PassCurrentStepMessage>().Subscribe(message =>
             {
+                if (!message.Validate(this)) return;
+                
                 PassCurrentStep();
             }));
             
