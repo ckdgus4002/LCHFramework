@@ -4,6 +4,7 @@
     "references": [
         "Unity.Addressables",
         "Unity.Addressables.Editor",
+        "Unity.InputSystem",
         "Unity.ResourceManager",
         "Unity.TextMeshPro",
         "UniRx"
