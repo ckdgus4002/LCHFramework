@@ -27,11 +27,11 @@ namespace LCHFramework.Managers.UI
         
         
         
-        public virtual async Awaitable Show(float fadeInDelay = 0)
+        public virtual async Awaitable Show(float showImageDelay = 0)
         {
             Wrapper.SetActive(true);
             SpinnerImage.SetActive(false);
-            await Awaitable.WaitForSecondsAsync(fadeInDelay, showCancellationTokenSource.Token).SuppressCancellationThrow();
+            await Awaitable.WaitForSecondsAsync(showImageDelay, showCancellationTokenSource.Token).SuppressCancellationThrow();
             if (showCancellationTokenSource == null || showCancellationTokenSource.IsCancellationRequested) return;
             
             SpinnerImage.SetActive(true);
