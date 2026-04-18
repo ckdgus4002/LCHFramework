@@ -29,24 +29,24 @@ namespace LCHFramework.Managers.UI
             Wrapper.SetActive(true);
             Texts.ForEach(text => text.text = message);
             var startTime = Time.time;
-            while (true)
+            fadeInDuration = Mathf.Max(fadeInDuration, float.Epsilon);
+            while (destroyCancellationToken is { IsCancellationRequested: false })
             {
                 CanvasGroup.alpha = (Time.time - startTime) / fadeInDuration;
-                if (Time.time < startTime + fadeInDuration) await Awaitable.NextFrameAsync();
+                if (Time.time < startTime + fadeInDuration) await Awaitable.NextFrameAsync(destroyCancellationToken).SuppressCancellationThrow();
                 else break;
             }
             
             var endTime = Time.time;
-            while (true)
+            fadeOutDuration = Mathf.Max(fadeOutDuration, float.Epsilon);
+            while (destroyCancellationToken is { IsCancellationRequested: false })
             {
                 CanvasGroup.alpha = 1 - (Time.time - endTime) / fadeOutDuration;
-                if (Time.time - endTime <= fadeOutDuration) await Awaitable.NextFrameAsync();
+                if (Time.time - endTime <= fadeOutDuration) await Awaitable.NextFrameAsync(destroyCancellationToken).SuppressCancellationThrow();
                 else break;
             }
             
-            Hide();
+            Wrapper.SetActive(false);
         }
-        
-        private void Hide() => Wrapper.SetActive(false); 
     }
 }

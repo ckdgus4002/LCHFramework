@@ -72,7 +72,7 @@ namespace LCHFramework.Managers.UI
                 if (!isDone)
                 {
                     await Awaitable.NextFrameAsync(cancellationTokenSource.Token).SuppressCancellationThrow();
-                    if (cancellationTokenSource.IsCancellationRequested) return;
+                    if (cancellationTokenSource == null || cancellationTokenSource.IsCancellationRequested) return;
                 }
                 else
                     break;
@@ -89,7 +89,7 @@ namespace LCHFramework.Managers.UI
                 if (Time.time - endTime <= fadeOutDuration)
                 {
                     await Awaitable.NextFrameAsync(cancellationTokenSource.Token).SuppressCancellationThrow();
-                    if (cancellationTokenSource.IsCancellationRequested) return;
+                    if (cancellationTokenSource == null || cancellationTokenSource.IsCancellationRequested) return;
                 }
                 else
                     break;

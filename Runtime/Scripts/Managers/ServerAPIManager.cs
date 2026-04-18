@@ -130,11 +130,11 @@ namespace LCHFramework.Managers
                     var sendWebRequest = request.SendWebRequest();
                     await using var registration = cancellationToken.Register(request.Abort);
 
-                    while (!cancellationToken.IsCancellationRequested && !sendWebRequest.isDone)
+                    while (cancellationToken is { IsCancellationRequested: false } && !sendWebRequest.isDone)
                     {
                         upload?.Invoke(request.uploadProgress);
                         download.Item2?.Invoke(request.downloadProgress);
-                        await Awaitable.NextFrameAsync();
+                        await Awaitable.NextFrameAsync(cancellationToken).SuppressCancellationThrow();
                     }
 
                     isSuccess = request.result == UnityWebRequest.Result.Success;

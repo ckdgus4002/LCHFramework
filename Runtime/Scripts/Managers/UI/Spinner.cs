@@ -1,47 +1,45 @@
+using System.Threading;
+using LCHFramework.Extensions;
+using LCHFramework.Utilities;
 using UnityEngine;
 
 namespace LCHFramework.Managers.UI
 {
-    [RequireComponent(typeof(CanvasGroup))]
     public class Spinner: MonoSingleton<Spinner>
     {
-        private CanvasGroup CanvasGroup => _canvasGroup == null ? _canvasGroup = GetComponent<CanvasGroup>() : _canvasGroup;
-        private CanvasGroup _canvasGroup;
+        private CancellationTokenSource showCancellationTokenSource;
+        
         
         private GameObject Wrapper => _wrapper == null ? _wrapper = transform.GetChild(0).gameObject : _wrapper;
         private GameObject _wrapper;
         
         private GameObject SpinnerImage => _spinnerImage == null ? _spinnerImage = Wrapper.transform.GetChild(0).gameObject : _spinnerImage;
-        private GameObject _spinnerImage; 
+        private GameObject _spinnerImage;
         
         
         
-        public virtual async Awaitable Show(float fadeInDelay = 0, float fadeInDuration = 0)
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            
+            CancellationTokenSourceUtility.ClearTokenSource(ref showCancellationTokenSource);
+        }
+        
+        
+        
+        public virtual async Awaitable Show(float fadeInDelay = 0)
         {
             Wrapper.SetActive(true);
             SpinnerImage.SetActive(false);
-            await Awaitable.WaitForSecondsAsync(fadeInDelay);
+            await Awaitable.WaitForSecondsAsync(fadeInDelay, showCancellationTokenSource.Token).SuppressCancellationThrow();
+            if (showCancellationTokenSource == null || showCancellationTokenSource.IsCancellationRequested) return;
             
             SpinnerImage.SetActive(true);
-            var startTime = Time.time;
-            while (true)
-            {
-                CanvasGroup.alpha = (Time.time - startTime) / fadeInDuration;
-                if (Time.time < startTime + fadeInDuration) await Awaitable.NextFrameAsync();
-                else break;
-            }
         }
         
-        public virtual async Awaitable Hide(float fadeOutDuration = 0)
+        public virtual void Hide()
         {
-            var endTime = Time.time;
-            while (true)
-            {
-                CanvasGroup.alpha = 1 - (Time.time - endTime) / fadeOutDuration;
-                if (Time.time - endTime <= fadeOutDuration) await Awaitable.NextFrameAsync();
-                else break;
-            }
-            
+            CancellationTokenSourceUtility.ClearTokenSource(ref showCancellationTokenSource);
             Wrapper.SetActive(false);
         }
     }
