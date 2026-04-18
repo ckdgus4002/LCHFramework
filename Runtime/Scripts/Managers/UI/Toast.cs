@@ -44,7 +44,9 @@ namespace LCHFramework.Managers.UI
                 else break;
             }
             
-            Wrapper.SetActive(false);
+            Hide();
         }
+        
+        private void Hide() => Wrapper.SetActive(false); 
     }
 }
