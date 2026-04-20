@@ -29,6 +29,8 @@ namespace LCHFramework.Managers.UI
         
         public virtual async Awaitable Show(float showImageDelay = 0)
         {
+            CancellationTokenSourceUtility.RestartTokenSource(ref showCancellationTokenSource);
+            
             Wrapper.SetActive(true);
             SpinnerImage.SetActive(false);
             await Awaitable.WaitForSecondsAsync(showImageDelay, showCancellationTokenSource.Token).SuppressCancellationThrow();

@@ -18,10 +18,9 @@ namespace LCHFramework.Managers.StepManager
         
         public async Awaitable ShowAsync()
         {
-            gameObject.SetActive(true);
-
             CancellationTokenSourceUtility.RestartTokenSource(ref showCancellationTokenSource);
             
+            gameObject.SetActive(true);
             await StartShowAsync(showCancellationTokenSource.Token).SuppressCancellationThrow();
             if (showCancellationTokenSource == null || showCancellationTokenSource.IsCancellationRequested) return;
             
