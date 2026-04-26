@@ -11,17 +11,20 @@ namespace LCHFramework.Managers.StepManager
 {
     public struct SetCurrentStepMessage
     {
-        public SetCurrentStepMessage(Func<Step, bool> predicate, Func<IStepManager, bool> validate = null) { Predicate = predicate; Validate = validate ?? (_ => true); }
+        public SetCurrentStepMessage(Func<Step, bool> predicate, Func<IStepManager, bool> validate = null) : this() { Predicate = predicate; Validate = validate; }
         
         public Func<Step, bool> Predicate { get; }
-        public Func<IStepManager, bool> Validate { get; }
+        
+        public Func<IStepManager, bool> Validate { get => _validate ??= _ => true; private set => _validate = value; }
+        private Func<IStepManager, bool> _validate;
     }
     
     public struct PassCurrentStepMessage
     {
-        public PassCurrentStepMessage(Func<IStepManager, bool> validate = null) { Validate = validate ?? (_ => true); }
-        
-        public Func<IStepManager, bool> Validate { get; }
+        public PassCurrentStepMessage(Func<IStepManager, bool> validate = null) : this() { Validate = validate; }
+
+        public Func<IStepManager, bool> Validate { get => _validate ??= _ => true; private set => _validate = value; }
+        private Func<IStepManager, bool> _validate;
     }
     
     public struct OnCurrentStepChangedMessage
