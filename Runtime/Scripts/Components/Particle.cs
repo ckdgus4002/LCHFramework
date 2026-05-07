@@ -19,20 +19,20 @@ namespace LCHFramework.Components
         
         public virtual void Show(RectTransform parent, Vector3 position)
         {
-            transform.position = position;
-            transform.SetParent(parent, true);
+            SetPosition(position);
+            SetParent(parent);
             Show();
         }
         
         public virtual void Show(RectTransform parent)
         {
-            transform.SetParent(parent);
+            SetParent(parent);
             Show();
         }
         
         public virtual void Show(Vector3 position)
         {
-            transform.position = position;
+            SetPosition(position);
             Show();
         }
 
@@ -41,6 +41,10 @@ namespace LCHFramework.Components
             gameObject.SetActive(true);
             ParticleSystem.Play();
         }
+        
+        public void SetPosition(Vector3 position) => transform.position = position;
+        
+        private void SetParent(RectTransform parent) => transform.SetParent(parent, true);
         
         public virtual void Hide() => gameObject.SetActive(false);
     }
