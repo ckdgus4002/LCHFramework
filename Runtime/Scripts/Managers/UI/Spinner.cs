@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading;
 using LCHFramework.Extensions;
 using LCHFramework.Utilities;
@@ -13,7 +14,7 @@ namespace LCHFramework.Managers.UI
         private GameObject Wrapper => _wrapper == null ? _wrapper = transform.GetChild(0).gameObject : _wrapper;
         private GameObject _wrapper;
         
-        private GameObject SpinnerImage => _spinnerImage == null ? _spinnerImage = Wrapper.transform.GetChild(0).gameObject : _spinnerImage;
+        private GameObject SpinnerImage => _spinnerImage == null ? _spinnerImage = Wrapper.transform.GetChildren().Last().gameObject : _spinnerImage;
         private GameObject _spinnerImage;
         
         
