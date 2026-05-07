@@ -13,6 +13,12 @@ namespace LCHFramework.Components
         
         
         
+        private void OnValidate()
+        {
+            var main = ParticleSystem.main; 
+            main.stopAction = ParticleSystemStopAction.Callback;
+        }
+        
         public virtual void OnParticleSystemStopped() => onStopped?.Invoke();
         
         
