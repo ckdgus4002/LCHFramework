@@ -21,12 +21,20 @@ namespace LCHFramework.Managers
         
         protected virtual void Update()
         {
-#if UNITY_EDITOR
-            Orientation.Value = Screen.AspectRatio < 1 || (Mathf.Approximately(Screen.AspectRatio, 1) && !LCHFramework.Instance.isPreferredLandscapeOrientation) ? ScreenOrientation.Portrait : ScreenOrientation.LandscapeLeft;
-#else
-            var orientationIndex = UnityEngine.Screen.orientation != UnityEngine.ScreenOrientation.AutoRotation ? (int)UnityEngine.Screen.orientation : (int)Input.deviceOrientation;
-            Orientation.Value = orientationIndex is < 1 or > 4 ? Orientation.Value : (ScreenOrientation)orientationIndex;
-#endif
+            switch (UnityEngine.Application.isEditor)
+            {
+                case true when UnityEngine.Application.isPlaying:
+                {
+                    Orientation.Value = Screen.AspectRatio < 1 || (Mathf.Approximately(Screen.AspectRatio, 1) && !LCHFramework.Instance.isPreferredLandscapeOrientation) ? ScreenOrientation.Portrait : ScreenOrientation.LandscapeLeft;
+                    break;
+                }
+                case false:
+                {
+                    var orientationIndex = UnityEngine.Screen.orientation != UnityEngine.ScreenOrientation.AutoRotation ? (int)UnityEngine.Screen.orientation : (int)Input.deviceOrientation;
+                    Orientation.Value = orientationIndex is < 1 or > 4 ? Orientation.Value : (ScreenOrientation)orientationIndex;
+                    break;
+                }
+            }
         }
     }
 }
