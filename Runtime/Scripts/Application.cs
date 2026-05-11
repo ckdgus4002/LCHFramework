@@ -1,6 +1,3 @@
-using System;
-using UniRx;
-using UnityEngine;
 #if UNITY_ANDROID || UNITY_IOS || UNITY_WEBGL
 using LCHFramework.Utilities;
 #endif
@@ -11,6 +8,9 @@ using UnityEngine.iOS;
 #if UNITY_ANDROID
 using UnityEngine.Android;
 #endif
+using System;
+using UniRx;
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -133,6 +133,25 @@ namespace LCHFramework
         private static Version _iOSVersion;
         
         public static bool IsIPad => UnityEngine.Application.platform == RuntimePlatform.IPhonePlayer && SystemInfo.deviceModel.Contains("iPad", StringComparison.OrdinalIgnoreCase);
+        
+        public static bool IsTablet
+        {
+            get
+            {
+                if (UnityEngine.Application.isEditor) return false;
+
+                var logicalScale = UnityEngine.Application.platform switch
+                {
+                    // 160dpi 기준 1dp = 1px.
+                    RuntimePlatform.Android => UnityEngine.Screen.dpi <= 0 ? 1f : UnityEngine.Screen.dpi / 160f,                                 
+                    // Retina 기준 대체로 1pt = 2px, 일부 기기는 3px, iPhone non-Retina 기준 163ppi.
+                    RuntimePlatform.IPhonePlayer => UnityEngine.Screen.dpi <= 0 ? 2f : Mathf.Max(1f, Mathf.Round(UnityEngine.Screen.dpi / 163f)),
+                    _ => 1f
+                };
+                var smallestWindowDp = Mathf.Min(Screen.width / logicalScale, Screen.height / logicalScale);
+                return 600f <= smallestWindowDp;
+            }
+        }
         
         
         
