@@ -10,7 +10,7 @@ namespace LCHFramework.Components.UI
     public class WidthTracker : DrivenRectTransformBehaviour
     {
         public RectTransform target;
-        public bool isHalfScaleX;
+        public Vector3 localScale = Vector3.one;
         [FormerlySerializedAs("isReverseScale")] [ShowInInspector(nameof(target))] public bool isReverseScaleY;
         
         
@@ -46,7 +46,8 @@ namespace LCHFramework.Components.UI
             tracker.Add(this, RectTransform, DrivenTransformProperties.SizeDeltaX | DrivenTransformProperties.Rotation | DrivenTransformProperties.Scale);
 
             RectTransform.rotation = target.rotation;
-            RectTransform.localScale = new Vector3(!isHalfScaleX ? 1 : 0.5f, !isReverseScaleY ? 1 : -1, 1);
+            RectTransform.localScale = new Vector3(1, !isReverseScaleY ? 1 : -1, 1);
+            // RectTransform.localScale = localScale;
             var scaleFactor = RectTransform.parent.lossyScale.x;
             var size = target.rect.size.x / scaleFactor;
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size);
