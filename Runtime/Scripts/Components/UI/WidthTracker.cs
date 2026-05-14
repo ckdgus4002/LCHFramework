@@ -1,8 +1,6 @@
 using System;
-using LCHFramework.Attributes;
 using LCHFramework.Utilities;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace LCHFramework.Components.UI
@@ -11,7 +9,6 @@ namespace LCHFramework.Components.UI
     {
         public RectTransform target;
         public Vector3 localScale = Vector3.one;
-        [FormerlySerializedAs("isReverseScale")] [ShowInInspector(nameof(target))] public bool isReverseScaleY;
         
         
         [NonSerialized] private float _prevWidth;
@@ -46,8 +43,7 @@ namespace LCHFramework.Components.UI
             tracker.Add(this, RectTransform, DrivenTransformProperties.SizeDeltaX | DrivenTransformProperties.Rotation | DrivenTransformProperties.Scale);
 
             RectTransform.rotation = target.rotation;
-            RectTransform.localScale = new Vector3(1, !isReverseScaleY ? 1 : -1, 1);
-            // RectTransform.localScale = localScale;
+            RectTransform.localScale = localScale;
             var scaleFactor = RectTransform.parent.lossyScale.x;
             var size = target.rect.size.x / scaleFactor;
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size);
