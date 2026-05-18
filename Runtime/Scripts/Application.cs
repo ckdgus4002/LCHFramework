@@ -9,10 +9,12 @@ using UnityEngine.iOS;
 using UnityEngine.Android;
 #endif
 using System;
+using System.Linq;
 using UniRx;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEditor.Recorder;
 #endif
 
 namespace LCHFramework
@@ -150,6 +152,18 @@ namespace LCHFramework
                 };
                 var smallestWindowDp = Mathf.Min(Screen.width / logicalScale, Screen.height / logicalScale);
                 return 600f <= smallestWindowDp;
+            }
+        }
+
+        public static bool IsRecording
+        {
+            get
+            {
+#if UNITY_EDITOR
+                return Resources.FindObjectsOfTypeAll<RecorderWindow>().Any(t => t.IsRecording());
+#else
+                return false;
+#endif
             }
         }
         

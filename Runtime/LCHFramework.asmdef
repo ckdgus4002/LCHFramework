@@ -5,6 +5,7 @@
         "Unity.Addressables",
         "Unity.Addressables.Editor",
         "Unity.InputSystem",
+        "Unity.Recorder.Editor",
         "Unity.ResourceManager",
         "Unity.TextMeshPro",
         "UniRx"
