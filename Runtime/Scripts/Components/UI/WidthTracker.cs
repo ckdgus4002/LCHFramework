@@ -8,6 +8,7 @@ namespace LCHFramework.Components.UI
     public class WidthTracker : DrivenRectTransformBehaviour
     {
         public RectTransform target;
+        public bool useScaleFactor = true;
         public Vector3 localScale = Vector3.one;
         
         
@@ -44,7 +45,7 @@ namespace LCHFramework.Components.UI
 
             RectTransform.rotation = target.rotation;
             RectTransform.localScale = localScale;
-            var scaleFactor = RectTransform.parent.lossyScale.x;
+            var scaleFactor = !useScaleFactor ? 1 : RectTransform.parent.lossyScale.x;
             var size = target.rect.size.x / scaleFactor;
             RectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size);
             
