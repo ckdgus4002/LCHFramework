@@ -17,6 +17,7 @@ namespace LCHFramework.Editor
             
         private void OnPostprocessPSD(Texture2D texture, Sprite[] sprites, PSDImporter psdImporter)
         {
+            if (!Enabled) return;
             if (AssetPostprocessorExceptTable.GlobalExceptAssetPathPrefix.Any(t => t.IsExclude(assetPath))) return;
             if (AssetPostprocessorExceptTable.Instances.Any(t => t.IsExclude(assetPath))) return;
             

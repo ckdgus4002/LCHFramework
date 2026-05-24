@@ -8,6 +8,7 @@ namespace LCHFramework.Editor
     {
         private void OnPostprocessSprites(Texture2D texture, Sprite[] sprites)
         {
+            if (!Enabled) return;
             if (AssetPostprocessorExceptTable.GlobalExceptAssetPathPrefix.Any(t => t.IsExclude(assetPath))) return;
             if (AssetPostprocessorExceptTable.Instances.Any(t => t.IsExclude(assetPath))) return;
 

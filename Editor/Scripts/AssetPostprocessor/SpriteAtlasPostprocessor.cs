@@ -11,18 +11,22 @@ namespace LCHFramework.Editor
     public class SpriteAtlasPostprocessor : AssetPostprocessor
     {
         private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
+            => OnPostprocessAllAssets(importedAssets);
+        
+        public static void OnPostprocessAllAssets(string[] importedAssets)
         {
             foreach (var importedAsset in importedAssets.Where(t => Path.GetExtension(t).Contains(".spriteatlas")))
             {
                 var spriteAtlasOrNull = AssetDatabase.LoadAssetAtPath<SpriteAtlas>(importedAsset);
                 if (spriteAtlasOrNull == null) return;
-
+                
                 OnPostprocessSpriteAtlas(spriteAtlasOrNull, importedAsset, AssetImporter.GetAtPath(importedAsset) as SpriteAtlasImporter);
             }
         }
         
         private static void OnPostprocessSpriteAtlas(SpriteAtlas spriteAtlas, string assetPath, SpriteAtlasImporter spriteAtlasImporterOrNull)
         {
+            if (!Enabled) return;
             if (AssetPostprocessorExceptTable.GlobalExceptAssetPathPrefix.Any(t => t.IsExclude(assetPath))) return;
             if (AssetPostprocessorExceptTable.Instances.Any(t => t.IsExclude(assetPath))) return;
             
