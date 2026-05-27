@@ -9,6 +9,7 @@ namespace LCHFramework.Components
     public class WebcamTextureController : MonoBehaviour
     {
         [SerializeField] private bool playOnEnable = true;
+        [SerializeField] private bool pauseOnDisable;
         [SerializeField] private bool stopOnDisable = true;
         public WebCamDeviceType webCamDeviceType = WebCamDeviceType.FrontFacing;
         public UnityEvent<WebCamTexture> onPlay;
@@ -43,6 +44,7 @@ namespace LCHFramework.Components
         
         protected virtual void OnDisable()
         {
+            if (pauseOnDisable) Pause();
             if (stopOnDisable) Stop();
         }
         
