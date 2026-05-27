@@ -1,4 +1,3 @@
-using System.Linq;
 using LCHFramework.Extensions;
 using LCHFramework.Managers.UI.MessageBoxItems;
 using UnityEngine;
@@ -15,14 +14,16 @@ namespace LCHFramework.Managers.UI
         
         
         
+        public bool IsShownFromKey(string key) => Items.TryFirstOrDefault(t => t.mKey == key, out var result) && result.IsShown;
+        
         public MessageBoxItem Show(string key, params object[] objects)
         {
             Wrapper.SetActive(true);
-            var item = Items.FirstOrDefault(t => t.mKey == key);
+
             MessageBoxItem result = null;
             Items.ForEach(t =>
             {
-                if (t == item)
+                if (t.mKey == key)
                 {
                     t.Show(objects);
                     result = t;
@@ -30,6 +31,12 @@ namespace LCHFramework.Managers.UI
                 else if (t.IsShown)
                     t.Hide();
             });
+            return result;
+        }
+
+        public MessageBoxItem Hide(string key)
+        {
+            if (Items.TryFirstOrDefault(t => t.mKey == key, out var result)) result.Hide();
             return result;
         }
         
