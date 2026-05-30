@@ -132,6 +132,7 @@ namespace LCHFramework.Managers
             
             SoundManager.Instance.ClearAll();
             PrevAtlasAddresses.ForEach(AddressablesLoadManager<SpriteAtlas>.ReleaseAsset);
+            await Resources.UnloadUnusedAssets();
             GC.Collect();
             loadSceneProcess = 0;
             if (isUpdateCatalogs) await AddressablesManager.UpdateCatalogsAsync(true, 
