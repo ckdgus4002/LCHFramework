@@ -57,9 +57,9 @@ namespace LCHFramework.Components
         
         
         
-        public virtual async Awaitable Play(bool replay = false)
+        public virtual async Awaitable Play(bool force = false)
         {
-            var webcamTextureOrNull = await GetWebcamTextureOrNull(replay);
+            var webcamTextureOrNull = await GetWebcamTextureOrNull(force);
             
             if (webcamTextureOrNull != null) webcamTextureOrNull.Play();
             

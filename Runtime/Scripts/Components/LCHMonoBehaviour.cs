@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using LCHFramework.Extensions;
+using LCHFramework.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -67,6 +68,12 @@ namespace LCHFramework.Components
             foreach (var stopCoroutine in stopCoroutines) if (stopCoroutine != null) monoBehaviour.StopCoroutine(stopCoroutine);
             
             return monoBehaviour.StartCoroutine(startCoroutine);
+        }
+
+        public static void DestroyAndSetNull<T>(ref T obj) where T : Object
+        {
+            Destroy(obj);
+            obj = null;
         }
         
         
