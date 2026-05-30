@@ -18,7 +18,7 @@ namespace LCHFramework.Components
         
         public async Awaitable<WebCamTexture> GetWebcamTextureOrNull(bool force = false)
         {
-            if ((_webcamTextureOrNull == null || force) && await Application.RequestUserCameraPermissionAsync())
+            if ((_webcamTextureOrNull == null || force) && await Application.RequestUserPermissionAsync(UserAuthorization.WebCam))
             {
                 var webCamDeviceExists = WebCamTexture.devices.TryFirstOrDefault(t => 
                     (webCamDeviceType & WebCamDeviceType.FrontFacing) != 0 && t.isFrontFacing,

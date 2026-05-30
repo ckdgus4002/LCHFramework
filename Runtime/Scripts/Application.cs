@@ -1,3 +1,7 @@
+using System;
+using System.Linq;
+using UniRx;
+using UnityEngine;
 #if UNITY_ANDROID || UNITY_IOS || UNITY_WEBGL
 using LCHFramework.Utilities;
 #endif
@@ -8,10 +12,6 @@ using UnityEngine.iOS;
 #if UNITY_ANDROID
 using UnityEngine.Android;
 #endif
-using System;
-using System.Linq;
-using UniRx;
-using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.Recorder;
@@ -189,16 +189,17 @@ namespace LCHFramework
 #endif
         }
         
-        public static async Awaitable<bool> RequestUserCameraPermissionAsync()
+        public static async Awaitable<bool> RequestUserPermissionAsync(UserAuthorization userAuthorization)
         {
 #if UNITY_ANDROID
-            if (!Permission.HasUserAuthorizedPermission(Permission.Camera))
+            var permission = userAuthorization == UserAuthorization.WebCam ? Permission.Camera : Permission.Microphone;
+            if (!Permission.HasUserAuthorizedPermission(permission))
             {
                 var callbacks = new PermissionCallbacks();
                 var result = -1;
                 callbacks.PermissionGranted += _ => result = 1;
                 callbacks.PermissionDenied += _ => result = 2;
-                Permission.RequestUserPermission(Permission.Camera, callbacks);
+                Permission.RequestUserPermission(permission, callbacks);
                 await AwaitableUtility.WaitUntil(() => -1 < result);
                 
                 var isGranted = result == 1;
@@ -208,10 +209,10 @@ namespace LCHFramework
             else
                 return true;
 #else // UNITY_IOS || UNITY_WEBGL
-            if (!UnityEngine.Application.HasUserAuthorization(UserAuthorization.WebCam))
+            if (!UnityEngine.Application.HasUserAuthorization(userAuthorization))
             {
-                await UnityEngine.Application.RequestUserAuthorization(UserAuthorization.WebCam);
-                return UnityEngine.Application.HasUserAuthorization(UserAuthorization.WebCam); 
+                await UnityEngine.Application.RequestUserAuthorization(userAuthorization);
+                return UnityEngine.Application.HasUserAuthorization(userAuthorization);
             }
             else
                 return true;
