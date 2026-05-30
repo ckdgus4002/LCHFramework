@@ -78,12 +78,13 @@ namespace LCHFramework.Components
         
         
         
+#if UNITY_EDITOR
         protected virtual void Reset()
         {
             canvasOrNull = GetComponent<Canvas>();
             rendererOrNull = GetComponent<Renderer>();
         }
-        
+#endif
         
         
         public virtual void OnBeginDrag(PointerEventData eventData)

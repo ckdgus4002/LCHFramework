@@ -13,12 +13,13 @@ namespace LCHFramework.Components
         
         
         
+#if UNITY_EDITOR
         private void OnValidate()
         {
             var main = ParticleSystem.main; 
             main.stopAction = ParticleSystemStopAction.Callback;
         }
-        
+#endif
         public virtual void OnParticleSystemStopped() => onStopped?.Invoke();
         
         
