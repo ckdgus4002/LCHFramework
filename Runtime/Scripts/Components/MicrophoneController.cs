@@ -16,11 +16,11 @@ namespace LCHFramework.Components
         public UnityEvent<AudioClip> onStopRecording;
         
         
-        public AudioClip RecordedClipOrNull { get; private set; }
+        public AudioClip RecordedAudioClipOrNull { get; private set; }
         
         
-        public AudioClip RecordingClipOrNull { get => _recordingClip; private set => _recordingClip = value; }
-        private AudioClip _recordingClip;
+        public AudioClip RecordingAudioClipOrNull { get => recordingAudioClip; private set => recordingAudioClip = value; }
+        private AudioClip recordingAudioClip;
         
         
         
@@ -41,30 +41,30 @@ namespace LCHFramework.Components
         
         public virtual async Awaitable StartRecording(bool force = false)
         {
-            if ((RecordingClipOrNull == null || force) && await Application.RequestUserPermissionAsync(UserAuthorization.Microphone))
+            if ((RecordingAudioClipOrNull == null || force) && await Application.RequestUserPermissionAsync(UserAuthorization.Microphone))
             {
-                RecordingClipOrNull = Microphone.Start(deviceName, loop, lengthSec, sampleRate);
+                RecordingAudioClipOrNull = Microphone.Start(deviceName, loop, lengthSec, sampleRate);
             }
             
-            onStartRecording?.Invoke(RecordingClipOrNull);
+            onStartRecording?.Invoke(RecordingAudioClipOrNull);
         }
         
         public virtual void StopRecording()
         {
-            if (RecordingClipOrNull == null) return;
+            if (RecordingAudioClipOrNull == null) return;
             
             var position = Microphone.GetPosition(deviceName);
             Microphone.End(deviceName);
             if (position < 1) return;
             
-            var data = new float[position * RecordingClipOrNull.channels];
-            RecordingClipOrNull.GetData(data, 0);
+            var data = new float[position * RecordingAudioClipOrNull.channels];
+            RecordingAudioClipOrNull.GetData(data, 0);
 
-            RecordedClipOrNull = AudioClip.Create(RecordingClipOrNull.name, position, RecordingClipOrNull.channels, sampleRate, false);
-            LCHMonoBehaviour.DestroyAndSetNull(ref _recordingClip);
-            RecordedClipOrNull.SetData(data, 0);
+            RecordedAudioClipOrNull = AudioClip.Create(RecordingAudioClipOrNull.name, position, RecordingAudioClipOrNull.channels, sampleRate, false);
+            LCHMonoBehaviour.DestroyAndSetNull(ref recordingAudioClip);
+            RecordedAudioClipOrNull.SetData(data, 0);
             
-            onStopRecording?.Invoke(RecordedClipOrNull);
+            onStopRecording?.Invoke(RecordedAudioClipOrNull);
         }
     }
 }
