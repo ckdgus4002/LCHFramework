@@ -36,9 +36,9 @@ namespace LCHFramework.Components
         
         
         
-        protected void Generate() => Generate($"{GetRenderTextureWidth()};{GetRenderTextureHeight()};{GetRenderTextureDepth()}");
+        public void Generate() => Generate($"{GetRenderTextureWidth()};{GetRenderTextureHeight()};{GetRenderTextureDepth()}");
         
-        protected void Generate(string key)
+        public void Generate(string key)
         {
             if (!RenderTextures.ContainsKey(key)) RenderTextures.Add(key, new RenderTexture(GetRenderTextureWidth(), GetRenderTextureHeight(), GetRenderTextureDepth()));
             onGenerate?.Invoke(RenderTextures[key]);
