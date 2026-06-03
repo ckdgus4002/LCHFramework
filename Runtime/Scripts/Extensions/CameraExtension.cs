@@ -1,17 +1,17 @@
 using System;
-using System.Threading.Tasks;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace LCHFramework.Extensions
 {
     public static class CameraExtension
     {
-        public static async Task Capture(this Camera camera, Func<Texture2D, Task> callback, bool autoRelease = true)
+        public static async Awaitable Capture(this Camera camera, Func<Texture2D, Awaitable> callback, bool autoRelease = true)
         {
             var result = camera.Capture();
             await callback.Invoke(result);
             
-            if (autoRelease) UnityEngine.Object.Destroy(result);
+            if (autoRelease) Object.Destroy(result);
         }
         
         public static Texture2D Capture(this Camera camera)

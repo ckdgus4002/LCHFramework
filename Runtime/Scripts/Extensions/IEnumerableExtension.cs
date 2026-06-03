@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
 using Random = System.Random;
 
@@ -94,12 +93,12 @@ namespace LCHFramework.Extensions
             foreach (var t in enumerable) action?.Invoke(t, i++);
         }
         
-        public static async Task ForEachAsync<T>(this IEnumerable<T> enumerable, Func<T, Task> action)
+        public static async Awaitable ForEachAsync<T>(this IEnumerable<T> enumerable, Func<T, Awaitable> action)
         {
             foreach (var t in enumerable) if (action != null) await action.Invoke(t);
         }
         
-        public static async Task ForEachAsync<T>(this IEnumerable<T> enumerable, Func<T, int, Task> action)
+        public static async Awaitable ForEachAsync<T>(this IEnumerable<T> enumerable, Func<T, int, Awaitable> action)
         {
             var i = 0;
             foreach (var t in enumerable) if (action != null) await action.Invoke(t, i++);
