@@ -8,6 +8,14 @@ namespace LCHFramework.Extensions
     {
         public static async Task Capture(this Camera camera, Func<Texture2D, Task> callback, bool autoRelease = true)
         {
+            var result = camera.Capture();
+            await callback.Invoke(result);
+            
+            if (autoRelease) UnityEngine.Object.Destroy(result);
+        }
+        
+        public static Texture2D Capture(this Camera camera)
+        {
             var w = camera.targetTexture.width;
             var h = camera.targetTexture.height;
             var prev = RenderTexture.active;
@@ -16,9 +24,7 @@ namespace LCHFramework.Extensions
             result.ReadPixels(new Rect(0, 0, w, h), 0, 0);
             result.Apply();
             RenderTexture.active = prev;
-            await callback.Invoke(result);
-            
-            if (autoRelease) UnityEngine.Object.Destroy(result);
+            return result;
         }
     }
 }
