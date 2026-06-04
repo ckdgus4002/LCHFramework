@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace LCHFramework.Utilities
 {
@@ -9,39 +10,35 @@ namespace LCHFramework.Utilities
         {
             var result = await CaptureScreenshotAsTextureAsync(rectTransform);
             await callback.Invoke(result);
-            
-            if (autoRelease) UnityEngine.Object.Destroy(result);
+
+            if (autoRelease) Object.Destroy(result);
         }
-        
-        public static async Awaitable<Texture> CaptureScreenshotAsTextureAsync(RectTransform rectTransform)
+
+        public static async Awaitable<Texture> CaptureScreenshotAsTextureAsync(RectTransform rectTransform, int supersize = 1)
         {
             await Awaitable.EndOfFrameAsync();
             
-            var fullScreen = ScreenCapture.CaptureScreenshotAsTexture();
-            
-            // 네 모서리의 월드 좌표 → [0]좌하단 [1]좌상단 [2]우상단 [3]우하단
-            var corners = new Vector3[4];
+            var corners = new Vector3[4]; // [1],[2]
+                                          // [0],[3]
             rectTransform.GetWorldCorners(corners);
-
-            // 좌하단/우상단을 스크린 좌표로 변환
-            // Screen Space - Overlay 캔버스면 uiCamera는 null이어야 함
-            var uiCamera = rectTransform.GetComponentInParent<Canvas>(true).worldCamera;
-            var bottomLeft = RectTransformUtility.WorldToScreenPoint(uiCamera, corners[0]);
-            var topRight   = RectTransformUtility.WorldToScreenPoint(uiCamera, corners[2]);
-
-            // 캡쳐 텍스처 해상도가 Screen 해상도와 다를 수 있어 스케일 보정
-            var scaleX = (float)fullScreen.width  / Screen.width;
-            var scaleY = (float)fullScreen.height / Screen.height;
-
-            // 텍스처 범위를 벗어나지 않도록 클램프
-            var x      = Mathf.Clamp(Mathf.RoundToInt(bottomLeft.x * scaleX), 0, fullScreen.width);
-            var y      = Mathf.Clamp(Mathf.RoundToInt(bottomLeft.y * scaleY), 0, fullScreen.height);
-            var width  = Mathf.Clamp(Mathf.RoundToInt((topRight.x - bottomLeft.x) * scaleX), 0, fullScreen.width - x);
-            var height = Mathf.Clamp(Mathf.RoundToInt((topRight.y - bottomLeft.y) * scaleY), 0, fullScreen.height - y);
-
+            var rootCanvas = rectTransform.GetComponentInParent<Canvas>(true).rootCanvas;
+            var camera = rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : rootCanvas.worldCamera;
+            
+            var screenshot = ScreenCapture.CaptureScreenshotAsTexture(supersize);
+            
+            var leftBottom = RectTransformUtility.WorldToScreenPoint(camera, corners[0]);
+            var rightTop = RectTransformUtility.WorldToScreenPoint(camera, corners[2]);
+            var left = Mathf.Clamp(Mathf.RoundToInt(leftBottom.x * supersize), 0, screenshot.width);
+            var bottom = Mathf.Clamp(Mathf.RoundToInt(leftBottom.y * supersize), 0, screenshot.height);
+            var right = Mathf.Clamp(Mathf.RoundToInt(rightTop.x * supersize), 0, screenshot.width);
+            var top = Mathf.Clamp(Mathf.RoundToInt(rightTop.y * supersize), 0, screenshot.height);
+            
+            var width = right - left;
+            var height = top - bottom;
             var result = new Texture2D(width, height, TextureFormat.RGBA32, false);
-            result.SetPixels(fullScreen.GetPixels(x, y, width, height));
+            result.SetPixels(screenshot.GetPixels(left, bottom, width, height));
             result.Apply();
+            Object.Destroy(screenshot);
             return result;
         }
     }
