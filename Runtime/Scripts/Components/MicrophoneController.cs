@@ -49,7 +49,7 @@ namespace LCHFramework.Components
             onStartRecording?.Invoke(RecordingAudioClipOrNull);
         }
         
-        public virtual void StopRecording()
+        public virtual void StopRecordingAndCreateAudioClip()
         {
             if (RecordingAudioClipOrNull == null) return;
             
@@ -59,12 +59,19 @@ namespace LCHFramework.Components
             
             var data = new float[position * RecordingAudioClipOrNull.channels];
             RecordingAudioClipOrNull.GetData(data, 0);
-
+            
             RecordedAudioClipOrNull = AudioClip.Create(RecordingAudioClipOrNull.name, position, RecordingAudioClipOrNull.channels, sampleRate, false);
             LCHMonoBehaviour.DestroyAndSetNull(ref recordingAudioClip);
             RecordedAudioClipOrNull.SetData(data, 0);
             
             onStopRecording?.Invoke(RecordedAudioClipOrNull);
+        }
+        
+        public void StopRecording()
+        {
+            if (RecordingAudioClipOrNull == null) return;
+            
+            Microphone.End(deviceName);
         }
     }
 }
