@@ -35,7 +35,7 @@ namespace LCHFramework.Components
         
         
         
-        public virtual async Awaitable StartRecording(bool force = false)
+        public virtual async Awaitable<AudioClip> StartRecording(bool force = false)
         {
             if ((RecordingAudioClipOrNull == null || force) && await Application.RequestUserPermissionAsync(UserAuthorization.Microphone))
             {
@@ -44,15 +44,16 @@ namespace LCHFramework.Components
             }
             
             onStartRecording?.Invoke(RecordingAudioClipOrNull);
+            return RecordingAudioClipOrNull;
         }
         
-        public virtual void StopRecordingAndCreateAudioClip()
+        public virtual AudioClip StopRecordingAndCreateAudioClip()
         {
-            if (RecordingAudioClipOrNull == null) return;
+            if (RecordingAudioClipOrNull == null) return null;
             
             var position = Microphone.GetPosition(deviceName);
             Microphone.End(deviceName);
-            if (position < 1) return;
+            if (position < 1) return null;
             
             var data = new float[position * RecordingAudioClipOrNull.channels];
             RecordingAudioClipOrNull.GetData(data, 0);
@@ -61,6 +62,7 @@ namespace LCHFramework.Components
             RecordedAudioClipOrNull.SetData(data, 0);
             
             onStopRecordingAndCreateAudioClip?.Invoke(RecordedAudioClipOrNull);
+            return RecordedAudioClipOrNull;
         }
         
         public void StopRecording()
