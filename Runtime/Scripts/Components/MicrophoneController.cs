@@ -12,7 +12,7 @@ namespace LCHFramework.Components
         public bool loop;
         public int lengthSec = 15;
         public UnityEvent<AudioClip> onStartRecording;
-        public UnityEvent<AudioClip> onStopRecording;
+        public UnityEvent<AudioClip> onStopRecordingAndCreateAudioClip;
         
         
         public AudioClip RecordingAudioClipOrNull { get ; private set; }
@@ -60,7 +60,7 @@ namespace LCHFramework.Components
             RecordedAudioClipOrNull = AudioClip.Create(RecordingAudioClipOrNull.name, position, RecordingAudioClipOrNull.channels, SampleRate, false);
             RecordedAudioClipOrNull.SetData(data, 0);
             
-            onStopRecording?.Invoke(RecordedAudioClipOrNull);
+            onStopRecordingAndCreateAudioClip?.Invoke(RecordedAudioClipOrNull);
         }
         
         public void StopRecording()
