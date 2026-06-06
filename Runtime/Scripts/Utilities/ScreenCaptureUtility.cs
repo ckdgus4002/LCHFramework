@@ -1,4 +1,5 @@
 using System;
+using LCHFramework.Components;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -6,39 +7,40 @@ namespace LCHFramework.Utilities
 {
     public static class ScreenCaptureUtility
     {
-        public static async Awaitable CaptureScreenshotAsTextureAsync(RectTransform rectTransform, Func<Texture, Awaitable> callback, bool autoRelease = true)
+        public static async Awaitable CaptureScreenshotAsTextureAsync(RectTransform[] rectTransforms, int supersize, Func<Texture2D[], Awaitable> callback, bool autoRelease)
         {
-            var result = await CaptureScreenshotAsTextureAsync(rectTransform);
+            var result = await CaptureScreenshotAsTextureAsync(rectTransforms, supersize);
             await callback.Invoke(result);
 
-            if (autoRelease) Object.Destroy(result);
+            if (autoRelease) for (var i = 0; i < result.Length; i++) LCHMonoBehaviour.DestroyAndSetNull(ref result[i]);
         }
 
-        public static async Awaitable<Texture> CaptureScreenshotAsTextureAsync(RectTransform rectTransform, int supersize = 1)
+        public static async Awaitable<Texture2D[]> CaptureScreenshotAsTextureAsync(RectTransform[] rectTransforms, int supersize = 1)
         {
             await Awaitable.EndOfFrameAsync();
             
-            var corners = new Vector3[4]; // [1],[2]
-                                          // [0],[3]
-            rectTransform.GetWorldCorners(corners);
-            var rootCanvas = rectTransform.GetComponentInParent<Canvas>(true).rootCanvas;
-            var camera = rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : rootCanvas.worldCamera;
-            
+            var result = new Texture2D[rectTransforms.Length];
             var screenshot = ScreenCapture.CaptureScreenshotAsTexture(supersize);
-            
-            var leftBottom = RectTransformUtility.WorldToScreenPoint(camera, corners[0]);
-            var rightTop = RectTransformUtility.WorldToScreenPoint(camera, corners[2]);
-            var left = Mathf.Clamp(Mathf.RoundToInt(leftBottom.x * supersize), 0, screenshot.width);
-            var bottom = Mathf.Clamp(Mathf.RoundToInt(leftBottom.y * supersize), 0, screenshot.height);
-            var right = Mathf.Clamp(Mathf.RoundToInt(rightTop.x * supersize), 0, screenshot.width);
-            var top = Mathf.Clamp(Mathf.RoundToInt(rightTop.y * supersize), 0, screenshot.height);
-            
-            var width = right - left;
-            var height = top - bottom;
-            var result = new Texture2D(width, height, TextureFormat.RGBA32, false);
-            result.SetPixels(screenshot.GetPixels(left, bottom, width, height));
-            result.Apply();
-            Object.Destroy(screenshot);
+            for (var i = 0; i < rectTransforms.Length; i++)
+            {
+                var rectTransform = rectTransforms[i];
+                var corners = new Vector3[4]; // [1],[2]
+                                              // [0],[3]
+                rectTransform.GetWorldCorners(corners);
+                
+                var rootCanvas = rectTransform.GetComponentInParent<Canvas>(true).rootCanvas;
+                var camera = rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : rootCanvas.worldCamera;
+                var leftBottom = RectTransformUtility.WorldToScreenPoint(camera, corners[0]);
+                var left = Mathf.Clamp(Mathf.RoundToInt(leftBottom.x * supersize), 0, screenshot.width);
+                var bottom = Mathf.Clamp(Mathf.RoundToInt(leftBottom.y * supersize), 0, screenshot.height);
+                var rightTop = RectTransformUtility.WorldToScreenPoint(camera, corners[2]);
+                var width = Mathf.Clamp(Mathf.RoundToInt(rightTop.x * supersize), 0, screenshot.width) - left;
+                var height = Mathf.Clamp(Mathf.RoundToInt(rightTop.y * supersize), 0, screenshot.height) - bottom;
+                result[i] = new Texture2D(width, height, TextureFormat.RGBA32, false);
+                result[i].SetPixels(screenshot.GetPixels(left, bottom, width, height));
+                result[i].Apply();
+                Object.Destroy(screenshot);
+            }
             return result;
         }
     }
