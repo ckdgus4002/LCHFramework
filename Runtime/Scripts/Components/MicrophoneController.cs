@@ -10,23 +10,19 @@ namespace LCHFramework.Components
         [SerializeField] private bool stopOnDisable = true;
         public string deviceName;
         public bool loop;
-        public int lengthSec = 60;
-        public int sampleRate;
+        public int lengthSec = 15;
         public UnityEvent<AudioClip> onStartRecording;
         public UnityEvent<AudioClip> onStopRecording;
         
         
+        public AudioClip RecordingAudioClipOrNull { get ; private set; }
         public AudioClip RecordedAudioClipOrNull { get; private set; }
         
         
-        public AudioClip RecordingAudioClipOrNull { get => recordingAudioClip; private set => recordingAudioClip = value; }
-        private AudioClip recordingAudioClip;
+        protected virtual int SampleRate => AudioSettings.outputSampleRate;
         
         
         
-#if UNITY_EDITOR
-        protected virtual void Reset() => sampleRate = AudioSettings.outputSampleRate;
-#endif
         protected virtual void OnEnable()
         {
             if (startOnEnable) StartRecording().Forget();
@@ -43,7 +39,8 @@ namespace LCHFramework.Components
         {
             if ((RecordingAudioClipOrNull == null || force) && await Application.RequestUserPermissionAsync(UserAuthorization.Microphone))
             {
-                RecordingAudioClipOrNull = Microphone.Start(deviceName, loop, lengthSec, sampleRate);
+                if (RecordingAudioClipOrNull != null) Destroy(RecordingAudioClipOrNull);
+                RecordingAudioClipOrNull = Microphone.Start(deviceName, loop, lengthSec, SampleRate);
             }
             
             onStartRecording?.Invoke(RecordingAudioClipOrNull);
@@ -60,8 +57,7 @@ namespace LCHFramework.Components
             var data = new float[position * RecordingAudioClipOrNull.channels];
             RecordingAudioClipOrNull.GetData(data, 0);
             
-            RecordedAudioClipOrNull = AudioClip.Create(RecordingAudioClipOrNull.name, position, RecordingAudioClipOrNull.channels, sampleRate, false);
-            LCHMonoBehaviour.DestroyAndSetNull(ref recordingAudioClip);
+            RecordedAudioClipOrNull = AudioClip.Create(RecordingAudioClipOrNull.name, position, RecordingAudioClipOrNull.channels, SampleRate, false);
             RecordedAudioClipOrNull.SetData(data, 0);
             
             onStopRecording?.Invoke(RecordedAudioClipOrNull);
