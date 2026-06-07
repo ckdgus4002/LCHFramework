@@ -17,12 +17,17 @@ namespace LCHFramework.Components
         
         public AudioClip RecordingAudioClipOrNull { get ; private set; }
         public AudioClip RecordedAudioClipOrNull { get; private set; }
-        
-        
+
+
         protected virtual int SampleRate => AudioSettings.outputSampleRate;
         
         
         
+        private void Awake()
+        {
+            if (string.IsNullOrEmpty(deviceName) && 0 < Microphone.devices.Length) deviceName = Microphone.devices[0];
+        }
+
         protected virtual void OnEnable()
         {
             if (startOnEnable) StartRecording().Forget();
@@ -35,11 +40,12 @@ namespace LCHFramework.Components
         
         
         
-        public virtual async Awaitable<AudioClip> StartRecording(bool force = false)
+        public virtual async Awaitable<AudioClip> StartRecording()
         {
-            if ((RecordingAudioClipOrNull == null || force) && await Application.RequestUserPermissionAsync(UserAuthorization.Microphone))
+            if (await Application.RequestUserPermissionAsync(UserAuthorization.Microphone))
             {
                 if (RecordingAudioClipOrNull != null) Destroy(RecordingAudioClipOrNull);
+                
                 RecordingAudioClipOrNull = Microphone.Start(deviceName, loop, lengthSec, SampleRate);
             }
             
@@ -58,7 +64,7 @@ namespace LCHFramework.Components
             var data = new float[position * RecordingAudioClipOrNull.channels];
             RecordingAudioClipOrNull.GetData(data, 0);
             
-            RecordedAudioClipOrNull = AudioClip.Create(RecordingAudioClipOrNull.name, position, RecordingAudioClipOrNull.channels, SampleRate, false);
+            RecordedAudioClipOrNull = AudioClip.Create(RecordingAudioClipOrNull.name, position, RecordingAudioClipOrNull.channels, RecordingAudioClipOrNull.frequency, false);
             RecordedAudioClipOrNull.SetData(data, 0);
             
             onStopRecordingAndCreateAudioClip?.Invoke(RecordedAudioClipOrNull);
