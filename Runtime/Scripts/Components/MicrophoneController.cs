@@ -1,4 +1,5 @@
 using LCHFramework.Extensions;
+using LCHFramework.Utilities;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -8,7 +9,6 @@ namespace LCHFramework.Components
     {
         [SerializeField] private bool startOnEnable = true;
         [SerializeField] private bool stopOnDisable = true;
-        public string deviceName;
         public bool loop;
         public int lengthSec = 15;
         public UnityEvent<AudioClip> onStartRecording;
@@ -19,15 +19,11 @@ namespace LCHFramework.Components
         public AudioClip RecordedAudioClipOrNull { get; private set; }
 
 
+        protected virtual string DeviceName => Microphone.devices.Length < 1 ? string.Empty : Microphone.devices[0];
         protected virtual int SampleRate => AudioSettings.outputSampleRate;
         
         
         
-        private void Awake()
-        {
-            if (string.IsNullOrEmpty(deviceName) && 0 < Microphone.devices.Length) deviceName = Microphone.devices[0];
-        }
-
         protected virtual void OnEnable()
         {
             if (startOnEnable) StartRecording().Forget();
@@ -46,7 +42,8 @@ namespace LCHFramework.Components
             {
                 if (RecordingAudioClipOrNull != null) Destroy(RecordingAudioClipOrNull);
                 
-                RecordingAudioClipOrNull = Microphone.Start(deviceName, loop, lengthSec, SampleRate);
+                RecordingAudioClipOrNull = Microphone.Start(DeviceName, loop, lengthSec, SampleRate);
+                await AwaitableUtility.WaitUntil(() => 0 < Microphone.GetPosition(DeviceName));
             }
             
             onStartRecording?.Invoke(RecordingAudioClipOrNull);
@@ -57,8 +54,8 @@ namespace LCHFramework.Components
         {
             if (RecordingAudioClipOrNull == null) return null;
             
-            var position = Microphone.GetPosition(deviceName);
-            Microphone.End(deviceName);
+            var position = Microphone.GetPosition(DeviceName);
+            Microphone.End(DeviceName);
             if (position < 1) return null;
             
             var data = new float[position * RecordingAudioClipOrNull.channels];
@@ -75,7 +72,7 @@ namespace LCHFramework.Components
         {
             if (RecordingAudioClipOrNull == null) return;
             
-            Microphone.End(deviceName);
+            Microphone.End(DeviceName);
         }
     }
 }
