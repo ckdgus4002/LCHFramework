@@ -1,3 +1,4 @@
+using System.Linq;
 using LCHFramework.Extensions;
 using LCHFramework.Utilities;
 using UnityEngine;
@@ -11,6 +12,7 @@ namespace LCHFramework.Components
         [SerializeField] private bool stopOnDisable = true;
         public bool loop;
         public int lengthSec = 15;
+        public float targetPeak = 1f;
         public UnityEvent<AudioClip> onStartRecording;
         public UnityEvent<AudioClip> onStopRecordingAndCreateAudioClip;
         
@@ -58,14 +60,24 @@ namespace LCHFramework.Components
             Microphone.End(DeviceName);
             if (position < 1) return null;
             
-            var data = new float[position * RecordingAudioClipOrNull.channels];
-            RecordingAudioClipOrNull.GetData(data, 0);
+            var samples = new float[position * RecordingAudioClipOrNull.channels];
+            RecordingAudioClipOrNull.GetData(samples, 0);
+            Amplify(samples);
             
             RecordedAudioClipOrNull = AudioClip.Create(RecordingAudioClipOrNull.name, position, RecordingAudioClipOrNull.channels, RecordingAudioClipOrNull.frequency, false);
-            RecordedAudioClipOrNull.SetData(data, 0);
+            RecordedAudioClipOrNull.SetData(samples, 0);
             
             onStopRecordingAndCreateAudioClip?.Invoke(RecordedAudioClipOrNull);
             return RecordedAudioClipOrNull;
+        }
+        
+        private void Amplify(float[] data)
+        {
+            var peak = data.Aggregate(0f, (current, sample) => Mathf.Max(current, Mathf.Abs(sample)));
+            if (peak < 0.0001f) return; // 거의 무음이면 그대로
+
+            var scale = peak / targetPeak;
+            for (var i = 0; i < data.Length; i++) data[i] = Mathf.Clamp(data[i] * scale, -1f, 1f);
         }
         
         public void StopRecording()
