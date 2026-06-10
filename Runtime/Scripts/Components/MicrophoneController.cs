@@ -8,7 +8,7 @@ namespace LCHFramework.Components
 {
     public class MicrophoneController : MonoBehaviour
     {
-        [SerializeField] private bool startOnEnable = true;
+        [SerializeField] private bool startOnEnable;
         [SerializeField] private bool stopOnDisable = true;
         public bool loop;
         public int lengthSec = 15;
@@ -19,9 +19,10 @@ namespace LCHFramework.Components
         
         public AudioClip RecordingAudioClipOrNull { get ; private set; }
         public AudioClip RecordedAudioClipOrNull { get; private set; }
-
-
+        
+        
         protected virtual string DeviceName => Microphone.devices.Length < 1 ? string.Empty : Microphone.devices[0];
+        
         protected virtual int SampleRate => AudioSettings.outputSampleRate;
         
         
