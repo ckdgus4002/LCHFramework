@@ -49,13 +49,17 @@ namespace LCHFramework.Managers
                         var catalogLocators = await updateCatalogs.ToAwaitable();
 
                         onEndUpdateCatalogs?.Invoke(catalogLocators);
-                        result = updateCatalogs.Status == AsyncOperationStatus.Succeeded;
+                        if (updateCatalogs.Status == AsyncOperationStatus.Succeeded) result = true;
+                        else UnityEngine.Debug.LogException(updateCatalogs.OperationException);
+                        
                         Addressables.Release(updateCatalogs);
                     }
                 }
                 else
                     result = true;
             }
+            else UnityEngine.Debug.LogException(checkForCatalogUpdates.OperationException);
+            
             Addressables.Release(checkForCatalogUpdates);
 
             return result;
