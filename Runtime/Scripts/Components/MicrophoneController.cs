@@ -17,13 +17,17 @@ namespace LCHFramework.Components
         public UnityEvent<AudioClip> onStopRecordingAndCreateAudioClip;
         
         
-        public AudioClip RecordingAudioClipOrNull { get ; private set; }
+        private AudioClip recordingAudioClipOrNull;
+        
+        
         public AudioClip RecordedAudioClipOrNull { get; private set; }
         
         
         protected virtual string DeviceName => Microphone.devices.Length < 1 ? string.Empty : Microphone.devices[0];
         
         protected virtual int SampleRate => AudioSettings.outputSampleRate;
+        
+        public AudioClip RecordingAudioClipOrNull => recordingAudioClipOrNull; 
         
         
         
@@ -43,29 +47,29 @@ namespace LCHFramework.Components
         {
             if (await Application.RequestUserPermissionAsync(UserAuthorization.Microphone))
             {
-                if (RecordingAudioClipOrNull != null) Destroy(RecordingAudioClipOrNull);
-                
-                RecordingAudioClipOrNull = Microphone.Start(DeviceName, loop, lengthSec, SampleRate);
+                if (recordingAudioClipOrNull != null) Destroy(recordingAudioClipOrNull);
+                recordingAudioClipOrNull = Microphone.Start(DeviceName, loop, lengthSec, SampleRate);
                 await AwaitableUtility.WaitUntil(() => 0 < Microphone.GetPosition(DeviceName));
             }
             
-            onStartRecording?.Invoke(RecordingAudioClipOrNull);
-            return RecordingAudioClipOrNull;
+            onStartRecording?.Invoke(recordingAudioClipOrNull);
+            return recordingAudioClipOrNull;
         }
         
         public virtual AudioClip StopRecordingAndCreateAudioClip()
         {
-            if (RecordingAudioClipOrNull == null) return null;
+            if (recordingAudioClipOrNull == null) return null;
             
             var position = Microphone.GetPosition(DeviceName);
             Microphone.End(DeviceName);
             if (position < 1) return null;
             
-            var samples = new float[position * RecordingAudioClipOrNull.channels];
-            RecordingAudioClipOrNull.GetData(samples, 0);
+            var samples = new float[position * recordingAudioClipOrNull.channels];
+            recordingAudioClipOrNull.GetData(samples, 0);
             Amplify(samples);
             
-            RecordedAudioClipOrNull = AudioClip.Create(RecordingAudioClipOrNull.name, position, RecordingAudioClipOrNull.channels, RecordingAudioClipOrNull.frequency, false);
+            RecordedAudioClipOrNull = AudioClip.Create(recordingAudioClipOrNull.name, position, recordingAudioClipOrNull.channels, recordingAudioClipOrNull.frequency, false);
+            ObjectUtility.DestroyAndSetNull(ref recordingAudioClipOrNull);
             RecordedAudioClipOrNull.SetData(samples, 0);
             
             onStopRecordingAndCreateAudioClip?.Invoke(RecordedAudioClipOrNull);
@@ -83,7 +87,7 @@ namespace LCHFramework.Components
         
         public void StopRecording()
         {
-            if (RecordingAudioClipOrNull == null) return;
+            if (recordingAudioClipOrNull == null) return;
             
             Microphone.End(DeviceName);
         }
