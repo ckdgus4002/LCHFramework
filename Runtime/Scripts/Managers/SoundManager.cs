@@ -111,6 +111,10 @@ namespace LCHFramework.Managers
         
         public void StopAll() => audioSourcePools.ForEach(t => t.Value.StopAllAudioSources());
         
+        public void PauseAll() => audioSourcePools.ForEach(t => t.Value.PauseAllAudioSources());
+        
+        public void UnPauseAll() => audioSourcePools.ForEach(t => t.Value.UnPauseAllAudioSources());
+        
         public void ClearAll() => audioSourcePools.ForEach(t => t.Value.ClearAudioSourcePool());
     }
 }

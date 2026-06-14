@@ -152,6 +152,14 @@ namespace LCHFramework.Managers
         
         public void StopAudioSource(AudioSource audioSource) => audioSource.Stop();
         
+        public void PauseAllAudioSources() => audioSources.ForEach(PauseAudioSource);
+        
+        public void PauseAudioSource(AudioSource audioSource) => audioSource.Pause();
+        
+        public void UnPauseAllAudioSources() => audioSources.ForEach(UnPauseAudioSource);
+        
+        public void UnPauseAudioSource(AudioSource audioSource) => audioSource.UnPause();
+        
         public void ClearAudioSourcePool() => audioSourcePool.Clear();
     }
 }
