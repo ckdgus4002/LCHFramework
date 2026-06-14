@@ -69,12 +69,6 @@ namespace LCHFramework.Components
             
             return monoBehaviour.StartCoroutine(startCoroutine);
         }
-
-        public static void DestroyAndSetNull<T>(ref T obj) where T : Object
-        {
-            Destroy(obj);
-            obj = null;
-        }
         
         
         

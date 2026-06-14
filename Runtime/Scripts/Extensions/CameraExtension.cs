@@ -1,6 +1,6 @@
 using System;
+using LCHFramework.Utilities;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace LCHFramework.Extensions
 {
@@ -11,7 +11,7 @@ namespace LCHFramework.Extensions
             var result = camera.Capture();
             await callback.Invoke(result);
             
-            if (autoRelease) Object.Destroy(result);
+            if (autoRelease) ObjectUtility.DestroyAndSetNull(ref result);
         }
         
         public static Texture2D Capture(this Camera camera)

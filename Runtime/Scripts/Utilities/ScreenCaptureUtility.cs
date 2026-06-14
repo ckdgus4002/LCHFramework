@@ -1,7 +1,5 @@
 using System;
-using LCHFramework.Components;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace LCHFramework.Utilities
 {
@@ -12,7 +10,7 @@ namespace LCHFramework.Utilities
             var result = await CaptureScreenshotAsTextureAsync(rectTransforms, supersize);
             await callback.Invoke(result);
 
-            if (autoRelease) for (var i = 0; i < result.Length; i++) LCHMonoBehaviour.DestroyAndSetNull(ref result[i]);
+            if (autoRelease) for (var i = 0; i < result.Length; i++) ObjectUtility.DestroyAndSetNull(ref result[i]);
         }
 
         public static async Awaitable<Texture2D[]> CaptureScreenshotAsTextureAsync(RectTransform[] rectTransforms, int supersize = 1)
@@ -39,7 +37,7 @@ namespace LCHFramework.Utilities
                 result[i] = new Texture2D(width, height, TextureFormat.RGBA32, false);
                 result[i].SetPixels(screenshot.GetPixels(left, bottom, width, height));
                 result[i].Apply();
-                Object.Destroy(screenshot);
+                ObjectUtility.Destroy(screenshot);
             }
             return result;
         }
