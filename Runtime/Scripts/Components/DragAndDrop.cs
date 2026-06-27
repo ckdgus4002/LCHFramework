@@ -94,7 +94,6 @@ namespace LCHFramework.Components
             BeginPosition = transform.position;
             BeginMousePosition = GetMousePosition(eventData);
             beginDragSortingOrder = SortingOrder;
-            
             onBeginDrag?.Invoke(eventData);
         }
         
@@ -102,8 +101,12 @@ namespace LCHFramework.Components
         {
             SortingOrder = GetDragSortingOrder();
             transform.position = GetDragPosition(eventData);
-            
-            onDrag?.Invoke(eventData, GetOverlapsInteractionAreaIndex());
+            OnDrag(eventData, GetOverlapsInteractionAreaIndex());
+        }
+        
+        public virtual void OnDrag(PointerEventData eventData, int interactionAreaIndex)
+        {
+            onDrag?.Invoke(eventData, interactionAreaIndex);
         }
         
         public virtual int GetDragSortingOrder() => beginDragSortingOrder + 1;
@@ -114,8 +117,12 @@ namespace LCHFramework.Components
         {
             IsDragging = false;
             SortingOrder = GetEndDragSortingOrder();
-            
-            onEndDrag?.Invoke(eventData, GetOverlapsInteractionAreaIndex());
+            OnEndDrag(eventData, GetOverlapsInteractionAreaIndex());
+        }
+        
+        public virtual void OnEndDrag(PointerEventData eventData, int interactionAreaIndex)
+        {
+            onEndDrag?.Invoke(eventData, interactionAreaIndex);
         }
         
         public virtual int GetEndDragSortingOrder() => beginDragSortingOrder;
