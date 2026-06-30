@@ -45,7 +45,6 @@ namespace LCHFramework.Components
         
         
         
-        [Header(nameof(DragAndDrop))]
         public Canvas canvasOrNull;
         public Renderer rendererOrNull;
         public InteractionAreas[] interactionAreas = Array.Empty<InteractionAreas>();

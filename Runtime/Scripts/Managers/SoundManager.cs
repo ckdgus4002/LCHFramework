@@ -105,7 +105,7 @@ namespace LCHFramework.Managers
         {
             var audioSourcePool = !audioSourcePools.TryGetValue(audioSourcePoolName, out var result) ? audioSourcePools[DefaultAudioSourcePoolName] : result;
             var soundPlayResult = audioSourcePool.Play(audioClip, volume, loop, position ?? transform.position, audioPlayType);
-            Debug.Log($"[SoundManager] Play: {(audioClip == null ? "Null" : audioClip.name)}, Result: {soundPlayResult.isSuccess}.");
+            Debug.Log($"[SoundManager] Play: {(audioClip == null ? "null" : audioClip.name)}, Result: {soundPlayResult.isSuccess}.");
             return soundPlayResult;
         }
         
