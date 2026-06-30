@@ -1,16 +1,30 @@
 using LCHFramework.Extensions;
 using LCHFramework.Managers.UI.MessageBoxItems;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace LCHFramework.Managers.UI
 {
+    [RequireComponent(typeof(CanvasScaler))]
     public class MessageBox : MonoSingleton<MessageBox>
     {
-        private GameObject Wrapper => _wrapper == null ? _wrapper = transform.GetChild(0).gameObject : _wrapper;
-        private GameObject _wrapper;
+        private GameObject wrapper;
+        
+        
+        public CanvasScaler CanvasScaler => _canvasScaler == null ? _canvasScaler = GetComponent<CanvasScaler>() : _canvasScaler;
+        private CanvasScaler _canvasScaler;
         
         internal MessageBoxItem[] Items => _items ??= GetComponentsInChildren<MessageBoxItem>(true);
         private MessageBoxItem[] _items;
+        
+        
+        
+        protected override void Awake()
+        {
+            base.Awake();
+            
+            wrapper = transform.GetChild(0).gameObject;
+        }
         
         
         
@@ -18,8 +32,8 @@ namespace LCHFramework.Managers.UI
         
         public MessageBoxItem Show(string key, params object[] objects)
         {
-            Wrapper.SetActive(true);
-
+            wrapper.SetActive(true);
+            
             MessageBoxItem result = null;
             Items.ForEach(t =>
             {
@@ -33,13 +47,13 @@ namespace LCHFramework.Managers.UI
             });
             return result;
         }
-
+        
         public MessageBoxItem Hide(string key)
         {
             if (Items.TryFirstOrDefault(t => t.mKey == key, out var result)) result.Hide();
             return result;
         }
         
-        public void Hide() => Wrapper.SetActive(false);
+        public void Hide() => wrapper.SetActive(false);
     }
 }

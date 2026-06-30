@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using LCHFramework.Extensions;
-using LCHFramework.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -116,10 +115,7 @@ namespace LCHFramework.Components
             if (transform is not UnityEngine.RectTransform) InitializeTRS();
         }
         
-        protected virtual void OnEnable()
-        {
-            EnableCount++;
-        }
+        protected virtual void OnEnable() => EnableCount++;
         
         protected virtual IEnumerator Start()
         {
@@ -128,10 +124,7 @@ namespace LCHFramework.Components
             yield break;
         }
         
-        protected virtual void OnDisable()
-        {
-            DisableCount++;
-        }
+        protected virtual void OnDisable() => DisableCount++;
         
         
         
