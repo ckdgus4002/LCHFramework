@@ -8,8 +8,8 @@ namespace LCHFramework.Components
     [Serializable]
     public class ParticleObjectPool
     {
-        [SerializeField] private Transform wrapper;
-        [SerializeField] private Particle prefab;
+        public Transform wrapper;
+        public Particle prefab;
         
         
         public ObjectPool<Particle> ObjectPool => _objectPool ??= new ObjectPool<Particle>
