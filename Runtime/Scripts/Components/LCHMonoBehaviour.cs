@@ -2,23 +2,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using LCHFramework.Data;
 using LCHFramework.Extensions;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace LCHFramework.Components
 {
-    public class LCHMonoBehaviour : MonoBehaviour
+    public class LCHMonoBehaviour : MonoBehaviour, IDestroyGameObject
     {
         public static bool TryFindObjectsByType<T>(out T[] result) where T : Object
             => TryFindObjectsByType(FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID, out result);
-
+        
         public static bool TryFindObjectsByType<T>(FindObjectsInactive findObjectsInactive, FindObjectsSortMode sortMode, out T[] result) where T : Object
             => (result = FindObjectsByType<T>(findObjectsInactive, sortMode)).Any();
         
         public static bool TryFindObjectsByType(Type type, out Object[] result)
             => TryFindObjectsByType(type, FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID, out result);
-
+        
         public static bool TryFindObjectsByType(Type type, FindObjectsInactive findObjectsInactive, FindObjectsSortMode sortMode, out Object[] result)
             => (result = FindObjectsByType(type, findObjectsInactive, sortMode)).Any();
         
@@ -33,13 +34,13 @@ namespace LCHFramework.Components
         
         public static bool TryFindFirstObjectByType<T>(FindObjectsInactive findObjectsInactive, out T result) where T : Object
             => (result = FindFirstObjectByType<T>(findObjectsInactive)) != null;
-
+        
         public static bool TryFindFirstObjectByType(Type type, out Object result)
             => TryFindFirstObjectByType(type, FindObjectsInactive.Exclude, out result);
         
         public static bool TryFindFirstObjectByType(Type type, FindObjectsInactive findObjectsInactive, out Object result)
             => (result = FindFirstObjectByType(type, findObjectsInactive)) != null;
-
+        
         public static bool TryFindAnyInterfaceByType<T>(out T result) where T : class
             => TryFindAnyInterfaceByType(FindObjectsInactive.Exclude, out result);
         
@@ -51,14 +52,14 @@ namespace LCHFramework.Components
             foreach (var t in FindObjectsByType<Component>(findObjectsInactive, FindObjectsSortMode.InstanceID))
                 if (t.TryGetComponent<T>(out var result))
                     return result;
-
+            
             return null;
         }
-                
+        
         public static Coroutine RestartCoroutine(MonoBehaviour monoBehaviour, Coroutine stopCoroutine, IEnumerator startCoroutine)
         {
             if (stopCoroutine != null) monoBehaviour.StopCoroutine(stopCoroutine);
-
+            
             return monoBehaviour.StartCoroutine(startCoroutine);
         }
         
@@ -134,5 +135,7 @@ namespace LCHFramework.Components
             defaultLocalTRS = Matrix4x4.TRS(transform.localPosition, transform.localRotation, transform.localScale);
             TRSIsInitialized = true;
         }
+        
+        public virtual void DestroyGameObject() => Destroy(gameObject);
     }
 }

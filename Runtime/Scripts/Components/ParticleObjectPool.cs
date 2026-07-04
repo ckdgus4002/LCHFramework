@@ -22,7 +22,7 @@ namespace LCHFramework.Components
             },
             t => t.Show(),
             t => t.Hide(),
-            t => Object.Destroy(t.gameObject)
+            t => t.DestroyGameObject()
         );
         private ObjectPool<Particle> _objectPool;
     }

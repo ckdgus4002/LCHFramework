@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace LCHFramework.Components
 {
-    public class Particle : MonoBehaviour
+    public class Particle : LCHMonoBehaviour
     {
         public Action onStopped;
         
