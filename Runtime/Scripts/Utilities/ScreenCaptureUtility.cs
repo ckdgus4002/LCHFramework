@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace LCHFramework.Utilities
 {
@@ -37,7 +38,7 @@ namespace LCHFramework.Utilities
                 result[i] = new Texture2D(width, height, TextureFormat.RGBA32, false);
                 result[i].SetPixels(screenshot.GetPixels(left, bottom, width, height));
                 result[i].Apply();
-                ObjectUtility.Destroy(screenshot);
+                Object.Destroy(screenshot);
             }
             return result;
         }
