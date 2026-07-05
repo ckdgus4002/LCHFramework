@@ -32,8 +32,7 @@ namespace LCHFramework.Managers
                 
             }, audioSource =>
             {
-                if (!audioSources.Contains(audioSource)) 
-                    audioSources.Add(audioSource);
+                audioSources.Add(audioSource);
                 if (!audioSourceDisposables.ContainsKey(audioSource))
                 {
                     audioSourceDisposables.Add(audioSource, new CompositeDisposable());
