@@ -11,8 +11,8 @@ namespace LCHFramework.Managers
 {
     public class AudioSourcePool : MonoBehaviour
     {
-        private readonly List<AudioSource> audioSources = new();
         private ObjectPool<AudioSource> audioSourcePool;
+        private readonly List<AudioSource> audioSources = new();
         private readonly Dictionary<AudioSource, CompositeDisposable> audioSourceDisposables = new();
         
         
