@@ -57,7 +57,7 @@ namespace LCHFramework.Managers
         {
             Debug.Log($"Request {nameof(GetAsync)}: {uri}", LogColor);
             var request = UnityWebRequest.Get(uri);
-            request.SetRequestHeader(ServerAPIData.ContentTypeName, ServerAPIData.ContentTypeValue.ApplicationJson);
+            request.SetRequestHeader(ServerAPIData.ContentType, ServerAPIData.ContentTypeValue.ApplicationJson);
             header?.ForEach(t => request.SetRequestHeader(t.Key, t.Value));
             request.timeout = timeout;
             return request;

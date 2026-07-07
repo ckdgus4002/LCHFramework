@@ -2,7 +2,7 @@ namespace LCHFramework.Data
 {
     public static class ServerAPIData
     {
-        public const string ContentTypeName = "Content-Type";
+        public const string ContentType = "Content-Type";
         
         public static class ContentTypeValue
         {
