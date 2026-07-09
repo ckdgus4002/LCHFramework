@@ -8,6 +8,13 @@ namespace LCHFramework.Managers
     /// </remarks>
     public static class QualitySettingsChooser
     {
+        [RuntimeInitializeOnLoadMethod]
+        private static void RuntimeInitializeOnLoadMethod()
+        {
+            var level = ChooseQualityLevel();
+            Debug.Log($"[{nameof(QualitySettingsChooser)}] level: {level}.");
+        }
+        
         public static int ChooseQualityLevel()
         {
             var shaderLevel = SystemInfo.graphicsShaderLevel;
@@ -44,7 +51,7 @@ namespace LCHFramework.Managers
             while (level < fantasticIndex && fillneed * levelmult[level + 1] < fillrate)
                 ++level;
             
-            Debug.Log($"{resx}x{resy} need {fillneed} has {fillrate} = {level} level");
+            // Debug.Log($"{resx}x{resy} need {fillneed} has {fillrate} = {level} level");
             
             return level;
         }
