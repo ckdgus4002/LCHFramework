@@ -107,12 +107,13 @@ namespace LCHFramework.Managers
             object value = null;
             try
             {
-                for (var i = 0; i < retryCount && !isSuccess; i++)
+                for (var i = 0; i < retryCount && !isSuccess && !cancellationToken.IsCancellationRequested; i++)
                 {
                     using var request = getRequest.Invoke();
                     if (download.Item1 == DownloadHandlerType.Texture) request.downloadHandler = new DownloadHandlerTexture();
                     else if (download.Item1 == DownloadHandlerType.AudioClipWav) request.downloadHandler = new DownloadHandlerAudioClip(request.uri, AudioType.WAV);
                     else if (download.Item1 == DownloadHandlerType.AudioClipMp3) request.downloadHandler = new DownloadHandlerAudioClip(request.uri, AudioType.MPEG);
+                    
                     var sendWebRequest = request.SendWebRequest();
                     await using var registration = cancellationToken.Register(request.Abort);
 
@@ -131,12 +132,13 @@ namespace LCHFramework.Managers
                     {
                         Debug.Log("Response Success."
                                   + $"\nText: {(download.Item1 is DownloadHandlerType.Json or DownloadHandlerType.Buffer ? request.downloadHandler.text : string.Empty)}"
-                                  + $"\nData: {string.Join("", request.downloadHandler.data)}", LogColor);
+                                  + $"\nData: {request.downloadHandler.data.Length}", LogColor);
                         value = !valueIsRequired ? null
                             : download.Item1 == DownloadHandlerType.Json ? JsonConvert.DeserializeObject<T>(request.downloadHandler.text)
                             : download.Item1 == DownloadHandlerType.Buffer ? request.downloadHandler.data
                             : download.Item1 == DownloadHandlerType.Texture ? DownloadHandlerTexture.GetContent(request)
                             : download.Item1 == DownloadHandlerType.AudioClipWav ? DownloadHandlerAudioClip.GetContent(request)
+                            : download.Item1 == DownloadHandlerType.AudioClipMp3 ? DownloadHandlerAudioClip.GetContent(request)
                             : throw new ArgumentOutOfRangeException(nameof(download.Item1), download.Item1, null);
                     }
                 }
