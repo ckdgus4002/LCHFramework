@@ -19,8 +19,6 @@ namespace LCHFramework.Managers
     
     public class ServerAPIResult<T> : ServerAPIResult
     {
-        public ServerAPIResult(bool isSuccess, string error) : base(isSuccess, error) => Value = default;
-        
         public ServerAPIResult(bool isSuccess, string error, T value) : base(isSuccess, error) => Value = value;
         
         public T Value { get; }
@@ -112,6 +110,9 @@ namespace LCHFramework.Managers
                 for (var i = 0; i < retryCount && !isSuccess; i++)
                 {
                     using var request = getRequest.Invoke();
+                    if (download.Item1 == DownloadHandlerType.Texture) request.downloadHandler = new DownloadHandlerTexture();
+                    else if (download.Item1 == DownloadHandlerType.AudioClipWav) request.downloadHandler = new DownloadHandlerAudioClip(request.uri, AudioType.WAV);
+                    else if (download.Item1 == DownloadHandlerType.AudioClipMp3) request.downloadHandler = new DownloadHandlerAudioClip(request.uri, AudioType.MPEG);
                     var sendWebRequest = request.SendWebRequest();
                     await using var registration = cancellationToken.Register(request.Abort);
 
@@ -128,12 +129,14 @@ namespace LCHFramework.Managers
                         UnityEngine.Debug.LogError($"Response {i + 1} of {retryCount}: {request.result}, {request.error}");
                     else
                     {
-                        Debug.Log($"Response Success.{(string.IsNullOrEmpty(request.downloadHandler.text) && request.downloadHandler.data.IsEmpty() ? "" : $"\nText: {request.downloadHandler.text}\nData: {string.Join("", request.downloadHandler.data)}")}", LogColor);
+                        Debug.Log("Response Success."
+                                  + $"\nText: {(download.Item1 is DownloadHandlerType.Json or DownloadHandlerType.Buffer ? request.downloadHandler.text : string.Empty)}"
+                                  + $"\nData: {string.Join("", request.downloadHandler.data)}", LogColor);
                         value = !valueIsRequired ? null
                             : download.Item1 == DownloadHandlerType.Json ? JsonConvert.DeserializeObject<T>(request.downloadHandler.text)
-                            : download.Item1 == DownloadHandlerType.File ? request.downloadHandler.data
+                            : download.Item1 == DownloadHandlerType.Buffer ? request.downloadHandler.data
                             : download.Item1 == DownloadHandlerType.Texture ? DownloadHandlerTexture.GetContent(request)
-                            : download.Item1 == DownloadHandlerType.AudioClip ? DownloadHandlerAudioClip.GetContent(request)
+                            : download.Item1 == DownloadHandlerType.AudioClipWav ? DownloadHandlerAudioClip.GetContent(request)
                             : throw new ArgumentOutOfRangeException(nameof(download.Item1), download.Item1, null);
                     }
                 }
@@ -153,9 +156,10 @@ namespace LCHFramework.Managers
         public enum DownloadHandlerType
         {
             Json = 0,
-            File,
+            Buffer,
             Texture,
-            AudioClip,
+            AudioClipWav,
+            AudioClipMp3,
         }
     }
 }
