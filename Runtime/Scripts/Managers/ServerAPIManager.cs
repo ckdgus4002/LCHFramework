@@ -9,21 +9,6 @@ using UnityEngine.Networking;
 
 namespace LCHFramework.Managers
 {
-    public class ServerAPIResult
-    {
-        public ServerAPIResult(bool isSuccess, string error) { IsSuccess = isSuccess; Error = error; }
-
-        public bool IsSuccess { get; }
-        public string Error { get; }
-    }
-    
-    public class ServerAPIResult<T> : ServerAPIResult
-    {
-        public ServerAPIResult(bool isSuccess, string error, T value) : base(isSuccess, error) => Value = value;
-        
-        public T Value { get; }
-    }
-    
     public static class ServerAPIManager
     {
         public const int RetryCount = 3;
@@ -83,7 +68,7 @@ namespace LCHFramework.Managers
             
         }, retryCount, cancellationToken);
         
-        public static Awaitable<T> DeleteAsync<T>(Uri uri, IEnumerable<KeyValuePair<string, string>> header = null, int timeout = 0, int retryCount = RetryCount, CancellationToken cancellationToken = default) where T : ServerAPIResult => SendRequestAsync<T>(() =>
+        public static Awaitable<ServerAPIResult> DeleteAsync(Uri uri, IEnumerable<KeyValuePair<string, string>> header = null, int timeout = 0, int retryCount = RetryCount, CancellationToken cancellationToken = default) => SendRequestAsync<ServerAPIResult>(() =>
         {
             Debug.Log($"Request {nameof(DeleteAsync)}: {uri}", LogColor);
             var request = UnityWebRequest.Delete(uri);
@@ -107,7 +92,7 @@ namespace LCHFramework.Managers
             object value = null;
             try
             {
-                for (var i = 0; i < retryCount && !isSuccess && !cancellationToken.IsCancellationRequested; i++)
+                for (var i = 0; !cancellationToken.IsCancellationRequested && !isSuccess && i < retryCount; i++)
                 {
                     using var request = getRequest.Invoke();
                     if (download.Item1 == DownloadHandlerType.Texture) request.downloadHandler = new DownloadHandlerTexture();
@@ -127,19 +112,29 @@ namespace LCHFramework.Managers
                     isSuccess = request.result == UnityWebRequest.Result.Success;
                     error = request.error;
                     if (!isSuccess)
-                        UnityEngine.Debug.LogError($"Response {i + 1} of {retryCount}: {request.result}, {request.error}");
+                    {
+                        var isProtocolError = request.result == UnityWebRequest.Result.ProtocolError;
+                        var isRetry = !cancellationToken.IsCancellationRequested && !isProtocolError && i < retryCount - 1;
+                        UnityEngine.Debug.LogError($"Response {i + 1} of {retryCount}: {request.result}, {request.error}, {(request.downloadHandler is null or DownloadHandlerAudioClip ? string.Empty : request.downloadHandler.text)}");
+                        if (isRetry) await Awaitable.WaitForSecondsAsync(Mathf.Pow(2f, i), cancellationToken).SuppressCancellationThrow();
+                        else break;
+                    }
+                    else if (!valueIsRequired)
+                        Debug.Log("Response Success.", LogColor);
                     else
                     {
                         Debug.Log("Response Success."
                                   + $"\nText: {(download.Item1 is DownloadHandlerType.Json or DownloadHandlerType.Buffer ? request.downloadHandler.text : string.Empty)}"
                                   + $"\nData: {request.downloadHandler.data.Length}", LogColor);
-                        value = !valueIsRequired ? null
-                            : download.Item1 == DownloadHandlerType.Json ? JsonConvert.DeserializeObject<T>(request.downloadHandler.text)
-                            : download.Item1 == DownloadHandlerType.Buffer ? request.downloadHandler.data
-                            : download.Item1 == DownloadHandlerType.Texture ? DownloadHandlerTexture.GetContent(request)
-                            : download.Item1 == DownloadHandlerType.AudioClipWav ? DownloadHandlerAudioClip.GetContent(request)
-                            : download.Item1 == DownloadHandlerType.AudioClipMp3 ? DownloadHandlerAudioClip.GetContent(request)
-                            : throw new ArgumentOutOfRangeException(nameof(download.Item1), download.Item1, null);
+                        value = download.Item1 switch
+                        {
+                            DownloadHandlerType.Json => JsonConvert.DeserializeObject<T>(request.downloadHandler.text),
+                            DownloadHandlerType.Buffer => request.downloadHandler.data,
+                            DownloadHandlerType.Texture => DownloadHandlerTexture.GetContent(request),
+                            DownloadHandlerType.AudioClipWav => DownloadHandlerAudioClip.GetContent(request),
+                            DownloadHandlerType.AudioClipMp3 => DownloadHandlerAudioClip.GetContent(request),
+                            _ => throw new ArgumentOutOfRangeException(nameof(download.Item1), download.Item1, null)
+                        };
                     }
                 }
             }

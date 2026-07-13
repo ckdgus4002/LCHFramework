@@ -9,7 +9,7 @@ namespace LCHFramework.Data
             public const string All = "*/*";
             public const string ApplicationJson = "application/json";
             public const string ApplicationOctetStream = "application/octet-stream";
-            public const string AudioMp3 = "audio/mp3";
+            public const string AudioMp3 = "audio/mpeg";
             public const string AudioWav = "audio/wav";
             public const string ImageJpeg = "image/jpeg";
             public const string ImagePng = "image/png";
