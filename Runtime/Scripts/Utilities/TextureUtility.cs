@@ -1,21 +1,9 @@
 ﻿using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace LCHFramework.Utilities
 {
     public static class TextureUtility
     {
-        public static void Copy(Texture2D source, Texture2D destination)
-        {
-            if (SystemInfo.copyTextureSupport == CopyTextureSupport.None)
-            {
-                destination.SetPixels(source.GetPixels());
-                destination.Apply();
-            }
-            else
-                Graphics.CopyTexture(source, destination);
-        }
-        
         public static Texture2D Composite(Texture2D background, Texture2D overlay, Vector2Int position)
         {
             var backgroundWidth = background.width;
@@ -42,11 +30,13 @@ namespace LCHFramework.Utilities
                     var destination = backgroundPixels[backgroundRow + destinationX];
                     var outA = source.a + destination.a * (1f - source.a);
                     var weight = destination.a * (1f - source.a);
-                    backgroundPixels[backgroundRow + destinationX] = new Color(
+                    backgroundPixels[backgroundRow + destinationX] = new Color
+                    (
                         (source.r * source.a + destination.r * weight) / outA,
                         (source.g * source.a + destination.g * weight) / outA,
                         (source.b * source.a + destination.b * weight) / outA,
-                        outA);
+                        outA
+                    );
                 }
             }
 
