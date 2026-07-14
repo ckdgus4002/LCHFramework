@@ -1,9 +1,8 @@
+using System.Linq;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Assertions;
 #if UNITY_EDITOR
 using UnityEditor.AddressableAssets;
-#else 
-using System.Linq;
 #endif
 
 namespace LCHFramework.Extensions
@@ -12,8 +11,6 @@ namespace LCHFramework.Extensions
     {
         public static string GetAddress(this AssetReference assetReference)
         {
-            Assert.IsNotNull(assetReference);
-            
 #if UNITY_EDITOR
             var assetEntry = AddressableAssetSettingsDefaultObject.Settings == null ? null : AddressableAssetSettingsDefaultObject.Settings.FindAssetEntry(assetReference.AssetGUID);
             return assetEntry == null ? "" : assetEntry.address;
