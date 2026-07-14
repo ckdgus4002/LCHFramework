@@ -5,29 +5,55 @@ namespace LCHFramework.Utilities
 {
     public static class TextureUtility
     {
-        public static void Copy(Texture2D source, Texture2D destination, Rect sourceRect, Vector2 destinationPosition = default)
+        public static void Copy(Texture2D source, Texture2D destination)
         {
             if (SystemInfo.copyTextureSupport == CopyTextureSupport.None)
             {
-                destination.SetPixels((int)destinationPosition.x, (int)destinationPosition.y, (int)sourceRect.width, (int)sourceRect.height,
-                    source.GetPixels((int)sourceRect.x, (int)sourceRect.y, (int)sourceRect.width, (int)sourceRect.height));
+                destination.SetPixels(source.GetPixels());
                 destination.Apply();
-            } 
+            }
             else
-                Graphics.CopyTexture(source, 0, 0, (int)sourceRect.x, (int)sourceRect.y, (int)sourceRect.width, (int)sourceRect.height, 
-                    destination, 0, 0, (int)destinationPosition.x, (int)destinationPosition.y);
+                Graphics.CopyTexture(source, destination);
         }
         
-        public static void FillWithTintColor(Texture2D texture2D, Color tintColor)
+        public static Texture2D Composite(Texture2D background, Texture2D overlay, Vector2Int position)
         {
-            var pixels  = texture2D.GetPixels();
-            for (var i = 0; i < pixels.Length; i++) {
-                pixels[i].r *= tintColor.r;
-                pixels[i].g *= tintColor.g;
-                pixels[i].b *= tintColor.b;
+            var backgroundWidth = background.width;
+            var backgroundHeight = background.height;
+            var backgroundPixels = background.GetPixels();
+            var overlayWidth = overlay.width;
+            var overlayHeight = overlay.height;
+            var overlayPixels = overlay.GetPixels();
+            for (var y = 0; y < overlayHeight; y++)
+            {
+                var destinationY = y + position.y;
+                if (destinationY < 0 || backgroundHeight <= destinationY) continue;
+
+                var backgroundRow = destinationY * backgroundWidth;
+                var overlayRow = y * overlayWidth;
+                for (var x = 0; x < overlayWidth; x++)
+                {
+                    var destinationX = x + position.x;
+                    if (destinationX < 0 || backgroundWidth <= destinationX) continue;
+
+                    var source = overlayPixels[overlayRow + x];
+                    if (source.a < float.Epsilon) continue;
+                    
+                    var destination = backgroundPixels[backgroundRow + destinationX];
+                    var outA = source.a + destination.a * (1f - source.a);
+                    var weight = destination.a * (1f - source.a);
+                    backgroundPixels[backgroundRow + destinationX] = new Color(
+                        (source.r * source.a + destination.r * weight) / outA,
+                        (source.g * source.a + destination.g * weight) / outA,
+                        (source.b * source.a + destination.b * weight) / outA,
+                        outA);
+                }
             }
-            texture2D.SetPixels(pixels);
-            texture2D.Apply();
+
+            var result = new Texture2D(backgroundWidth, backgroundHeight, TextureFormat.RGBA32, false);
+            result.SetPixels(backgroundPixels);
+            result.Apply();
+            return result;
         }
     }
 }
