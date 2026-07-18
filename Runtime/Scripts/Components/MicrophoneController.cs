@@ -23,7 +23,7 @@ namespace LCHFramework.Components
         public AudioClip RecordedAudioClipOrNull { get; private set; }
         
         
-        protected virtual string DeviceName => Microphone.devices.Length < 1 ? string.Empty : Microphone.devices[0];
+        public virtual string DeviceName => Microphone.devices.Length < 1 ? string.Empty : Microphone.devices[0];
         
         protected virtual int SampleRate => AudioSettings.outputSampleRate;
         
