@@ -58,8 +58,17 @@ namespace LCHFramework.Extensions
             } while (true);
         }
         
+        public static bool TryFind(this Transform transform, string n, out Transform result)
+            => (result = transform.Find(n)) != null;
+        
+        public static bool TryFindInChildren(this Transform transform, string n, out Transform result)
+            => (result = transform.FindInChildren(n)) != null;
+        
         public static Transform FindInChildren(this Transform transform, string n)
             => transform.FindInChildren(childName => n == childName);
+        
+        public static bool TryFindInChildren(this Transform transform, Func<string, bool> predicate, out Transform result)
+            => (result = transform.FindInChildren(predicate)) != null;
         
         public static Transform FindInChildren(this Transform transform, Func<string, bool> predicate)
         {
