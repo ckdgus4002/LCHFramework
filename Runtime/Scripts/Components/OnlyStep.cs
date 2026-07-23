@@ -19,7 +19,7 @@ namespace LCHFramework.Components
         {
             yield return base.Start();
             
-            MessageBroker.Default.Receive<OnCurrentStepChangedMessage>().Subscribe(_ => OnCurrentStepIndexChanged()).AddTo(gameObject);
+            MessageBroker.Default.Receive<OnCurrentStepChangedMessage>().Subscribe(_ => OnCurrentStepIndexChanged()).AddTo(this);
             
             Refresh();
         }
