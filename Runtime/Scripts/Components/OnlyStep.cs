@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Linq;
 using LCHFramework.Managers.StepManager;
@@ -20,26 +19,25 @@ namespace LCHFramework.Components
         {
             yield return base.Start();
             
-            MessageBroker.Default.Receive<OnCurrentStepChangedMessage>().Subscribe(message =>
-            {
-                var prevStepIndex = message.prevOrNull == null ? -1 : message.prevOrNull.Index;
-                OnCurrentStepIndexChanged(prevStepIndex, message.current.Index);
-                
-            }).AddTo(gameObject);
+            MessageBroker.Default.Receive<OnCurrentStepChangedMessage>().Subscribe(_ => OnCurrentStepIndexChanged()).AddTo(gameObject);
+            
+            Refresh();
         }
         
         
         
-        private void OnCurrentStepIndexChanged(int prevStepIndex, int currentStepIndex)
-            => OnCurrentStepIndexChanged(() => prevStepIndex, () => currentStepIndex);
+        private void OnCurrentStepIndexChanged()
+            => Refresh();
         
-        private void OnCurrentStepIndexChanged(Func<int> prevStepIndex, Func<int> currentStepIndex)
+        public void Refresh()
         {
-            var isShow = steps.Any(t => t.Index == currentStepIndex.Invoke());
+            var currentStepIndex = StepManager.Instance.CurrentStep.Index;
+            var isShow = steps.Any(t => t.Index == currentStepIndex);
             
             if (isShow) Show(); else Hide();
             
-            (isShow ? onShow : onHide)?.Invoke(prevStepIndex.Invoke(), currentStepIndex.Invoke());
+            var prevStepIndex = StepManager.Instance.PrevStepOrNull == null ? -1 : StepManager.Instance.PrevStepOrNull.Index;
+            (isShow ? onShow : onHide)?.Invoke(prevStepIndex, currentStepIndex);
         }
         
         private void Show() => gameObject.SetActive(true);
