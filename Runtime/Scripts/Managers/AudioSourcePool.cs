@@ -24,43 +24,34 @@ namespace LCHFramework.Managers
         
         private void Awake()
         {
-            audioSourcePool = new ObjectPool<AudioSource>(() => 
+            audioSourcePool = new ObjectPool<AudioSource>(() =>
             {
-                var audioSource = new GameObject().AddComponent<AudioSource>(); 
+                var audioSource = new GameObject().AddComponent<AudioSource>();
                 audioSource.transform.SetParent(transform);
                 return audioSource;
-                
+
             }, audioSource =>
             {
                 audioSources.Add(audioSource);
                 if (!audioSourceDisposables.ContainsKey(audioSource))
                 {
                     audioSourceDisposables.Add(audioSource, new CompositeDisposable());
-                    audioSourceDisposables[audioSource].Add(SoundManager.MasterVolume.Subscribe(masterVolume => audioSource.volume = GetPlayVolume() * masterVolume * SoundManager.LocalVolumes[name].Value));
-                    audioSourceDisposables[audioSource].Add(SoundManager.LocalVolumes[name].Subscribe(localVolume => audioSource.volume = GetPlayVolume() * SoundManager.MasterVolume.Value * localVolume));
+                    audioSourceDisposables[audioSource].Add(SoundManager.MasterVolume.Subscribe(masterVolume =>
+                        audioSource.volume = GetPlayVolume() * masterVolume * SoundManager.LocalVolumes[name].Value));
+                    audioSourceDisposables[audioSource].Add(SoundManager.LocalVolumes[name].Subscribe(localVolume =>
+                        audioSource.volume = GetPlayVolume() * SoundManager.MasterVolume.Value * localVolume));
+
                     float GetPlayVolume()
                     {
                         var split = audioSource.name.Split('|');
                         return split.Length < 2 ? audioSource.volume : Convert.ToSingle(split[1]);
                     }
                 }
+
                 SetAudioSourceTimeScale(audioSource, SoundManager.TimeScale);
                 audioSource.SetActive(true);
-                
-            }, audioSource =>
-            {
-                audioSources.Remove(audioSource);
-                if (audioSourceDisposables.Remove(audioSource, out var disposables)) disposables.Clear();
-                if (audioSource == null) return;
-                audioSource.SetActive(false);
-                
-            }, audioSource =>
-            {
-                audioSources.Remove(audioSource);
-                if (audioSourceDisposables.Remove(audioSource, out var disposables)) disposables.Clear();
-                if (audioSource == null) return;
-                Destroy(audioSource.gameObject);
-            });
+
+            }, ReleaseAudioSource, ClearAudioSource);
         }
         
         
@@ -81,28 +72,27 @@ namespace LCHFramework.Managers
                 var audioSource = audioSourcePool.Get();
                 if (isPlayingAudioSources.IsEmpty()) return PlayAudioSource(audioSource, audioClip, volume, loop, position, canFadeAudioSourceVolume);
                 
-                isPlayingAudioSources.ForEach((t, i) => StartCoroutine(FadeAudioSourceVolumeCor(t, 0, callback: i < isPlayingAudioSources.Length - 1 ? null : () => 
+                isPlayingAudioSources.ForEach((t, i) => StartCoroutine(SoundManager.FadeAudioSourceVolumeCor(t, audioSource.volume, 0f, callback: () =>
                 {
-                    isPlayingAudioSources.ForEach(StopAudioSource);
-                    PlayAudioSource(audioSource, audioClip, volume, loop, position, canFadeAudioSourceVolume);
+                    StartCoroutine(ReleaseAudioSourcePoolCor(audioSource, () => { if (isPlayingAudioSources.Length - 1 <= i)
+                    {
+                        PlayAudioSource(audioSource, audioClip, volume, loop, position, canFadeAudioSourceVolume);
+                    }}));
                 })));
                 return new SoundPlayResult { isFail = false, isSuccess = true, audioClipLength = audioClip.length, audioSource = audioSource };
             }
             else if (audioPlayType == AudioPlayType.StoppableAudio && !canFadeAudioSourceVolume)
             {
                 isPlayingAudioSources.ForEach(StopAudioSource);
-                return PlayAudioSource(audioClip, volume, loop, position, canFadeAudioSourceVolume);
+                return PlayAudioSource(audioSourcePool.Get(), audioClip, volume, loop, position, canFadeAudioSourceVolume);
             }
             else if (audioPlayType == AudioPlayType.SkippableAudio && !isPlaying) 
-                return PlayAudioSource(audioClip, volume, loop, position, canFadeAudioSourceVolume);
+                return PlayAudioSource(audioSourcePool.Get(), audioClip, volume, loop, position, canFadeAudioSourceVolume);
             else if (audioPlayType == AudioPlayType.NestableAudio)
-                return PlayAudioSource(audioClip, volume, loop, position, canFadeAudioSourceVolume);
+                return PlayAudioSource(audioSourcePool.Get(), audioClip, volume, loop, position, canFadeAudioSourceVolume);
             else
                 return SoundPlayResult.fail;
         }
-        
-        private SoundPlayResult PlayAudioSource(AudioClip audioClip, float volume, bool loop, Vector3 position, bool canFadeAudioSourceVolume)
-            => PlayAudioSource(audioSourcePool.Get(), audioClip, volume, loop, position, canFadeAudioSourceVolume);
         
         private SoundPlayResult PlayAudioSource(AudioSource audioSource, AudioClip audioClip, float volume, bool loop, Vector3 position, bool canFadeAudioSourceVolume)
         {
@@ -113,37 +103,34 @@ namespace LCHFramework.Managers
             audioSource.Play();
             volume *= SoundManager.MasterVolume.Value * SoundManager.LocalVolumes[name].Value;
             if (canFadeAudioSourceVolume)
-                StartCoroutine(FadeAudioSourceVolumeCor(audioSource, volume, callback: () => StartCoroutine(ReleaseAudioSourceCor(audioSource, ReleaseAudioSourcePredicate))));
+                StartCoroutine(SoundManager.FadeAudioSourceVolumeCor(audioSource, 0f, volume, callback: () => StartCoroutine(ReleaseAudioSourcePoolCor(audioSource))));
             else
             {
                 audioSource.volume = volume;
-                StartCoroutine(ReleaseAudioSourceCor(audioSource, ReleaseAudioSourcePredicate));
+                StartCoroutine(ReleaseAudioSourcePoolCor(audioSource));
             }
             
             return new SoundPlayResult { isFail = false, isSuccess = true, audioClipLength = audioClip.length, audioSource = audioSource };
         }
         
-        private IEnumerator FadeAudioSourceVolumeCor(AudioSource audioSource, float volume, float duration = SoundManager.FadeDuration, Action callback = null)
+        
+        
+        private IEnumerator ReleaseAudioSourcePoolCor(AudioSource audioSourceOrNull, Action callback = null)
         {
-            var startVolume = audioSource.volume;
-            var startTime = Time.time;
-            var endTime = startTime + duration;
-            while (audioSource != null && Time.time < endTime)
-            {
-                audioSource.volume = Mathf.Lerp(startVolume, volume, (Time.time - startTime) / (endTime - startTime));
-                yield return null;
-            }
-            if (audioSource != null) audioSource.volume = volume;
+            Func<bool> predicate = () => audioSourceOrNull == null || (!audioSourceOrNull.isPlaying && audioSourceOrNull.timeSamples < 1);
+            yield return new WaitUntil(predicate.Invoke);
+            
+            if (audioSourceOrNull != null) audioSourcePool.Release(audioSourceOrNull);
+            else ReleaseAudioSource(audioSourceOrNull);
             callback?.Invoke();
         }
         
-        private IEnumerator ReleaseAudioSourceCor(AudioSource audioSource, Func<AudioSource, bool> predicate)
+        public void ClearAudioSourcePool()
         {
-            yield return new WaitUntil(() => predicate.Invoke(audioSource));
-            audioSourcePool.Release(audioSource);
+            StopAllCoroutines();
+            audioSourcePool.Clear();
+            foreach (var audioSource in audioSources) ClearAudioSource(audioSource);
         }
-        
-        private bool ReleaseAudioSourcePredicate(AudioSource audioSource) => audioSource == null || (!audioSource.isPlaying && audioSource.timeSamples < 1);
         
         
         
@@ -159,6 +146,18 @@ namespace LCHFramework.Managers
         
         public void UnPauseAudioSource(AudioSource audioSource) => audioSource.UnPause();
         
-        public void ClearAudioSourcePool() => audioSourcePool.Clear();
+        private void ReleaseAudioSource(AudioSource audioSource)
+        {
+            audioSources.Remove(audioSource);
+            if (audioSourceDisposables.Remove(audioSource, out var disposables)) disposables.Clear();
+            audioSource.SetActive(false);
+        }
+        
+        private void ClearAudioSource(AudioSource audioSource)
+        {
+            audioSources.Remove(audioSource);
+            if (audioSourceDisposables.Remove(audioSource, out var disposables)) disposables.Clear();
+            Destroy(audioSource.gameObject);
+        }
     }
 }
