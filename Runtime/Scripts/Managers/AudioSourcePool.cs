@@ -128,7 +128,7 @@ namespace LCHFramework.Managers
         {
             StopAllCoroutines();
             audioSourcePool.Clear();
-            foreach (var audioSource in audioSources) ClearAudioSource(audioSource);
+            while (audioSources.Exists()) ClearAudioSource(audioSources[0]);
         }
         
         
