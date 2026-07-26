@@ -58,17 +58,21 @@ namespace LCHFramework.Components
         
         public static Coroutine RestartCoroutine(MonoBehaviour monoBehaviour, Coroutine stopCoroutine, IEnumerator startCoroutine)
         {
-            if (stopCoroutine != null) monoBehaviour.StopCoroutine(stopCoroutine);
+            StopCoroutine(monoBehaviour, stopCoroutine);
             
             return monoBehaviour.StartCoroutine(startCoroutine);
         }
         
         public static Coroutine RestartCoroutine(MonoBehaviour monoBehaviour, IEnumerable<Coroutine> stopCoroutines, IEnumerator startCoroutine)
         {
-            foreach (var stopCoroutine in stopCoroutines) if (stopCoroutine != null) monoBehaviour.StopCoroutine(stopCoroutine);
+            StopCoroutines(monoBehaviour, stopCoroutines);
             
             return monoBehaviour.StartCoroutine(startCoroutine);
         }
+        
+        public static void StopCoroutines(MonoBehaviour monoBehaviour, IEnumerable<Coroutine> stopCoroutines) { foreach (var stopCoroutine in stopCoroutines) StopCoroutine(monoBehaviour, stopCoroutine); }
+        
+        public static void StopCoroutine(MonoBehaviour monoBehaviour, Coroutine stopCoroutine) { if (stopCoroutine != null) monoBehaviour.StopCoroutine(stopCoroutine); }
         
         
         

@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using LCHFramework.Extensions;
 using UniRx;
@@ -35,9 +37,6 @@ namespace LCHFramework.Managers
         public const float DefaultVolume = 1f;
         public const bool DefaultLoop = false;
         public const float FadeDuration = 1f;
-        
-        
-        
         public static readonly ReactiveProperty<float> MasterVolume = new() { Value = DefaultVolume };
         public static readonly Dictionary<string, ReactiveProperty<float>> LocalVolumes = new();
         
@@ -57,6 +56,19 @@ namespace LCHFramework.Managers
         
         [RuntimeInitializeOnLoadMethod]
         private static void RuntimeInitializeOnLoadMethod() => CreateGameObjectIfInstanceIsNull();
+        
+        public static IEnumerator FadeAudioSourceVolumeCor(AudioSource audioSource, float startVolume, float endVolume, float duration = FadeDuration, Action callback = null)
+        {
+            var startTime = Time.time;
+            var endTime = startTime + duration;
+            while (audioSource != null && Time.time < endTime)
+            {
+                audioSource.volume = Mathf.Lerp(startVolume, endVolume, (Time.time - startTime) / (endTime - startTime));
+                yield return null;
+            }
+            if (audioSource != null) audioSource.volume = endVolume;
+            callback?.Invoke();
+        }
         
         
         
