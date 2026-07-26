@@ -60,13 +60,12 @@ namespace LCHFramework.Managers
         
         private void SetAudioSourceTimeScale(AudioSource audioSource, float timeScale) { if (audioSource != null) audioSource.pitch = timeScale; }
         
-        public SoundPlayResult Play(AudioClip audioClip, float volume, bool loop, Vector3 position, AudioPlayType audioPlayType)
+        public SoundPlayResult Play(AudioClip audioClip, float volume, bool loop, Vector3 position, AudioPlayType audioPlayType, bool canFadeAudioSourceVolume)
         {
             if (audioClip == null) return SoundPlayResult.fail;
             
             var isPlayingAudioSources = PlayingAudioSources.ToArray();
             var isPlaying = IsPlaying(isPlayingAudioSources);
-            var canFadeAudioSourceVolume = name == SoundManager.Bgm;
             if (audioPlayType == AudioPlayType.StoppableAudio && canFadeAudioSourceVolume)
             {
                 var audioSource = audioSourcePool.Get();
