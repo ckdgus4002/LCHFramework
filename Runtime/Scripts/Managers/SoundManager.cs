@@ -60,7 +60,7 @@ namespace LCHFramework.Managers
         public static IEnumerator FadeAudioSourceVolumeCor(AudioSource audioSource, float startVolume, float endVolume, float duration = FadeDuration, Action callback = null)
         {
             var startTime = Time.time;
-            var endTime = startTime + duration;
+            var endTime = startTime + Mathf.Min(audioSource.clip.length, duration);
             while (audioSource != null && Time.time < endTime)
             {
                 audioSource.volume = Mathf.Lerp(startVolume, endVolume, (Time.time - startTime) / (endTime - startTime));
