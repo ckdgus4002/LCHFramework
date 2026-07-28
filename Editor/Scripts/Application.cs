@@ -8,6 +8,9 @@ namespace LCHFramework.Editor
 {
     public class Application
     {
+        public static Assembly Assembly => _assembly ??= typeof(Application).Assembly;
+        private static Assembly _assembly;
+        
         public static IEnumerable<BuildTargetGroup> PlatformGroups
         {
             get
