@@ -136,25 +136,20 @@ namespace LCHFramework
         
         public static bool IsIPad => UnityEngine.Application.platform == RuntimePlatform.IPhonePlayer && SystemInfo.deviceModel.Contains("iPad", StringComparison.OrdinalIgnoreCase);
         
-        public static bool IsTablet
+        public static bool IsLargeScreenMobile
         {
             get
             {
-                if (UnityEngine.Application.isEditor) return false;
+                if (!UnityEngine.Device.Application.isMobilePlatform) return false;
 
-                var logicalScale = UnityEngine.Application.platform switch
-                {
-                    // 160dpi 기준 1dp = 1px.
-                    RuntimePlatform.Android => UnityEngine.Screen.dpi <= 0 ? 1f : UnityEngine.Screen.dpi / 160f,                                 
-                    // Retina 기준 대체로 1pt = 2px, 일부 기기는 3px, iPhone non-Retina 기준 163ppi.
-                    RuntimePlatform.IPhonePlayer => UnityEngine.Screen.dpi <= 0 ? 2f : Mathf.Max(1f, Mathf.Round(UnityEngine.Screen.dpi / 163f)),
-                    _ => 1f
-                };
-                var smallestWindowDp = Mathf.Min(Screen.width / logicalScale, Screen.height / logicalScale);
-                return 600f <= smallestWindowDp;
+                var logicalScale = UnityEngine.Device.Application.platform == RuntimePlatform.Android
+                            ? UnityEngine.Device.Screen.dpi <= 0 ? 1f : UnityEngine.Device.Screen.dpi / 160f
+                            : UnityEngine.Device.Screen.dpi <= 0 ? 2f : Mathf.Max(1f, Mathf.Round(UnityEngine.Device.Screen.dpi / 163f));
+                var smallestScreenWidthDp = Mathf.FloorToInt(Mathf.Min(UnityEngine.Device.Screen.width, UnityEngine.Device.Screen.height) / logicalScale);
+                return 600f <= smallestScreenWidthDp;
             }
         }
-
+        
         public static bool IsRecording
         {
             get
