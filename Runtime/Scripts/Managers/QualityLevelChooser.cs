@@ -8,13 +8,6 @@ namespace LCHFramework.Managers
     /// </remarks>
     public static class QualitySettingsChooser
     {
-        [RuntimeInitializeOnLoadMethod]
-        private static void RuntimeInitializeOnLoadMethod()
-        {
-            var level = ChooseQualityLevel();
-            Debug.Log($"[{nameof(QualitySettingsChooser)}] level: {level}.");
-        }
-        
         public static int ChooseQualityLevel()
         {
             var shaderLevel = SystemInfo.graphicsShaderLevel;

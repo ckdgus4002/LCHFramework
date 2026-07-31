@@ -34,6 +34,10 @@ namespace LCHFramework
             var lchFrameworkOrNull = Resources.Load<LCHFramework>(nameof(LCHFramework));
             if (lchFrameworkOrNull == null) CreateGameObjectIfInstanceIsNull();
             else InstantiateIfInstanceIsNull(() => lchFrameworkOrNull);
+            
+            var isLargeScreen = Application.IsLargeScreenMobile;
+            var qualitySettingLevel = QualitySettingsChooser.ChooseQualityLevel();
+            Debug.Log($"[{nameof(LCHFramework)}] {nameof(isLargeScreen)}: {isLargeScreen}, {nameof(qualitySettingLevel)}: {qualitySettingLevel}.");
         }
         
         public static Coroutine PlayAnimations<T>(IEnumerable<(float, T)> animations, Action<int, T> action, bool loop = false) => PlayAnimations(Instance, animations, action, loop);
