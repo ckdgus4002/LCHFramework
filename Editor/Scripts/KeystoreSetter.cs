@@ -15,7 +15,7 @@ namespace LCHFramework.Editor
         
         private static bool Enabled
         {
-            get => EditorPrefs.GetBool(EnabledPrefsKey, TypeCache.GetTypesDerivedFrom<IKeystoreSetter>().Any(t => t.Assembly != Application.Assembly));
+            get => EditorPrefs.GetBool(EnabledPrefsKey, TypeCache.GetTypesDerivedFrom<IKeystoreSetter>().All(t => t.Assembly == Application.Assembly));
             set => EditorPrefs.SetBool(EnabledPrefsKey, value);
         }
         
