@@ -34,6 +34,11 @@ namespace LCHFramework.Managers
                     Orientation.Value = orientationIndex is < 1 or > 4 ? Orientation.Value : (ScreenOrientation)orientationIndex;
                     break;
                 }
+                default:
+                {
+                    Orientation.Value = ScreenOrientation.Unknown;
+                    break;
+                }
             }
         }
     }
