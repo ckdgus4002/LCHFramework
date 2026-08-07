@@ -30,18 +30,22 @@ namespace LCHFramework.Managers
                 {
                     var isScreenAspectRatioOne = Mathf.Approximately(screenAspectRatio, 1);
                     var isPreferredLandscapeOrientation = IsPreferredLandscapeOrientation;
-                    Value.Value = screenAspectRatio < 1 || (isScreenAspectRatioOne && isPreferredLandscapeOrientation != null && !(bool)isPreferredLandscapeOrientation) ? ScreenOrientation.Portrait
+                    SetScreenOrientation(screenAspectRatio < 1 || (isScreenAspectRatioOne && isPreferredLandscapeOrientation != null && !(bool)isPreferredLandscapeOrientation) ? ScreenOrientation.Portrait
                         : isScreenAspectRatioOne && isPreferredLandscapeOrientation == null ? ScreenOrientation.Unknown
-                        : ScreenOrientation.LandscapeLeft;
+                        : ScreenOrientation.LandscapeLeft);
                     break;
                 }
                 case false:
                 {
                     var orientationIndex = UnityEngine.Screen.orientation != UnityEngine.ScreenOrientation.AutoRotation ? (int)UnityEngine.Screen.orientation : (int)Input.deviceOrientation;
-                    Value.Value = orientationIndex is < 1 or > 4 ? Value.Value : (ScreenOrientation)orientationIndex;
+                    SetScreenOrientation((int)ScreenOrientation.LandscapeRight < orientationIndex ? Value.Value : (ScreenOrientation)orientationIndex);
                     break;
                 }
             }
         }
+        
+        
+        
+        protected virtual void SetScreenOrientation(ScreenOrientation value) => Value.Value = value;
     }
 }
