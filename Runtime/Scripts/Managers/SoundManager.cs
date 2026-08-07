@@ -27,7 +27,11 @@ namespace LCHFramework.Managers
         public AudioSource audioSource;
     }
     
-    public class SoundManager : MonoSingleton<SoundManager>
+    public class SoundManager : SoundManager<SoundManager>
+    {
+    }
+    
+    public class SoundManager<T> : MonoSingleton<T> where T : SoundManager<T>
     {
         public const string Bgm = "Bgm";
         public const string Narration = "Narration";
@@ -53,9 +57,6 @@ namespace LCHFramework.Managers
         private static float _timeScale;
         
         
-        
-        [RuntimeInitializeOnLoadMethod]
-        private static void RuntimeInitializeOnLoadMethod() => CreateGameObjectIfInstanceIsNull();
         
         public static IEnumerator FadeAudioSourceVolumeCor(AudioSource audioSource, float startVolume, float endVolume, float duration = FadeDuration, Action callback = null)
         {
