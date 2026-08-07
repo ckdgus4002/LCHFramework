@@ -6,7 +6,11 @@ using UnityEngine;
 
 namespace LCHFramework.Managers.UI
 {
-    public class Spinner: MonoSingleton<Spinner>
+    public class Spinner : Spinner<Spinner>
+    {
+    }
+    
+    public class Spinner<T>: MonoSingleton<T> where T : Spinner<T>
     {
         private CancellationTokenSource showCancellationTokenSource;
         

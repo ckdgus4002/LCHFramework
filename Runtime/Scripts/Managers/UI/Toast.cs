@@ -5,8 +5,12 @@ using UnityEngine;
 
 namespace LCHFramework.Managers.UI
 {
+    public class Toast : Toast<Toast>
+    {
+    }
+    
     [RequireComponent(typeof(CanvasGroup))]
-    public class Toast : MonoSingleton<Toast>
+    public class Toast<T> : MonoSingleton<T> where T : Toast<T>
     {
         public const float DefaultFadeInDuration = 0.5f;
         public const float DefaultFadeOutDuration = 0.5f;

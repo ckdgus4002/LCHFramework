@@ -5,9 +5,13 @@ using UnityEngine.UI;
 
 namespace LCHFramework.Managers.UI
 {
+    public class MessageBox : MessageBox<MessageBox>
+    {
+    }
+    
     [RequireComponent(typeof(Canvas))]
     [RequireComponent(typeof(CanvasScaler))]
-    public class MessageBox : MonoSingleton<MessageBox>
+    public class MessageBox<T> : MonoSingleton<T> where T : MessageBox<T>
     {
         private GameObject wrapper;
         

@@ -9,8 +9,12 @@ using UnityEngine.UI;
 
 namespace LCHFramework.Managers.UI
 {
+    public class Loading : Loading<Loading>
+    {
+    }
+    
     [RequireComponent(typeof(CanvasGroup))]
-    public class Loading : MonoSingleton<Loading>, ILoadSceneUI
+    public class Loading<T> : MonoSingleton<T>, ILoadSceneUI where T : Loading<T>
     {
         public const float DefaultFadeInDuration = 0.5f;
         public const float DefaultFadeOutDuration = 0.5f;
