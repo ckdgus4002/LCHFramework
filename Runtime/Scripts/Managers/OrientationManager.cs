@@ -19,6 +19,8 @@ namespace LCHFramework.Managers
         
         protected virtual bool? IsPreferredLandscapeOrientation => LCHFramework.InstanceIsNull ? null : LCHFramework.Instance.isPreferredLandscapeOrientation;
         
+        protected int OrientationIndex => (int)Orientation.Value;
+        
         
         
         protected virtual void Update()
@@ -37,8 +39,8 @@ namespace LCHFramework.Managers
                 }
                 case false:
                 {
-                    var orientationIndex = UnityEngine.Screen.orientation != UnityEngine.ScreenOrientation.AutoRotation ? (int)UnityEngine.Screen.orientation : (int)Input.deviceOrientation;
-                    Orientation.Value = orientationIndex is < 1 or > 4 ? Orientation.Value : (ScreenOrientation)orientationIndex;
+                    var unityEnginOrientationIndex = UnityEngine.Screen.orientation != UnityEngine.ScreenOrientation.AutoRotation ? (int)UnityEngine.Screen.orientation : (int)Input.deviceOrientation;
+                    Orientation.Value = unityEnginOrientationIndex is < 1 or > 4 ? Orientation.Value : (ScreenOrientation)unityEnginOrientationIndex;
                     break;
                 }
             }
