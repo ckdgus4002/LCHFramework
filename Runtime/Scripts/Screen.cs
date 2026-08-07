@@ -1,4 +1,3 @@
-using UnityEditor;
 using UnityEngine;
 
 namespace LCHFramework
@@ -19,29 +18,9 @@ namespace LCHFramework
         public static Vector2Int Size => new(width, height);
         
         public static Vector2 HalfSize => new(width * 0.5f, height * 0.5f);
+
+        public static int width => UnityEngine.Screen.width;
         
-        public static int width
-        {
-            get
-            {
-#if UNITY_EDITOR
-                return (int)Handles.GetMainGameViewSize().x;
-#else
-                return UnityEngine.Screen.width;
-#endif
-            }
-        }
-        
-        public static int height
-        {
-            get
-            {
-#if UNITY_EDITOR
-                return (int)Handles.GetMainGameViewSize().y;
-#else
-                return UnityEngine.Screen.height;
-#endif
-            }
-        }
+        public static int height => UnityEngine.Screen.height;
     }
 }
