@@ -22,7 +22,7 @@ namespace LCHFramework.Managers.StepManager
     public struct PassCurrentStepMessage
     {
         public PassCurrentStepMessage(Func<IStepManager, bool> validate = null) : this() { Validate = validate; }
-
+        
         public Func<IStepManager, bool> Validate { get => _validate ??= _ => true; private set => _validate = value; }
         private Func<IStepManager, bool> _validate;
     }
