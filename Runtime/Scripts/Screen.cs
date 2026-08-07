@@ -6,7 +6,7 @@ namespace LCHFramework
     public enum ScreenOrientation
     {
         Unknown,
-        Portrait,
+        Portrait = 1,
         PortraitUpsideDown,
         LandscapeLeft,
         LandscapeRight,
