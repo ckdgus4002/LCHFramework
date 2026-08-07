@@ -3,14 +3,15 @@ using UnityEngine;
 
 namespace LCHFramework.Managers
 {
-    [ExecuteAlways]
-    public class OrientationManager : MonoSingleton<OrientationManager>
+    public class OrientationManager : OrientationManager<OrientationManager>
     {
         [RuntimeInitializeOnLoadMethod]
         private static void RuntimeInitializeOnLoadMethod() => CreateGameObjectIfInstanceIsNull();
-        
-        
-        
+    }
+    
+    [ExecuteAlways]
+    public class OrientationManager<T> : MonoSingleton<T> where T : OrientationManager<T>
+    {
         protected override bool IsDontDestroyOnLoad => transform.parent == null;
         
         public override bool IsDestroyPrevInstance => false;
