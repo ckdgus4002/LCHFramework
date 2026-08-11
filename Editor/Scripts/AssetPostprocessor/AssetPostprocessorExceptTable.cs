@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using LCHFramework.Editor.Utilities;
 using LCHFramework.Extensions;
+using UnityEditor;
 using UnityEngine;
 
 namespace LCHFramework.Editor
@@ -34,17 +37,29 @@ namespace LCHFramework.Editor
         
         
         
-        public bool IsExclude(string assetPath) => !exceptAssetPathPrefix.IsEmpty() && exceptAssetPathPrefix.Any(t => new ExceptAssetPrefix(t).IsExclude(assetPath));
+        public bool IsExclude(string assetPath) => !exceptAssetPathPrefix.IsEmpty() && exceptAssetPathPrefix.Any(t => new ExceptAssetPrefix(t, this).IsExclude(assetPath));
         
         
         
         public class ExceptAssetPrefix
         {
-            public ExceptAssetPrefix(string value) { t = value; }
+            public ExceptAssetPrefix(string value, AssetPostprocessorExceptTable assetPostprocessorExceptTableOrNull = null)
+            {
+                this.value = value;
+                this.assetPostprocessorExceptTableOrNull = assetPostprocessorExceptTableOrNull;
+            }
             
-            private readonly string t;
+            private readonly string value;
+            private readonly AssetPostprocessorExceptTable assetPostprocessorExceptTableOrNull;
             
-            public bool IsExclude(string b) => t.Length <= b.Length && t == b[..t.Length];
+            public bool IsExclude(string strB)
+            {
+                var strA = value;
+                if (strA[..6] != "Assets" && assetPostprocessorExceptTableOrNull != null)
+                    strA = $"{Path.GetDirectoryName(AssetDatabase.GetAssetPath(assetPostprocessorExceptTableOrNull))}/{strA}";
+                
+                return strA.Length <= strB.Length && string.Compare(strA, strB[..strA.Length], StringComparison.OrdinalIgnoreCase) == 0;
+            }
         }
     }
 }
