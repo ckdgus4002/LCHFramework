@@ -191,15 +191,17 @@ namespace LCHFramework
             if (!Permission.HasUserAuthorizedPermission(permission))
             {
                 var callbacks = new PermissionCallbacks();
-                var result = -1;
-                callbacks.PermissionGranted += _ => result = 1;
-                callbacks.PermissionDenied += _ => result = 2;
+                bool? isGranted = null;
+                callbacks.PermissionGranted += _ => isGranted = true;
+                callbacks.PermissionDenied += _ => isGranted = false;
+                callbacks.PermissionRequestDismissed += _ => isGranted = false;
                 Permission.RequestUserPermission(permission, callbacks);
-                await AwaitableUtility.WaitUntil(() => -1 < result);
+                await AwaitableUtility.WaitUntil(() => isGranted != null);
+
+                if (!isGranted!.Value) return false;
                 
-                var isGranted = result == 1;
-                if (isGranted) await Awaitable.NextFrameAsync();
-                return isGranted;
+                await Awaitable.NextFrameAsync();
+                return true;
             }
             else
                 return true;
@@ -211,6 +213,19 @@ namespace LCHFramework
             }
             else
                 return true;
+#endif
+        }
+        
+        public static void OpenAppSettings()
+        {
+#if !UNITY_EDITOR && UNITY_ANDROID
+            using var intent = new AndroidJavaObject("android.content.Intent", "android.settings.APPLICATION_DETAILS_SETTINGS");
+            using var uri = new AndroidJavaClass("android.net.Uri").CallStatic<AndroidJavaObject>("parse", "package:" + UnityEngine.Application.identifier);
+            intent.Call<AndroidJavaObject>("setData", uri);
+
+            CurrentActivity.Call("startActivity", intent);
+#elif !UNITY_EDITOR && UNITY_IOS
+            Application.OpenURL("app-settings:");
 #endif
         }
         
