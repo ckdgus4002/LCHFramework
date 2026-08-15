@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -22,7 +23,7 @@ namespace LCHFramework.Editor
             if (spriteImporter.spriteBorder != Vector4.zero) spriteImporterSettings.spriteMeshType = SpriteMeshType.FullRect;
             spriteImporter.SetTextureSettings(spriteImporterSettings);
 
-            spriteImporter.textureCompression = TextureImporterCompression.Uncompressed;
+            spriteImporter.textureCompression = !spriteImporter.assetPath.Contains("Unpacking", StringComparison.OrdinalIgnoreCase) ? TextureImporterCompression.Uncompressed : TextureImporterCompression.Compressed;
             
             Debug.Log($"{nameof(OnPostprocessSprites)}: {assetPath}");
         }

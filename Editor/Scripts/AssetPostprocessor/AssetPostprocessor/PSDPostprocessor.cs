@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.U2D.PSD;
@@ -28,7 +29,7 @@ namespace LCHFramework.Editor
             serializedObject.ApplyModifiedProperties();
             
             var defaultPlatformSettings = psdImporter.GetImporterPlatformSettings(BuildTarget.NoTarget);
-            defaultPlatformSettings.textureCompression = TextureImporterCompression.Uncompressed;
+            defaultPlatformSettings.textureCompression = !psdImporter.assetPath.Contains("Unpacking", StringComparison.OrdinalIgnoreCase) ? TextureImporterCompression.Uncompressed : TextureImporterCompression.Compressed;
             psdImporter.SetImporterPlatformSettings(defaultPlatformSettings);
             
             Debug.Log($"{nameof(OnPostprocessPSD)}: {assetPath}");
