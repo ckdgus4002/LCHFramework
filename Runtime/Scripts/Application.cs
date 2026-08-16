@@ -225,7 +225,7 @@ namespace LCHFramework
 
             CurrentActivity.Call("startActivity", intent);
 #elif !UNITY_EDITOR && UNITY_IOS
-            Application.OpenURL("app-settings:");
+            UnityEngine.Application.OpenURL("app-settings:");
 #endif
         }
         
