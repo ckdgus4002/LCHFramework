@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using LCHFramework.Extensions;
 using LCHFramework.Utilities;
@@ -9,6 +10,7 @@ namespace LCHFramework.Components
     public class MicrophoneController : MonoBehaviour
     {
         private const float TargetPeak = 1f;
+        protected const UserAuthorization UserAuthorizationMicrophone = UserAuthorization.Microphone;
         
         
         
@@ -46,9 +48,12 @@ namespace LCHFramework.Components
         
         
         
-        public virtual async Awaitable<AudioClip> StartRecording()
+        public virtual async Awaitable<AudioClip> StartRecording(Func<Awaitable<Application.RequestUserPermissionResult>> onRequestPermissionDeniedAndDontAskAgainOrNull = null)
         {
-            if (await Application.RequestUserPermissionAsync(UserAuthorization.Microphone))
+            var requestUserPermissionResult = await Application.RequestUserPermissionAsync(UserAuthorizationMicrophone);
+            if (onRequestPermissionDeniedAndDontAskAgainOrNull != null && requestUserPermissionResult == Application.RequestUserPermissionResult.DeniedAndDontAskAgain) requestUserPermissionResult = await onRequestPermissionDeniedAndDontAskAgainOrNull.Invoke();
+            
+            if (Application.RequestUserPermissionResult.Granted <= requestUserPermissionResult)
             {
                 if (recordingAudioClipOrNull != null) Destroy(recordingAudioClipOrNull);
                 recordingAudioClipOrNull = Microphone.Start(DeviceName, loop, lengthSec, SampleRate);

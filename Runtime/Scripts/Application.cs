@@ -1,16 +1,14 @@
 using System;
 using System.Linq;
+using LCHFramework.Utilities;
 using UniRx;
 using UnityEngine;
-#if UNITY_ANDROID || UNITY_IOS || UNITY_WEBGL
-using LCHFramework.Utilities;
+#if UNITY_ANDROID
+using UnityEngine.Android;
 #endif
 #if !UNITY_EDITOR && UNITY_IOS
 using System.Runtime.InteropServices;
 using UnityEngine.iOS;
-#endif
-#if UNITY_ANDROID
-using UnityEngine.Android;
 #endif
 #if UNITY_EDITOR
 using UnityEditor;
@@ -184,49 +182,108 @@ namespace LCHFramework
 #endif
         }
         
-        public static async Awaitable<bool> RequestUserPermissionAsync(UserAuthorization userAuthorization)
+        public enum RequestUserPermissionResult
         {
+            None = -1,
+            Denied = 0,
+            DeniedAndDontAskAgain = 1,
+            RequestDismissed = 2,
+            Granted = 3,
+        }
+        
+        public static async Awaitable<RequestUserPermissionResult> RequestUserPermissionAsync(UserAuthorization userAuthorization)
+        {
+            var result = RequestUserPermissionResult.None;
 #if UNITY_ANDROID
             var permission = userAuthorization == UserAuthorization.WebCam ? Permission.Camera : Permission.Microphone;
-            if (!Permission.HasUserAuthorizedPermission(permission))
+            if (!HasUserAuthorization(permission))
             {
                 var callbacks = new PermissionCallbacks();
-                bool? isGranted = null;
-                callbacks.PermissionGranted += _ => isGranted = true;
-                callbacks.PermissionDenied += _ => isGranted = false;
-                callbacks.PermissionRequestDismissed += _ => isGranted = false;
+                callbacks.PermissionDenied += _ =>
+                {
+#if UNITY_EDITOR
+                    result = RequestUserPermissionResult.Denied;
+#else
+                    result = CurrentActivity.Call<bool>("shouldShowRequestPermissionRationale", permission) ? RequestUserPermissionResult.Denied : RequestUserPermissionResult.DeniedAndDontAskAgain;
+#endif
+                };
+                callbacks.PermissionRequestDismissed += _ => result = RequestUserPermissionResult.RequestDismissed;
+                callbacks.PermissionGranted += _ => result = RequestUserPermissionResult.Granted;
                 Permission.RequestUserPermission(permission, callbacks);
-                await AwaitableUtility.WaitUntil(() => isGranted != null);
+                await AwaitableUtility.WaitUntil(() => result != RequestUserPermissionResult.None);
 
-                if (!isGranted!.Value) return false;
-                
-                await Awaitable.NextFrameAsync();
-                return true;
+                if (RequestUserPermissionResult.Granted <= result) await Awaitable.NextFrameAsync();
             }
             else
-                return true;
-#else // UNITY_IOS || UNITY_WEBGL
-            if (!UnityEngine.Application.HasUserAuthorization(userAuthorization))
+                result = RequestUserPermissionResult.Granted;
+#else
+            if (!HasUserAuthorization(userAuthorization))
             {
                 await UnityEngine.Application.RequestUserAuthorization(userAuthorization);
-                return UnityEngine.Application.HasUserAuthorization(userAuthorization);
+                result = !HasUserAuthorization(userAuthorization) ? RequestUserPermissionResult.Denied : RequestUserPermissionResult.Granted;
             }
             else
-                return true;
+                result = RequestUserPermissionResult.Granted;
+#endif
+            return result;
+        }
+        
+        public static bool HasUserAuthorization(string permission)
+        {
+#if UNITY_ANDROID
+            return Permission.HasUserAuthorizedPermission(permission);
+#else
+            return HasUserAuthorization(permission switch
+            {
+                /*Permission.Camera*/"android.permission.CAMERA" => UserAuthorization.WebCam,
+                /*Permission.Microphone*/"android.permission.RECORD_AUDIO" => UserAuthorization.Microphone,
+                _ => throw new ArgumentOutOfRangeException(nameof(permission), permission, null),
+            });
 #endif
         }
         
-        public static void OpenAppSettings()
+        public static bool HasUserAuthorization(UserAuthorization userAuthorization)
         {
-#if !UNITY_EDITOR && UNITY_ANDROID
-            using var intent = new AndroidJavaObject("android.content.Intent", "android.settings.APPLICATION_DETAILS_SETTINGS");
-            using var uri = new AndroidJavaClass("android.net.Uri").CallStatic<AndroidJavaObject>("parse", "package:" + UnityEngine.Application.identifier);
-            intent.Call<AndroidJavaObject>("setData", uri);
-
-            CurrentActivity.Call("startActivity", intent);
-#elif !UNITY_EDITOR && UNITY_IOS
-            UnityEngine.Application.OpenURL("app-settings:");
+#if UNITY_ANDROID
+            return HasUserAuthorization(userAuthorization switch
+            {
+                UserAuthorization.WebCam => Permission.Camera,
+                UserAuthorization.Microphone => Permission.Microphone,
+                _ => throw new ArgumentOutOfRangeException(nameof(userAuthorization), userAuthorization, null),
+            });
+#else
+            return UnityEngine.Application.HasUserAuthorization(userAuthorization);
 #endif
+        }
+        
+        public static async Awaitable OpenAppSettingsAsync()
+        {
+            var step = 0;   // 0: 이탈 대기, 1: 설정 화면으로 이탈, 2: 앱 복귀
+            void OnFocusChanged(bool hasFocus)
+            {
+                if (step == 0 && !hasFocus) step = 1;
+                else if (step == 1 && hasFocus) step = 2;
+            }
+            UnityEngine.Application.focusChanged += OnFocusChanged;
+            try
+            {
+#if !UNITY_EDITOR && UNITY_ANDROID
+                using var intent = new AndroidJavaObject("android.content.Intent", "android.settings.APPLICATION_DETAILS_SETTINGS");
+                using var uri = new AndroidJavaClass("android.net.Uri").CallStatic<AndroidJavaObject>("parse", "package:" + UnityEngine.Application.identifier);
+                intent.Call<AndroidJavaObject>("setData", uri);
+
+                CurrentActivity.Call("startActivity", intent);
+#elif !UNITY_EDITOR && UNITY_IOS
+                UnityEngine.Application.OpenURL("app-settings:");
+#else
+                step = 2;
+#endif
+                await AwaitableUtility.WaitUntil(() => 1 < step);
+            }
+            finally
+            {
+                UnityEngine.Application.focusChanged -= OnFocusChanged;
+            }
         }
         
 #if !UNITY_EDITOR && UNITY_IOS

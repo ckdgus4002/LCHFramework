@@ -8,6 +8,10 @@ namespace LCHFramework.Components
 {
     public class WebcamTextureController : MonoBehaviour
     {
+        protected const UserAuthorization UserAuthorizationWebCam = UserAuthorization.WebCam;
+        
+        
+        
         [SerializeField] private bool playOnEnable = true;
         [SerializeField] private bool pauseOnDisable;
         [SerializeField] private bool stopOnDisable = true;
@@ -16,14 +20,20 @@ namespace LCHFramework.Components
         
         
         
-        public async Awaitable<WebCamTexture> GetWebcamTextureOrNull(bool force = false)
+        public virtual async Awaitable<WebCamTexture> GetWebcamTextureOrNull(bool force = false, Func<Awaitable<Application.RequestUserPermissionResult>> onRequestPermissionDeniedAndDontAskAgainOrNull = null)
         {
-            if ((_webcamTextureOrNull == null || force) && await Application.RequestUserPermissionAsync(UserAuthorization.WebCam))
+            if (_webcamTextureOrNull == null || force)
             {
-                var webCamDeviceExists = WebCamTexture.devices.TryFirstOrDefault(t => 
-                    (webCamDeviceType & WebCamDeviceType.FrontFacing) != 0 && t.isFrontFacing,
-                    out var webCamDevice);
-                _webcamTextureOrNull = !webCamDeviceExists ? null : new WebCamTexture(webCamDevice.name, Screen.width, Screen.height);
+                var requestUserPermissionResult = await Application.RequestUserPermissionAsync(UserAuthorizationWebCam);
+                if (onRequestPermissionDeniedAndDontAskAgainOrNull != null && requestUserPermissionResult == Application.RequestUserPermissionResult.DeniedAndDontAskAgain) requestUserPermissionResult = await onRequestPermissionDeniedAndDontAskAgainOrNull.Invoke();
+                
+                if (Application.RequestUserPermissionResult.Granted <= requestUserPermissionResult)
+                {
+                    var webCamDeviceExists = WebCamTexture.devices.TryFirstOrDefault(t => 
+                            (webCamDeviceType & WebCamDeviceType.FrontFacing) != 0 && t.isFrontFacing,
+                        out var webCamDevice);
+                    _webcamTextureOrNull = !webCamDeviceExists ? null : new WebCamTexture(webCamDevice.name, Screen.width, Screen.height);
+                }
             }
             
             return _webcamTextureOrNull;
