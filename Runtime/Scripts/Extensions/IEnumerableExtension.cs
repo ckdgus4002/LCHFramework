@@ -27,6 +27,9 @@ namespace LCHFramework.Extensions
         public static bool TryIndexOf<T>(this IEnumerable<T> enumerable, T value, out int result)
             => -1 < (result = enumerable.IndexOf(value));
         
+        public static bool TryIndexOf<T>(this IEnumerable<T> enumerable, Func<T, bool> func, out int result)
+            => -1 < (result = enumerable.IndexOf(func));
+        
         public static int IndexOf<T>(this IEnumerable<T> enumerable, T value)
             => IndexOf(enumerable, t => EqualityComparer<T>.Default.Equals(t, value));
         
