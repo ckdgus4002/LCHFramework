@@ -23,8 +23,8 @@ namespace LCHFramework.Editor
             if (spriteImporter.spriteBorder != Vector4.zero) spriteImporterSettings.spriteMeshType = SpriteMeshType.FullRect;
             spriteImporter.SetTextureSettings(spriteImporterSettings);
             
-            var textureCompression = !spriteImporter.assetPath.Contains("Unpacking", StringComparison.OrdinalIgnoreCase) ? TextureImporterCompression.Uncompressed : TextureImporterCompression.Compressed;
-            spriteImporter.textureCompression = textureCompression;
+            if (!spriteImporter.assetPath.Contains("Unpacking", StringComparison.OrdinalIgnoreCase)) spriteImporter.textureCompression = TextureImporterCompression.Uncompressed;
+            // spriteImporter.textureFormat = TextureImporterFormat.Automatic;
             spriteImporter.compressionQuality = !spriteImporter.crunchedCompression ? 50 : 100;
             
             Debug.Log($"{nameof(OnPostprocessSprites)}: {assetPath}");
