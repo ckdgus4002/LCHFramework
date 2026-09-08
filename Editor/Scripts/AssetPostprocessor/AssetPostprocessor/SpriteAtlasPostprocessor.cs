@@ -48,12 +48,12 @@ namespace LCHFramework.Editor
             if (spriteAtlasImporterOrNull == null) spriteAtlas.SetTextureSettings(textureSettings);
             else spriteAtlasImporterOrNull.textureSettings = textureSettings;
             
-            var defaultPlatformSettings = spriteAtlas.GetPlatformSettings("DefaultTexturePlatform");
-            defaultPlatformSettings.maxTextureSize = 4096;
-            defaultPlatformSettings.format = TextureImporterFormat.Automatic;
-            defaultPlatformSettings.compressionQuality = !defaultPlatformSettings.crunchedCompression ? 50 : 100;
-            if (spriteAtlasImporterOrNull == null) spriteAtlas.SetPlatformSettings(defaultPlatformSettings);
-            else spriteAtlasImporterOrNull.SetPlatformSettings(defaultPlatformSettings);
+            var defaultPlatformTextureSettings = spriteAtlas.GetPlatformSettings("DefaultTexturePlatform");
+            defaultPlatformTextureSettings.maxTextureSize = 4096;
+            defaultPlatformTextureSettings.format = TextureImporterFormat.Automatic;
+            defaultPlatformTextureSettings.compressionQuality = !defaultPlatformTextureSettings.crunchedCompression ? 50 : 100;
+            if (spriteAtlasImporterOrNull == null) spriteAtlas.SetPlatformSettings(defaultPlatformTextureSettings);
+            else spriteAtlasImporterOrNull.SetPlatformSettings(defaultPlatformTextureSettings);
             
             foreach (var platformGroup in Application.PlatformGroups)
             {

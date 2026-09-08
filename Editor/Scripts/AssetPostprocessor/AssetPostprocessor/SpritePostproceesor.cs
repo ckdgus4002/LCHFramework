@@ -18,13 +18,15 @@ namespace LCHFramework.Editor
             
             spriteImporter.spritePixelsPerUnit = 1;
             
-            var spriteImporterSettings = new TextureImporterSettings();
-            spriteImporter.ReadTextureSettings(spriteImporterSettings);
-            if (spriteImporter.spriteBorder != Vector4.zero) spriteImporterSettings.spriteMeshType = SpriteMeshType.FullRect;
-            spriteImporter.SetTextureSettings(spriteImporterSettings);
+            var textureImporterSettings = new TextureImporterSettings();
+            spriteImporter.ReadTextureSettings(textureImporterSettings);
+            if (spriteImporter.spriteBorder != Vector4.zero) textureImporterSettings.spriteMeshType = SpriteMeshType.FullRect;
+            spriteImporter.SetTextureSettings(textureImporterSettings);
             
             if (!spriteImporter.assetPath.Contains("Unpacking", StringComparison.OrdinalIgnoreCase)) spriteImporter.textureCompression = TextureImporterCompression.Uncompressed;
-            // spriteImporter.textureFormat = TextureImporterFormat.Automatic;
+            var defaultPlatformTextureSettings = spriteImporter.GetDefaultPlatformTextureSettings();
+            defaultPlatformTextureSettings.format = TextureImporterFormat.Automatic;
+            spriteImporter.SetPlatformTextureSettings(defaultPlatformTextureSettings);
             spriteImporter.compressionQuality = !spriteImporter.crunchedCompression ? 50 : 100;
             
             Debug.Log($"{nameof(OnPostprocessSprites)}: {assetPath}");
