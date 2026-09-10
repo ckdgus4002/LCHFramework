@@ -24,9 +24,6 @@ namespace LCHFramework.Editor
             spriteImporter.SetTextureSettings(textureImporterSettings);
             
             if (!spriteImporter.assetPath.Contains("Unpacking", StringComparison.OrdinalIgnoreCase)) spriteImporter.textureCompression = TextureImporterCompression.Uncompressed;
-            var defaultPlatformTextureSettings = spriteImporter.GetDefaultPlatformTextureSettings();
-            defaultPlatformTextureSettings.format = TextureImporterFormat.Automatic;
-            spriteImporter.SetPlatformTextureSettings(defaultPlatformTextureSettings);
             spriteImporter.compressionQuality = !spriteImporter.crunchedCompression ? 50 : 100;
             
             Debug.Log($"{nameof(OnPostprocessSprites)}: {assetPath}");
