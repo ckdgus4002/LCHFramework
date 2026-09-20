@@ -36,7 +36,7 @@ namespace LCHFramework
             else InstantiateIfInstanceIsNull(() => lchFrameworkOrNull);
             
             var isLargeScreen = Application.IsLargeScreenMobile;
-            var qualitySettingLevel = QualitySettingsChooser.ChooseQualityLevel();
+            var qualitySettingLevel = QualityLevelChooser.GetQualityLevel();
             Debug.Log($"[{nameof(LCHFramework)}] {nameof(isLargeScreen)}: {isLargeScreen}, {nameof(qualitySettingLevel)}: {qualitySettingLevel}.");
         }
         
