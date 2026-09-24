@@ -44,6 +44,7 @@ namespace LCHFramework.Managers
         public static string PrevSceneAddress { get; private set; } = "";
         private static string[] PrevAtlasAddresses { get; set; } = Array.Empty<string>();
         public static string Message { get; private set; } = "";
+        public static string PrevMessage { get; private set; } = "";
         
         
         
@@ -92,7 +93,8 @@ namespace LCHFramework.Managers
             updateAddressableCatalogs = default;
             downloadAddressable = default;
             loadScene = default;
-            Message = !string.IsNullOrWhiteSpace(message) ? message : Message;
+            PrevMessage = Message;
+            Message = message;
             
             
             var startTime = Time.time;
