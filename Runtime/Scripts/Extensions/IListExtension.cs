@@ -5,7 +5,7 @@ namespace LCHFramework.Extensions
 {
     public static class IListExtension
     {
-        private static readonly Random Random = new();
+        private static readonly Random _shuffle = new();
         public static void Shuffle<T>(this IList<T> list)
         {
             if (list == null) return;
@@ -14,7 +14,7 @@ namespace LCHFramework.Extensions
             while (1 < n)
             {
                 n--;
-                var k = Random.Next(0, n + 1);
+                var k = _shuffle.Next(0, n + 1);
                 if (k != n) (list[k], list[n]) = (list[n], list[k]);
             }
         }
