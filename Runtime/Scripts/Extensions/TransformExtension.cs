@@ -6,6 +6,12 @@ namespace LCHFramework.Extensions
 {
     public static class TransformExtension
     {
+        public static bool TryGetChild(this Transform transform, int index, out Transform result)
+        {
+            result = transform.GetChild(index);
+            return result != null;
+        }
+        
         public static Transform[] GetChildren(this Transform transform, bool includeInactive = false, int depth = 1)
         {
             if (depth < 0) return Array.Empty<Transform>();
