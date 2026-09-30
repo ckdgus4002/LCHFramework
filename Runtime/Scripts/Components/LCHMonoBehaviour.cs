@@ -29,18 +29,6 @@ namespace LCHFramework.Components
         public static bool TryFindAnyObjectByType<T>(FindObjectsInactive findObjectsInactive, out T result) where T : Object
             => (result = FindAnyObjectByType<T>(findObjectsInactive)) != null;
         
-        public static bool TryFindFirstObjectByType<T>(out T result) where T : Object
-            => TryFindFirstObjectByType(FindObjectsInactive.Exclude, out result);
-        
-        public static bool TryFindFirstObjectByType<T>(FindObjectsInactive findObjectsInactive, out T result) where T : Object
-            => (result = FindFirstObjectByType<T>(findObjectsInactive)) != null;
-        
-        public static bool TryFindFirstObjectByType(Type type, out Object result)
-            => TryFindFirstObjectByType(type, FindObjectsInactive.Exclude, out result);
-        
-        public static bool TryFindFirstObjectByType(Type type, FindObjectsInactive findObjectsInactive, out Object result)
-            => (result = FindFirstObjectByType(type, findObjectsInactive)) != null;
-        
         public static bool TryFindAnyInterfaceByType<T>(out T result) where T : class
             => TryFindAnyInterfaceByType(FindObjectsInactive.Exclude, out result);
         
