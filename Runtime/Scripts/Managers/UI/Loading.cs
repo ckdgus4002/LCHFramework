@@ -44,13 +44,11 @@ namespace LCHFramework.Managers.UI
         
         
         
-#if UNITY_EDITOR
         private void Reset()
         {
             messageText = GetComponentsInChildren<TMP_Text>().FirstOrDefault(t => t.name.Contains("Message", StringComparison.OrdinalIgnoreCase) && t.name.Contains("Text", StringComparison.OrdinalIgnoreCase));
             slider = GetComponentInChildren<Slider>();
         }
-#endif
         
         
         
