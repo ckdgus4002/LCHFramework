@@ -33,8 +33,8 @@ namespace LCHFramework.Extensions
         
         public static Vector2 SetY(this Vector2 v, float y) { v.y = y; return v; }
         
-        public static Vector3 ToVector3(this Vector2 v) => v;
+        public static Vector3 ToVector3(this Vector2 v, float z = 0) => new(v.x, v.y, z);
         
-        public static Vector4 ToVector4(this Vector2 v) => v;
+        public static Vector4 ToVector4(this Vector2 v, float z = 0, float w = 0) => new(v.x, v.y, z, w);
     }
 }

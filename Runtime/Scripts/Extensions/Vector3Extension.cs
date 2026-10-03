@@ -49,6 +49,6 @@ namespace LCHFramework.Extensions
         
         public static Vector2 ToVector2(this Vector3 v) => v;
         
-        public static Vector4 ToVector4(this Vector3 v) => v;
+        public static Vector4 ToVector4(this Vector3 v, float w = 0) => new(v.x, v.y, v.z, w);
     }
 }
