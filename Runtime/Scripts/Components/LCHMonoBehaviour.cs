@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LCHFramework.Data;
 using LCHFramework.Extensions;
+using LCHFramework.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -128,6 +129,6 @@ namespace LCHFramework.Components
             TRSIsInitialized = true;
         }
         
-        public virtual void DestroyGameObject() => Destroy(gameObject);
+        public virtual void DestroyGameObject(bool allowDestroyingAssets = false) => ObjectUtility.Destroy(gameObject, allowDestroyingAssets);
     }
 }

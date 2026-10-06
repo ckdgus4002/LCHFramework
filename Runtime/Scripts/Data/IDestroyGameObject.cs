@@ -2,6 +2,6 @@ namespace LCHFramework.Data
 {
     public interface IDestroyGameObject
     {
-        public void DestroyGameObject();
+        public void DestroyGameObject(bool allowDestroyingAssets = false);
     }
 }
