@@ -127,7 +127,7 @@ namespace LCHFramework
 #if UNITY_EDITOR || !UNITY_IOS
             ? _iosVersion = new Version()
 #else
-            ? _iOSVersion = new Version(Device.systemVersion)
+            ? _iosVersion = new Version(Device.systemVersion)
 #endif
             : _iosVersion;
         private static Version _iosVersion;
