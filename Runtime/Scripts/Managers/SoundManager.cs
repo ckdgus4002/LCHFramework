@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using LCHFramework.Extensions;
 using UniRx;
 using UnityEngine;
+
 // ReSharper disable StaticMemberInGenericType
 
 namespace LCHFramework.Managers
@@ -43,21 +44,11 @@ namespace LCHFramework.Managers
         public const bool DefaultLoop = false;
         public const float FadeDuration = 1f;
         private const string MasterVolumePrefsKey = "MasterVolume";
-        private static readonly Dictionary<string, string> LocalVolumesPrefsKey = new()
-        {
-            { Bgm, $"{Bgm}Volume" },
-            { Narration, $"{Narration}Volume" },
-            { Sfx, $"{Sfx}Volume" },
-        };
+        private static readonly Dictionary<string, string> LocalVolumesPrefsKey = new() { { Bgm, $"{Bgm}Volume" }, { Narration, $"{Narration}Volume" }, { Sfx, $"{Sfx}Volume" }, };
         
         
-        public static readonly ReactiveProperty<float> MasterVolume = new() { Value = PlayerPrefs.GetFloat(MasterVolumePrefsKey, DefaultVolume) };
-        public static readonly Dictionary<string, ReactiveProperty<float>> LocalVolumes = new()
-        {
-            { Bgm, new ReactiveProperty<float> { Value = PlayerPrefs.GetFloat(LocalVolumesPrefsKey[Bgm], DefaultVolume) } },
-            { Narration, new ReactiveProperty<float> { Value = PlayerPrefs.GetFloat(LocalVolumesPrefsKey[Narration], DefaultVolume) } },
-            { Sfx, new ReactiveProperty<float> { Value = PlayerPrefs.GetFloat(LocalVolumesPrefsKey[Sfx], DefaultVolume) } },
-        };
+        public static readonly ReactiveProperty<float> MasterVolume = new();
+        public static readonly Dictionary<string, ReactiveProperty<float>> LocalVolumes = new() { { Bgm, new ReactiveProperty<float>() }, { Narration, new ReactiveProperty<float>() }, { Sfx, new ReactiveProperty<float>() }, };
         
         
         public static float TimeScale
@@ -101,13 +92,16 @@ namespace LCHFramework.Managers
         {
             base.Awake();
             
+            MasterVolume.Value = PlayerPrefs.GetFloat(MasterVolumePrefsKey, DefaultVolume);
             MasterVolume.Subscribe(value => OnVolumeChanged(MasterVolumePrefsKey, value)).AddTo(this);
-            foreach (var (poolName, t) in LocalVolumes)
+            foreach (var (poolName, localVolume) in LocalVolumes)
             {
                 var go = new GameObject($"{poolName}");
                 go.transform.SetParent(transform);
                 audioSourcePools.Add(poolName, go.AddComponent<AudioSourcePool>());
-                t.Subscribe(value => OnVolumeChanged(LocalVolumesPrefsKey[poolName], value)).AddTo(this);
+                
+                localVolume.Value = PlayerPrefs.GetFloat(LocalVolumesPrefsKey[Bgm], DefaultVolume);
+                localVolume.Subscribe(value => OnVolumeChanged(LocalVolumesPrefsKey[poolName], value)).AddTo(this);
             }
         }
         
@@ -121,6 +115,8 @@ namespace LCHFramework.Managers
         
         
         protected virtual void OnVolumeChanged(string prefsKey, float volume) => PlayerPrefs.SetFloat(prefsKey, volume);
+        
+        
         
         public SoundPlayResult Play(string audioClipAddress, string audioSourcePoolName = DefaultAudioSourcePoolName, AudioPlayType audioPlayType = DefaultAudioPlayType, float volume = DefaultVolume, bool loop = DefaultLoop, Vector3? position = null, bool canFadeAudioSourceVolume = false)
         {
