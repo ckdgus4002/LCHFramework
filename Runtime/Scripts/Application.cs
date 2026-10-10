@@ -123,14 +123,14 @@ namespace LCHFramework
         private static AndroidJavaObject _currentActivity;
 #endif
         
-        public static Version IOSVersion => _iOSVersion == null
+        public static Version IosVersion => _iosVersion == null
 #if UNITY_EDITOR || !UNITY_IOS
-            ? _iOSVersion = new Version()
+            ? _iosVersion = new Version()
 #else
             ? _iOSVersion = new Version(Device.systemVersion)
 #endif
-            : _iOSVersion;
-        private static Version _iOSVersion;
+            : _iosVersion;
+        private static Version _iosVersion;
         
         public static bool IsIPad => UnityEngine.Application.platform == RuntimePlatform.IPhonePlayer && SystemInfo.deviceModel.Contains("iPad", StringComparison.OrdinalIgnoreCase);
         

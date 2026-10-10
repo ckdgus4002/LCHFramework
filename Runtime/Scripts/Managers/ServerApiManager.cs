@@ -9,14 +9,14 @@ using UnityEngine.Networking;
 
 namespace LCHFramework.Managers
 {
-    public static class ServerAPIManager
+    public static class ServerApiManager
     {
         public const int RetryCount = 3;
         public static readonly Color LogColor = Color.cyan;
         
         
         
-        public static Awaitable<T> UploadFileAsync<T>(Uri uri, List<IMultipartFormSection> multipartFormSections, IEnumerable<KeyValuePair<string, string>> header = null, Action<float> progress = null, int timeout = 0, int retryCount = RetryCount, CancellationToken cancellationToken = default) where T : ServerAPIResult => SendRequestAsync<T>(() =>
+        public static Awaitable<T> UploadFileAsync<T>(Uri uri, List<IMultipartFormSection> multipartFormSections, IEnumerable<KeyValuePair<string, string>> header = null, Action<float> progress = null, int timeout = 0, int retryCount = RetryCount, CancellationToken cancellationToken = default) where T : ServerApiResult => SendRequestAsync<T>(() =>
         {
             Debug.Log($"Request {nameof(UploadFileAsync)}: {uri}", LogColor);
             var request = UnityWebRequest.Post(uri, multipartFormSections);
@@ -26,7 +26,7 @@ namespace LCHFramework.Managers
             
         }, retryCount, progress, cancellationToken);
         
-        public static  Awaitable<T> UploadFileAsync<T>(Uri uri, byte[] data, IEnumerable<KeyValuePair<string, string>> header = null, Action<float> progress = null, int timeout = 0, int retryCount = RetryCount, CancellationToken cancellationToken = default) where T : ServerAPIResult => SendRequestAsync<T>(() =>
+        public static  Awaitable<T> UploadFileAsync<T>(Uri uri, byte[] data, IEnumerable<KeyValuePair<string, string>> header = null, Action<float> progress = null, int timeout = 0, int retryCount = RetryCount, CancellationToken cancellationToken = default) where T : ServerApiResult => SendRequestAsync<T>(() =>
         {
             Debug.Log($"Request {nameof(UploadFileAsync)}: {uri}", LogColor);
             var request = UnityWebRequest.Put(uri, data);
@@ -36,39 +36,39 @@ namespace LCHFramework.Managers
             
         }, retryCount, progress, cancellationToken);
         
-        public static Awaitable<T> GetAsync<T>(Uri uri, IEnumerable<KeyValuePair<string, string>> header = null, DownloadHandlerType downloadHandlerType = DownloadHandlerType.Json, Action<float> downloadProgress = null, int timeout = 0, int retryCount = RetryCount, CancellationToken cancellationToken = default) where T : ServerAPIResult => SendRequestAsync<T>(() =>
+        public static Awaitable<T> GetAsync<T>(Uri uri, IEnumerable<KeyValuePair<string, string>> header = null, DownloadHandlerType downloadHandlerType = DownloadHandlerType.Json, Action<float> downloadProgress = null, int timeout = 0, int retryCount = RetryCount, CancellationToken cancellationToken = default) where T : ServerApiResult => SendRequestAsync<T>(() =>
         {
             Debug.Log($"Request {nameof(GetAsync)}: {uri}", LogColor);
             var request = UnityWebRequest.Get(uri);
-            request.SetRequestHeader(ServerAPIData.ContentType, ServerAPIData.ContentTypeValue.ApplicationJson);
+            request.SetRequestHeader(ServerApiData.ContentType, ServerApiData.ContentTypeValue.ApplicationJson);
             header?.ForEach(t => request.SetRequestHeader(t.Key, t.Value));
             request.timeout = timeout;
             return request;
             
         }, retryCount, (downloadHandlerType, downloadProgress), cancellationToken);
         
-        public static Awaitable<T> PostAsync<T>(Uri uri, string data, IEnumerable<KeyValuePair<string, string>> header = null, DownloadHandlerType downloadHandlerType = DownloadHandlerType.Json, Action<float> downloadProgress = null, int timeout = 0, int retryCount = RetryCount, CancellationToken cancellationToken = default) where T : ServerAPIResult => SendRequestAsync<T>(() =>
+        public static Awaitable<T> PostAsync<T>(Uri uri, string data, IEnumerable<KeyValuePair<string, string>> header = null, DownloadHandlerType downloadHandlerType = DownloadHandlerType.Json, Action<float> downloadProgress = null, int timeout = 0, int retryCount = RetryCount, CancellationToken cancellationToken = default) where T : ServerApiResult => SendRequestAsync<T>(() =>
         {
             Debug.Log($"Request {nameof(PostAsync)}: {uri}", LogColor);
-            var request = UnityWebRequest.Post(uri, data, ServerAPIData.ContentTypeValue.ApplicationJson);
+            var request = UnityWebRequest.Post(uri, data, ServerApiData.ContentTypeValue.ApplicationJson);
             header?.ForEach(t => request.SetRequestHeader(t.Key, t.Value));
             request.timeout = timeout;
             return request;
             
         }, retryCount, (downloadHandlerType, downloadProgress), cancellationToken);
         
-        public static Awaitable<T> PutAsync<T>(Uri uri, string data, IEnumerable<KeyValuePair<string, string>> header = null, int timeout = 0, int retryCount = RetryCount, CancellationToken cancellationToken = default) where T : ServerAPIResult => SendRequestAsync<T>(() =>
+        public static Awaitable<T> PutAsync<T>(Uri uri, string data, IEnumerable<KeyValuePair<string, string>> header = null, int timeout = 0, int retryCount = RetryCount, CancellationToken cancellationToken = default) where T : ServerApiResult => SendRequestAsync<T>(() =>
         {
             Debug.Log($"Request {nameof(PutAsync)}: {uri}", LogColor);
             var request = UnityWebRequest.Put(uri, data);
-            request.uploadHandler.contentType = ServerAPIData.ContentTypeValue.ApplicationJson;
+            request.uploadHandler.contentType = ServerApiData.ContentTypeValue.ApplicationJson;
             header?.ForEach(t => request.SetRequestHeader(t.Key, t.Value));
             request.timeout = timeout;
             return request;
             
         }, retryCount, cancellationToken);
         
-        public static Awaitable<ServerAPIResult> DeleteAsync(Uri uri, IEnumerable<KeyValuePair<string, string>> header = null, int timeout = 0, int retryCount = RetryCount, CancellationToken cancellationToken = default) => SendRequestAsync<ServerAPIResult>(() =>
+        public static Awaitable<ServerApiResult> DeleteAsync(Uri uri, IEnumerable<KeyValuePair<string, string>> header = null, int timeout = 0, int retryCount = RetryCount, CancellationToken cancellationToken = default) => SendRequestAsync<ServerApiResult>(() =>
         {
             Debug.Log($"Request {nameof(DeleteAsync)}: {uri}", LogColor);
             var request = UnityWebRequest.Delete(uri);
@@ -78,17 +78,17 @@ namespace LCHFramework.Managers
             
         }, retryCount, cancellationToken);
         
-        private static Awaitable<T> SendRequestAsync<T>(Func<UnityWebRequest> getRequest, int retryCount, CancellationToken cancellationToken) where T : ServerAPIResult => SendRequestAsync<T>(getRequest, retryCount, null, cancellationToken);
+        private static Awaitable<T> SendRequestAsync<T>(Func<UnityWebRequest> getRequest, int retryCount, CancellationToken cancellationToken) where T : ServerApiResult => SendRequestAsync<T>(getRequest, retryCount, null, cancellationToken);
         
-        private static Awaitable<T> SendRequestAsync<T>(Func<UnityWebRequest> getRequest, int retryCount, (DownloadHandlerType, Action<float>) download, CancellationToken cancellationToken) where T : ServerAPIResult => SendRequestAsync<T>(getRequest, retryCount, null, download, cancellationToken);
+        private static Awaitable<T> SendRequestAsync<T>(Func<UnityWebRequest> getRequest, int retryCount, (DownloadHandlerType, Action<float>) download, CancellationToken cancellationToken) where T : ServerApiResult => SendRequestAsync<T>(getRequest, retryCount, null, download, cancellationToken);
         
-        private static Awaitable<T> SendRequestAsync<T>(Func<UnityWebRequest> getRequest, int retryCount, Action<float> upload, CancellationToken cancellationToken) where T : ServerAPIResult => SendRequestAsync<T>(getRequest, retryCount, upload, (DownloadHandlerType.Json, null), cancellationToken);
+        private static Awaitable<T> SendRequestAsync<T>(Func<UnityWebRequest> getRequest, int retryCount, Action<float> upload, CancellationToken cancellationToken) where T : ServerApiResult => SendRequestAsync<T>(getRequest, retryCount, upload, (DownloadHandlerType.Json, null), cancellationToken);
         
-        private static async Awaitable<T> SendRequestAsync<T>(Func<UnityWebRequest> getRequest, int retryCount, Action<float> upload, (DownloadHandlerType, Action<float>) download, CancellationToken cancellationToken) where T : ServerAPIResult
+        private static async Awaitable<T> SendRequestAsync<T>(Func<UnityWebRequest> getRequest, int retryCount, Action<float> upload, (DownloadHandlerType, Action<float>) download, CancellationToken cancellationToken) where T : ServerApiResult
         {
             var isSuccess = false;
             var error = string.Empty;
-            var valueIsRequired = typeof(T) != typeof(ServerAPIResult);
+            var valueIsRequired = typeof(T) != typeof(ServerApiResult);
             object value = null;
             try
             {
