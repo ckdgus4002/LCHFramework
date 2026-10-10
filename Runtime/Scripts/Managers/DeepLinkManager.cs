@@ -8,7 +8,7 @@ namespace LCHFramework.Managers
 {
     public abstract class DeepLinkManager : MonoSingleton<DeepLinkManager>
     {
-        protected const string DeferredDeepLinkPrefsKey = "DeferredDeepLink";
+        protected const string HasDeferredDeepLinkPrefsKey = "HasDeferredDeepLink";
         
         
         
@@ -23,11 +23,11 @@ namespace LCHFramework.Managers
             UnityEngine.Application.deepLinkActivated += OnDeepLinkActivated;
             
             var getDeferredDeepLink = (false, "");
-            if (!PlayerPrefs.HasKey(DeferredDeepLinkPrefsKey))
+            if (PlayerPrefs.GetInt(HasDeferredDeepLinkPrefsKey, 0) == 0)
             {
                 yield return GetDeferredDeepLink(result => getDeferredDeepLink = result);
                 
-                PlayerPrefsUtility.SetInt(DeferredDeepLinkPrefsKey, 1);
+                PlayerPrefsUtility.SetInt(HasDeferredDeepLinkPrefsKey, 1);
             }
             
             var absoluteURL = UnityEngine.Application.absoluteURL;
