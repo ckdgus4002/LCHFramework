@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using LCHFramework.Extensions;
+using LCHFramework.Utilities;
 using UniRx;
 using UnityEngine;
 
@@ -114,7 +115,7 @@ namespace LCHFramework.Managers
         
         
         
-        protected virtual void OnVolumeChanged(string prefsKey, float volume) => PlayerPrefs.SetFloat(prefsKey, volume);
+        protected virtual void OnVolumeChanged(string prefsKey, float volume) => PlayerPrefsUtility.SetFloat(prefsKey, volume);
         
         
         

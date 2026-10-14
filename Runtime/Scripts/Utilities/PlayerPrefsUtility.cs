@@ -10,6 +10,12 @@ namespace LCHFramework.Utilities
             PlayerPrefs.Save();
         }
         
+        public static void SetFloat(string key, float value)
+        {
+            PlayerPrefs.SetFloat(key, value);
+            PlayerPrefs.Save();
+        }
+        
         public static void SetString(string key, string value)
         {
             PlayerPrefs.SetString(key, value);
