@@ -101,7 +101,7 @@ namespace LCHFramework.Managers
                 go.transform.SetParent(transform);
                 audioSourcePools.Add(poolName, go.AddComponent<AudioSourcePool>());
                 
-                localVolume.Value = PlayerPrefs.GetFloat(LocalVolumesPrefsKey[Bgm], DefaultVolume);
+                localVolume.Value = PlayerPrefs.GetFloat(LocalVolumesPrefsKey[poolName], DefaultVolume);
                 localVolume.Subscribe(value => OnVolumeChanged(LocalVolumesPrefsKey[poolName], value)).AddTo(this);
             }
         }
