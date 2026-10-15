@@ -17,13 +17,13 @@ namespace LCHFramework.Utilities
         public static bool TryGetWasReleasedThisFramePointerPositions(out List<(Pointer, Vector2)> result) => (result = GetWasReleasedThisFramePointerPositions()).Exists();
         
         public static Pointer GetWasPressedThisFramePointerOrNull()
-            => Touchscreen.current != null && Touchscreen.current.touches.Any(t => t.press.wasReleasedThisFrame) ? Touchscreen.current 
+            => Touchscreen.current != null && Touchscreen.current.touches.Any(t => t.press.wasPressedThisFrame) ? Touchscreen.current 
                 : Pen.current != null && Pen.current.tip.wasPressedThisFrame ? Pen.current
                 : Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame ? Mouse.current
                 : null;
         
         public static Pointer GetIsPressedPointerOrNull()
-            => Touchscreen.current != null && Touchscreen.current.touches.Any(t => t.press.wasReleasedThisFrame) ? Touchscreen.current 
+            => Touchscreen.current != null && Touchscreen.current.touches.Any(t => t.press.isPressed) ? Touchscreen.current 
                 : Pen.current != null && Pen.current.tip.isPressed ? Pen.current
                 : Mouse.current != null && Mouse.current.leftButton.isPressed ? Mouse.current
                 : null;
