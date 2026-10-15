@@ -18,6 +18,9 @@ namespace LCHFramework.Extensions
         public static bool TryLastOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate, out T result)
             => !EqualityComparer<T>.Default.Equals(result = enumerable.LastOrDefault(predicate), default);
         
+        public static bool TryWhere<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate, out IEnumerable<T> result)
+            => (result = enumerable.Where(predicate)).Exists();
+        
         public static bool Exists<T>(this IEnumerable<T> enumerable)
             => !enumerable.IsEmpty();
         

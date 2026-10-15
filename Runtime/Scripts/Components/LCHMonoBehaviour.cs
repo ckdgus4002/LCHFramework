@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using LCHFramework.Data;
 using LCHFramework.Extensions;
 using LCHFramework.Utilities;
@@ -16,13 +15,7 @@ namespace LCHFramework.Components
             => TryFindObjectsByType(FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID, out result);
         
         public static bool TryFindObjectsByType<T>(FindObjectsInactive findObjectsInactive, FindObjectsSortMode sortMode, out T[] result) where T : Object
-            => (result = FindObjectsByType<T>(findObjectsInactive, sortMode)).Any();
-        
-        public static bool TryFindObjectsByType(Type type, out Object[] result)
-            => TryFindObjectsByType(type, FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID, out result);
-        
-        public static bool TryFindObjectsByType(Type type, FindObjectsInactive findObjectsInactive, FindObjectsSortMode sortMode, out Object[] result)
-            => (result = FindObjectsByType(type, findObjectsInactive, sortMode)).Any();
+            => (result = FindObjectsByType<T>(findObjectsInactive, sortMode)).Exists();
         
         public static bool TryFindAnyObjectByType<T>(out T result) where T : Object
             => TryFindAnyObjectByType(FindObjectsInactive.Exclude, out result);
