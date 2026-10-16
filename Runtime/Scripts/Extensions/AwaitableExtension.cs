@@ -44,7 +44,7 @@ namespace LCHFramework.Extensions
         {
             try
             {
-                await awaitable;
+                return await awaitable;
             }
             catch (OperationCanceledException)
             {
