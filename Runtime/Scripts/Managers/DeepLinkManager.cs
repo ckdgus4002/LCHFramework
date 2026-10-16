@@ -12,7 +12,7 @@ namespace LCHFramework.Managers
         
         
         
-        [SerializeField] protected string [] queryKeys;
+        [SerializeField] protected string[] queryKeys;
         
         
         
