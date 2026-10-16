@@ -20,10 +20,10 @@ namespace LCHFramework.Components
         [SerializeField] private float fadeInDuration = 0.5f;
         
         [ShowInInspector(nameof(loadSceneMode), ComparisonOperator.NotEquals, LoadSceneMode.None)]
-        [SerializeField] private string loadingMessage = "";
+        [SerializeField] private string loadingMessage = string.Empty;
         
         [SerializeField] private bool isUpdateCatalogs = true;
-        [SerializeField] private string message = "";
+        [SerializeField] private string message = string.Empty;
         
         
         

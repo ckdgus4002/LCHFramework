@@ -13,7 +13,7 @@ namespace LCHFramework.Extensions
         {
 #if UNITY_EDITOR
             var assetEntry = AddressableAssetSettingsDefaultObject.Settings == null ? null : AddressableAssetSettingsDefaultObject.Settings.FindAssetEntry(assetReference.AssetGUID);
-            return assetEntry == null ? "" : assetEntry.address;
+            return assetEntry == null ? string.Empty : assetEntry.address;
 #else
             return Addressables.LoadResourceLocationsAsync(assetReference.RuntimeKey).WaitForCompletion().FirstOrDefault().PrimaryKey;
 #endif

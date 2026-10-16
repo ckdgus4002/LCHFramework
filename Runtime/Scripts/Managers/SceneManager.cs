@@ -40,11 +40,11 @@ namespace LCHFramework.Managers
         private static AsyncOperationHandle<SceneInstance> loadScene;
         
         
-        public static string SceneAddress { get; private set; } = "";
-        public static string PrevSceneAddress { get; private set; } = "";
+        public static string SceneAddress { get; private set; } = string.Empty;
+        public static string PrevSceneAddress { get; private set; } = string.Empty;
         private static string[] PrevAtlasAddresses { get; set; } = Array.Empty<string>();
-        public static string Message { get; private set; } = "";
-        public static string PrevMessage { get; private set; } = "";
+        public static string Message { get; private set; } = string.Empty;
+        public static string PrevMessage { get; private set; } = string.Empty;
         
         
         
@@ -66,7 +66,7 @@ namespace LCHFramework.Managers
         {
             LoadSceneMode.LoadingUI => Loading.DefaultLoadingMessage,
             LoadSceneMode.ScreenFadeUI => ScreenFader.DefaultFadeMessage,
-            _ => ""
+            _ => string.Empty
         };
         
         public static string DefaultErrorMessage(int errorCode, string error) => GetErrorMessage($"{error}{errorCode}");

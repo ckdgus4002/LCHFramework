@@ -80,7 +80,7 @@ namespace LCHFramework.Managers.StepManager
                 RightStepOrNull = _currentStep.Index < Steps.Count - 1 ? Steps[_currentStep.Index + 1] : loop ? FirstStep : null;
                 
                 Steps.Where(t => t.IsShown).ForEach(t => t.Hide());
-                Debug.Log($"[{transform.GetPath()}] CurrentStep is changed. {(PrevStepOrNull == null ? "" : $"{PrevStepOrNull.name} -> ")}{_currentStep.name}");
+                Debug.Log($"[{transform.GetPath()}] CurrentStep is changed. {(PrevStepOrNull == null ? string.Empty : $"{PrevStepOrNull.name} -> ")}{_currentStep.name}");
                 _currentStep.ShowAsync().Forget();
                 MessageBroker.Default.Publish(new OnCurrentStepChangedMessage { prevOrNull = PrevStepOrNull, current = _currentStep });
             }

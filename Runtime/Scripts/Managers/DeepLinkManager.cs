@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using LCHFramework.Extensions;
 using LCHFramework.Utilities;
 using UnityEngine;
 
@@ -22,7 +23,7 @@ namespace LCHFramework.Managers
             
             UnityEngine.Application.deepLinkActivated += OnDeepLinkActivated;
             
-            var getDeferredDeepLink = (false, "");
+            var getDeferredDeepLink = (false, string.Empty);
             if (PlayerPrefs.GetInt(HasDeferredDeepLinkPrefsKey, 0) == 0)
             {
                 yield return GetDeferredDeepLink(result => getDeferredDeepLink = result);
@@ -56,11 +57,15 @@ namespace LCHFramework.Managers
             var queries = urls[1].Split('&').Select(t => t.Split('=')).Where(t => t.Length == 2).ToArray();
             for (var i = 0; i < queries.Length; i++)
                 foreach (var _ in queryKeys.Where(t => string.Equals(queries[i][0], t, StringComparison.OrdinalIgnoreCase)))
-                    OnDeepLinkActivated(url, queries, i, queries[i][0], queries[i][1]);
+                    OnDeepLinkActivated(url, queries, i, queries[i][0], queries[i][1]).Forget();
         }
         
-        protected virtual void OnDeepLinkActivated(string url, string[][] queries, int queryIndex, string queryKey, string queryValue)
-            => Debug.Log($"[{nameof(DeepLinkManager)}/{nameof(OnDeepLinkActivated)}] {nameof(url)}: {url}, {nameof(queries)}Length: {queries.Length}, {nameof(queryIndex)}: {queryIndex}, {nameof(queryKey)}: {queryKey}, {nameof(queryValue)}: {queryValue}");
+        protected virtual async Awaitable OnDeepLinkActivated(string url, string[][] queries, int queryIndex, string queryKey, string queryValue)
+        {
+            Debug.Log($"[{nameof(DeepLinkManager)}/{nameof(OnDeepLinkActivated)}] {nameof(url)}: {url}, {nameof(queries)}Length: {queries.Length}, {nameof(queryIndex)}: {queryIndex}, {nameof(queryKey)}: {queryKey}, {nameof(queryValue)}: {queryValue}");
+            
+            await AwaitableUtility.CompletedTask;
+        }
         
         
         

@@ -50,9 +50,9 @@ namespace LCHFramework.Editor
             const string KeyaliasName = "KeyaliasName: ";
             const string KeyaliasPass = "KeyaliasPass: ";
             foreach (var line in File.ReadAllLines(keystorePasswordFileInfo.FullName))
-                if (line.Contains(KeystorePass)) PlayerSettings.Android.keystorePass = line.Replace(KeystorePass, "");
-                else if (line.Contains(KeyaliasName)) PlayerSettings.Android.keyaliasName = line.Replace(KeyaliasName, "");
-                else if (line.Contains(KeyaliasPass)) PlayerSettings.Android.keyaliasPass = line.Replace(KeyaliasPass, "");
+                if (line.Contains(KeystorePass)) PlayerSettings.Android.keystorePass = line.Replace(KeystorePass, string.Empty);
+                else if (line.Contains(KeyaliasName)) PlayerSettings.Android.keyaliasName = line.Replace(KeyaliasName, string.Empty);
+                else if (line.Contains(KeyaliasPass)) PlayerSettings.Android.keyaliasPass = line.Replace(KeyaliasPass, string.Empty);
         }
     }
 }

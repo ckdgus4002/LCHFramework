@@ -28,7 +28,7 @@ namespace LCHFramework.Attributes
         
         public ShowInInspectorAttribute(bool result)
         {
-            TargetName = "";
+            TargetName = string.Empty;
             NeedInitializeComparison = false;
             ComparisonOperator = default;
             ComparisonValue = null;
