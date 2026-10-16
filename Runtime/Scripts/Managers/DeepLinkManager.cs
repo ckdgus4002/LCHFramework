@@ -8,7 +8,7 @@ namespace LCHFramework.Managers
 {
     public abstract class DeepLinkManager : MonoSingleton<DeepLinkManager>
     {
-        protected const string HasDeferredDeepLinkPrefsKey = "HasDeferredDeepLink";
+        private const string HasDeferredDeepLinkPrefsKey = "HasDeferredDeepLink";
         
         
         
@@ -53,16 +53,7 @@ namespace LCHFramework.Managers
             var urls = url.Split('?');
             if (urls.Length < 2) return;
             
-            ActiveDeepLink(url, urls[1]);
-        }
-        
-        
-        
-        protected abstract IEnumerator GetDeferredDeepLink(Action<(bool, string)> deferredDeepLink);
-        
-        protected void ActiveDeepLink(string url, string query)
-        {
-            var queries = query.Split('&').Select(t => t.Split('=')).Where(t => t.Length == 2).ToArray();
+            var queries = urls[1].Split('&').Select(t => t.Split('=')).Where(t => t.Length == 2).ToArray();
             for (var i = 0; i < queries.Length; i++)
                 foreach (var _ in queryKeys.Where(t => string.Equals(queries[i][0], t, StringComparison.OrdinalIgnoreCase)))
                     OnDeepLinkActivated(url, queries, i, queries[i][0], queries[i][1]);
@@ -70,5 +61,9 @@ namespace LCHFramework.Managers
         
         protected virtual void OnDeepLinkActivated(string url, string[][] queries, int queryIndex, string queryKey, string queryValue)
             => Debug.Log($"[{nameof(DeepLinkManager)}/{nameof(OnDeepLinkActivated)}] {nameof(url)}: {url}, {nameof(queries)}Length: {queries.Length}, {nameof(queryIndex)}: {queryIndex}, {nameof(queryKey)}: {queryKey}, {nameof(queryValue)}: {queryValue}");
+        
+        
+        
+        protected abstract IEnumerator GetDeferredDeepLink(Action<(bool, string)> deferredDeepLink);
     }
 }
