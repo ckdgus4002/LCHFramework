@@ -128,7 +128,7 @@ namespace LCHFramework.Managers
                                   + $"\nData: {request.downloadHandler.data.Length}", LogColor);
                         value = download.Item1 switch
                         {
-                            DownloadHandlerType.Json => JsonConvert.DeserializeObject<T>(request.downloadHandler.text),
+                            DownloadHandlerType.Json => JsonConvert.DeserializeObject(request.downloadHandler.text, typeof(T).GetGenericArguments()[0]),
                             DownloadHandlerType.Buffer => request.downloadHandler.data,
                             DownloadHandlerType.Texture => DownloadHandlerTexture.GetContent(request),
                             DownloadHandlerType.AudioClipWav => DownloadHandlerAudioClip.GetContent(request),
