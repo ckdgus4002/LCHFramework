@@ -38,24 +38,34 @@ namespace LCHFramework.Editor
         [InitializeOnLoadMethod]
         public static void InitializeOnLoad()
         {
+#if UNITY_6000_6_OR_NEWER
+            EditorApplication.hierarchyWindowItemByEntityIdOnGUI -= HierarchyWindowItemByEntityIdOnGUI;
+            EditorApplication.hierarchyWindowItemByEntityIdOnGUI += HierarchyWindowItemByEntityIdOnGUI;
+#else
             EditorApplication.hierarchyWindowItemOnGUI -= HierarchyWindowItemOnGUI;
             EditorApplication.hierarchyWindowItemOnGUI += HierarchyWindowItemOnGUI;
+#endif
         }
+        
+#if UNITY_6000_6_OR_NEWER
+        private static void HierarchyWindowItemByEntityIdOnGUI(EntityId entityId, Rect selectionRect)
+            => _HierarchyWindowItemOnGUI(EditorUtility.EntityIdToObject(entityId) as GameObject, selectionRect);
+#elif UNITY_6000_3_OR_NEWER
+        private static void HierarchyWindowItemOnGUI(int instanceID, Rect selectionRect)
+            => _HierarchyWindowItemOnGUI(EditorUtility.EntityIdToObject(instanceID) as GameObject, selectionRect);
+#else
+        private static void HierarchyWindowItemOnGUI(int instanceID, Rect selectionRect)
+            => _HierarchyWindowItemOnGUI(EditorUtility.InstanceIDToObject(instanceID) as GameObject, selectionRect);
+#endif
         
         private static Transform _offsetTransform;
         private static int _offset;
-        private static void HierarchyWindowItemOnGUI(int instanceID, Rect selectionRect)
+        private static void _HierarchyWindowItemOnGUI(GameObject gameObjectOrNull, Rect selectionRect)
         {
-            if (!Enabled) return;
-            
             // Check.
-#if !UNITY_6000_3_OR_NEWER
-            var gameObjectOrNull = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
-#else
-            var gameObjectOrNull = EditorUtility.EntityIdToObject(instanceID) as GameObject;
-#endif
+            if (!Enabled) return;
             if (gameObjectOrNull == null) return;
-
+            
             // Fix Rectangle.
             selectionRect.width += selectionRect.x;
             selectionRect.x = 0;
