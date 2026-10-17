@@ -7,7 +7,17 @@ using UnityEngine;
 
 namespace LCHFramework.Managers
 {
-    public abstract class DeepLinkManager : MonoSingleton<DeepLinkManager>
+    public class DeepLinkManager : DeepLinkManager<DeepLinkManager>
+    {
+        protected override IEnumerator GetDeferredDeepLink(Action<(bool, string)> deferredDeepLink)
+        {
+            deferredDeepLink?.Invoke((false, string.Empty));
+            
+            yield break;
+        }
+    }
+    
+    public abstract class DeepLinkManager<T> : MonoSingleton<T> where T : DeepLinkManager<T>
     {
         private const string HasDeferredDeepLinkPrefsKey = "HasDeferredDeepLink";
         
