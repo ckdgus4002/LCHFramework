@@ -81,7 +81,7 @@ namespace LCHFramework.Managers
         
         public static async Awaitable LoadSceneAsync(string sceneAddress, string addressLabel, string[] atlasAddresses, LoadSceneMode loadSceneMode, float fadeOutDuration, float fadeInDuration, string loadingMessage, Func<int, string, string> getErrorMessage, bool isUpdateCatalogs = true, string message = "")
         {
-            var log = $"[{nameof(SceneManager)}] {nameof(LoadSceneAsync)}: {sceneAddress}, {nameof(message)}: {message}";
+            var log = $"[{nameof(SceneManager)}/{nameof(LoadSceneAsync)}] {nameof(sceneAddress)}: {sceneAddress}, {nameof(message)}: {message}";
             if (!isLoadingScene) Debug.Log($"{log}.");
             else { Debug.LogWarning($"{log}, {nameof(isLoadingScene)}: {isLoadingScene}!"); return; }
             

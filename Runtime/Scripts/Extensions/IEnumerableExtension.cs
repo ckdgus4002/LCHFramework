@@ -10,10 +10,19 @@ namespace LCHFramework.Extensions
     {
         private static readonly Random Random = new();
         public static T Pick<T>(this IEnumerable<T> enumerable)
-            => enumerable.ElementAt(Random.Next(enumerable.Count()));
+        {
+            var array = enumerable as T[] ?? enumerable.ToArray();
+            return array[Random.Next(array.Length)];
+        }
+        
+        public static bool TryFirstOrDefault<T>(this IEnumerable<T> enumerable, out T result)
+            => !EqualityComparer<T>.Default.Equals(result = enumerable.FirstOrDefault(), default);
         
         public static bool TryFirstOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate, out T result)
             => !EqualityComparer<T>.Default.Equals(result = enumerable.FirstOrDefault(predicate), default);
+        
+        public static bool TryLastOrDefault<T>(this IEnumerable<T> enumerable, out T result)
+            => !EqualityComparer<T>.Default.Equals(result = enumerable.LastOrDefault(), default);
         
         public static bool TryLastOrDefault<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate, out T result)
             => !EqualityComparer<T>.Default.Equals(result = enumerable.LastOrDefault(predicate), default);
