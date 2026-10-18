@@ -32,7 +32,6 @@ namespace LCHFramework.Managers
         
         
         
-        private static bool isLoadingScene;
         private static bool uiIsDone;
         private static int loadSceneProcess;
         private static AsyncOperationHandle<List<IResourceLocator>> updateAddressableCatalogs;
@@ -40,6 +39,7 @@ namespace LCHFramework.Managers
         private static AsyncOperationHandle<SceneInstance> loadScene;
         
         
+        public static bool IsLoadingScene { get; private set; }
         public static string SceneAddress { get; private set; } = string.Empty;
         public static string PrevSceneAddress { get; private set; } = string.Empty;
         private static string[] PrevAtlasAddresses { get; set; } = Array.Empty<string>();
@@ -82,12 +82,12 @@ namespace LCHFramework.Managers
         public static async Awaitable LoadSceneAsync(string sceneAddress, string addressLabel, string[] atlasAddresses, LoadSceneMode loadSceneMode, float fadeOutDuration, float fadeInDuration, string loadingMessage, Func<int, string, string> getErrorMessage, bool isUpdateCatalogs = true, string message = "")
         {
             var log = $"[{nameof(SceneManager)}/{nameof(LoadSceneAsync)}] {nameof(sceneAddress)}: {sceneAddress}, {nameof(message)}: {message}";
-            if (!isLoadingScene) Debug.Log($"{log}.");
-            else { Debug.LogWarning($"{log}, {nameof(isLoadingScene)}: {isLoadingScene}!"); return; }
+            if (!IsLoadingScene) Debug.Log($"{log}.");
+            else { Debug.LogWarning($"{log}, {nameof(IsLoadingScene)}: {IsLoadingScene}!"); return; }
             
             
             SoundManager.Instance.StopAll();
-            isLoadingScene = true;
+            IsLoadingScene = true;
             uiIsDone = false;
             loadSceneProcess = -1;
             updateAddressableCatalogs = default;
@@ -175,7 +175,7 @@ namespace LCHFramework.Managers
             await Awaitable.WaitForSecondsAsync(fadeInDuration);
             
             
-            isLoadingScene = false;
+            IsLoadingScene = false;
             MessageBroker.Default.Publish(new LoadSceneCompletedMessage { prevSceneAddress = PrevSceneAddress, sceneAddress = sceneAddress });
         }
         
