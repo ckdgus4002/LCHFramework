@@ -1,13 +1,13 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
-using LCHFramework.Extensions;
 using LCHFramework.Utilities;
 using UnityEngine;
 
 namespace LCHFramework.Managers
 {
-    public abstract class DeepLinkManager : MonoSingleton<DeepLinkManager>
+    public abstract class DeepLinkManager<T> : MonoSingleton<T> where T : DeepLinkManager<T>
     {
         private const string HasDeferredDeepLinkPrefsKey = "HasDeferredDeepLink";
         
@@ -16,6 +16,16 @@ namespace LCHFramework.Managers
         [SerializeField] protected string[] queryKeys;
         
         
+        public Dictionary<string, bool> IsActivatingDeepLink { get; private set; } = new();
+        
+        
+        
+        protected override void Awake()
+        {
+            base.Awake();
+            
+            IsActivatingDeepLink = queryKeys.ToDictionary(t => t, _ => false);
+        }
         
         protected override IEnumerator Start()
         {
@@ -49,23 +59,23 @@ namespace LCHFramework.Managers
         
         private void OnDeepLinkActivated(string url)
         {
-            Debug.Log($"[{nameof(DeepLinkManager)}/{nameof(OnDeepLinkActivated)}] {nameof(url)}: {url}");
-            
             var urls = url.Split('?');
-            if (urls.Length < 2) return;
-            
-            var queries = urls[1].Split('&').Select(t => t.Split('=')).Where(t => t.Length == 2).ToArray();
-            for (var i = 0; i < queries.Length; i++)
-                foreach (var _ in queryKeys.Where(t => string.Equals(queries[i][0], t, StringComparison.OrdinalIgnoreCase)))
-                    OnDeepLinkActivated(url, queries, i, queries[i][0], queries[i][1]).Forget();
+            var queries = urls.Length < 2 ? Array.Empty<string[]>() : urls[1].Split('&').Select(t => t.Split('=')).Where(t => t.Length == 2).ToArray();
+            for (var queryIndex = 0; queryIndex < queries.Length; queryIndex++)
+                foreach (var _ in queryKeys.Where(t => string.Equals(queries[queryIndex][0], t, StringComparison.OrdinalIgnoreCase)))
+                {
+                    var queryKey = queries[queryIndex][0];
+                    var queryValue = queries[queryIndex][1];
+                    var log = $"[DeepLinkManager/{nameof(OnDeepLinkActivated)}] {nameof(url)}: {url}, {nameof(queries)}Length: {queries.Length}, {nameof(queryIndex)}: {queryIndex}, {nameof(queryKey)}: {queryKey}, {nameof(queryValue)}: {queryValue}.";
+                    if (!IsActivatingDeepLink[queryKey]) Debug.Log($"{log}.");
+                    else { Debug.LogWarning($"{log}, {nameof(IsActivatingDeepLink)}: {IsActivatingDeepLink[queryKey]}!"); continue; }
+                    
+                    IsActivatingDeepLink[queryKey] = true;
+                    OnDeepLinkActivated(url, queries, queryIndex, queryKey, queryValue).GetAwaiter().OnCompleted(() => IsActivatingDeepLink[queryKey] = false);
+                }
         }
         
-        protected virtual async Awaitable OnDeepLinkActivated(string url, string[][] queries, int queryIndex, string queryKey, string queryValue)
-        {
-            Debug.Log($"[{nameof(DeepLinkManager)}/{nameof(OnDeepLinkActivated)}] {nameof(url)}: {url}, {nameof(queries)}Length: {queries.Length}, {nameof(queryIndex)}: {queryIndex}, {nameof(queryKey)}: {queryKey}, {nameof(queryValue)}: {queryValue}");
-            
-            await AwaitableUtility.CompletedTask;
-        }
+        protected abstract Awaitable OnDeepLinkActivated(string url, string[][] queries, int queryIndex, string queryKey, string queryValue);
         
         
         
