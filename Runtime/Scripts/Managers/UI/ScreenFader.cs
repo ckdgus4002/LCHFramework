@@ -2,14 +2,20 @@ using System;
 using System.Linq;
 using System.Threading;
 using LCHFramework.Extensions;
+using LCHFramework.Utilities;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace LCHFramework.Managers.UI
 {
+    public class ScreenFader : ScreenFader<ScreenFader>
+    {
+        public override Awaitable FadeAsync(Color color, Func<string> getMessage, float fadeInDuration, int fadeInEase, float fadeOutDuration, int fadeOutEase, Func<bool> getIsDone) => AwaitableUtility.CompletedTask;
+    }
+    
     [RequireComponent(typeof(CanvasGroup))]
-    public abstract class ScreenFader : MonoSingleton<ScreenFader>, ILoadSceneUI
+    public abstract class ScreenFader<T> : MonoSingleton<T>, ILoadSceneUI where T : ScreenFader<T>
     {
         public const float DefaultFadeInDuration = 0.5f;
         public const float DefaultFadeOutDuration = 0.5f;
