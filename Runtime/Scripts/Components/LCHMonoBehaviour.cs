@@ -12,10 +12,19 @@ namespace LCHFramework.Components
     public class LCHMonoBehaviour : MonoBehaviour, IDestroyGameObject
     {
         public static bool TryFindObjectsByType<T>(out T[] result) where T : Object
+#if UNITY_6000_6_OR_NEWER
+            => TryFindObjectsByType(FindObjectsInactive.Exclude, out result);
+#else
             => TryFindObjectsByType(FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID, out result);
+#endif
         
+#if UNITY_6000_6_OR_NEWER
+        public static bool TryFindObjectsByType<T>(FindObjectsInactive findObjectsInactive, out T[] result) where T : Object
+            => (result = FindObjectsByType<T>(findObjectsInactive)).Exists();
+#else
         public static bool TryFindObjectsByType<T>(FindObjectsInactive findObjectsInactive, FindObjectsSortMode sortMode, out T[] result) where T : Object
             => (result = FindObjectsByType<T>(findObjectsInactive, sortMode)).Exists();
+#endif
         
         public static bool TryFindAnyObjectByType<T>(out T result) where T : Object
             => TryFindAnyObjectByType(FindObjectsInactive.Exclude, out result);
@@ -31,7 +40,11 @@ namespace LCHFramework.Components
         
         public static T FindAnyInterfaceByType<T>(FindObjectsInactive findObjectsInactive = FindObjectsInactive.Exclude) where T : class
         {
+#if UNITY_6000_6_OR_NEWER
+            foreach (var t in FindObjectsByType<Component>(findObjectsInactive))
+#else
             foreach (var t in FindObjectsByType<Component>(findObjectsInactive, FindObjectsSortMode.InstanceID))
+#endif
                 if (t.TryGetComponent<T>(out var result))
                     return result;
             

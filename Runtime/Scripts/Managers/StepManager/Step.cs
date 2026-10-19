@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using LCHFramework.Components;
 using LCHFramework.Extensions;
@@ -8,7 +9,7 @@ namespace LCHFramework.Managers.StepManager
 {
     public class Step : LCHMonoBehaviour
     {
-        public CancellationTokenSource showCancellationTokenSource;
+        private CancellationTokenSource showCancellationTokenSource;
         
         
         

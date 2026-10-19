@@ -79,7 +79,11 @@ namespace LCHFramework.Components
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode) => DestroyNotMonoSingletonByType();
 
         public void DestroyNotMonoSingletonByType()
+#if UNITY_6000_6_OR_NEWER
+            => FindObjectsByType(SingletonType, FindObjectsInactive.Include)
+#else
             => FindObjectsByType(SingletonType, FindObjectsInactive.Include, FindObjectsSortMode.InstanceID)
+#endif
                 .Cast<Component>()
                 .Where(t => t.GetComponent<MonoSingleton>() == null)
                 .ForEach(t =>
