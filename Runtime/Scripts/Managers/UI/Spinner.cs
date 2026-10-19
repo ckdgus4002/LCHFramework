@@ -12,16 +12,23 @@ namespace LCHFramework.Managers.UI
     
     public class Spinner<T>: MonoSingleton<T> where T : Spinner<T>
     {
+        private GameObject wrapper;
         private CancellationTokenSource showCancellationTokenSource;
         
         
-        private GameObject Wrapper => _wrapper == null ? _wrapper = transform.GetChild(0).gameObject : _wrapper;
-        private GameObject _wrapper;
+        public override bool IsShown => wrapper.activeInHierarchy;
         
-        private GameObject SpinnerImage => _spinnerImage == null ? _spinnerImage = Wrapper.transform.GetChildren().Last().gameObject : _spinnerImage;
+        private GameObject SpinnerImage => _spinnerImage == null ? _spinnerImage = wrapper.transform.GetChildren().Last().gameObject : _spinnerImage;
         private GameObject _spinnerImage;
         
         
+        
+        protected override void Awake()
+        {
+            base.Awake();
+            
+            wrapper = transform.GetChild(0).gameObject;
+        }
         
         protected override void OnDestroy()
         {
@@ -36,7 +43,7 @@ namespace LCHFramework.Managers.UI
         {
             CancellationTokenSourceUtility.RestartTokenSource(ref showCancellationTokenSource);
             
-            Wrapper.SetActive(true);
+            wrapper.SetActive(true);
             SpinnerImage.SetActive(false);
             await Awaitable.WaitForSecondsAsync(showImageDelay, showCancellationTokenSource.Token).SuppressCancellationThrow();
             if (showCancellationTokenSource == null || showCancellationTokenSource.IsCancellationRequested) return;
@@ -47,7 +54,7 @@ namespace LCHFramework.Managers.UI
         public virtual void Hide()
         {
             CancellationTokenSourceUtility.ClearTokenSource(ref showCancellationTokenSource);
-            Wrapper.SetActive(false);
+            wrapper.SetActive(false);
         }
     }
 }

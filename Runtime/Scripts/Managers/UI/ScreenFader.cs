@@ -20,10 +20,11 @@ namespace LCHFramework.Managers.UI
         public TMP_Text messageText;
         
         
+        protected GameObject wrapper;
         protected CancellationTokenSource cancellationTokenSource;
         
         
-        public override bool IsShown => Wrapper.activeInHierarchy;
+        public override bool IsShown => wrapper.activeInHierarchy;
         
         protected override bool IsDontDestroyOnLoad => transform.parent == null;
         
@@ -33,9 +34,6 @@ namespace LCHFramework.Managers.UI
         protected CanvasGroup CanvasGroup => _canvasGroup == null ? _canvasGroup = GetComponent<CanvasGroup>() : _canvasGroup;
         private CanvasGroup _canvasGroup;
         
-        protected GameObject Wrapper => _wrapper == null ? _wrapper = transform.GetChild(0).gameObject : _wrapper;
-        private GameObject _wrapper;
-        
         protected Image Image => _image == null ? _image = GetComponentInChildren<Image>(true) : _image;
         private Image _image;
         
@@ -44,6 +42,13 @@ namespace LCHFramework.Managers.UI
         private void Reset()
         {
             messageText = GetComponentsInChildren<TMP_Text>().FirstOrDefault(t => t.name.Contains("Message", StringComparison.OrdinalIgnoreCase) && t.name.Contains("Text", StringComparison.OrdinalIgnoreCase));
+        }
+        
+        protected override void Awake()
+        {
+            base.Awake();
+            
+            wrapper = transform.GetChild(0).gameObject;
         }
         
         

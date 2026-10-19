@@ -26,10 +26,11 @@ namespace LCHFramework.Managers.UI
         public Slider slider;
         
         
+        private GameObject wrapper;
         private CancellationTokenSource cancellationTokenSource;
         
         
-        public override bool IsShown => Wrapper.activeInHierarchy;
+        public override bool IsShown => wrapper.activeInHierarchy;
         
         protected override bool IsDontDestroyOnLoad => transform.parent == null;
         
@@ -39,15 +40,19 @@ namespace LCHFramework.Managers.UI
         private CanvasGroup CanvasGroup => _canvasGroup == null ? _canvasGroup = GetComponent<CanvasGroup>() : _canvasGroup;
         private CanvasGroup _canvasGroup;
         
-        private GameObject Wrapper => _wrapper == null ? _wrapper = transform.GetChild(0).gameObject : _wrapper;
-        private GameObject _wrapper;
-        
         
         
         private void Reset()
         {
             messageText = GetComponentsInChildren<TMP_Text>().FirstOrDefault(t => t.name.Contains("Message", StringComparison.OrdinalIgnoreCase) && t.name.Contains("Text", StringComparison.OrdinalIgnoreCase));
             slider = GetComponentInChildren<Slider>();
+        }
+        
+        protected override void Awake()
+        {
+            base.Awake();
+            
+            wrapper = transform.GetChild(0).gameObject;
         }
         
         
@@ -59,7 +64,7 @@ namespace LCHFramework.Managers.UI
         {
             CancellationTokenSourceUtility.RestartTokenSource(ref cancellationTokenSource);
             
-            Wrapper.SetActive(true);
+            wrapper.SetActive(true);
             var startTime = Time.time;
             while (true)
             {
@@ -97,7 +102,7 @@ namespace LCHFramework.Managers.UI
                     break;
             }
             
-            Wrapper.SetActive(false);
+            wrapper.SetActive(false);
         }
     }
 }

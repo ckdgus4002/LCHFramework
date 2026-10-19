@@ -17,20 +17,31 @@ namespace LCHFramework.Managers.UI
         
         
         
+        private GameObject wrapper;
+        
+        
+        public override bool IsShown => wrapper.activeInHierarchy;
+        
         private CanvasGroup CanvasGroup => _canvasGroup == null ? _canvasGroup = GetComponent<CanvasGroup>() : _canvasGroup;
         private CanvasGroup _canvasGroup;
-        
-        private GameObject Wrapper => _wrapper == null ? _wrapper = transform.GetChild(0).gameObject : _wrapper;
-        private GameObject _wrapper;
         
         private TMP_Text[] Texts => _texts ??= GetComponentsInChildren<TMP_Text>(true);
         [NonSerialized] private TMP_Text[] _texts;
         
         
         
+        protected override void Awake()
+        {
+            base.Awake();
+            
+            wrapper = transform.GetChild(0).gameObject;
+        }
+        
+        
+        
         public virtual async Awaitable Show(string message, float fadeInDuration = DefaultFadeInDuration, float fadeOutDuration = DefaultFadeOutDuration)
         {
-            Wrapper.SetActive(true);
+            wrapper.SetActive(true);
             Texts.ForEach(text => text.text = message);
             var startTime = Time.time;
             fadeInDuration = Mathf.Max(fadeInDuration, float.Epsilon);
@@ -50,7 +61,7 @@ namespace LCHFramework.Managers.UI
                 else break;
             }
             
-            Wrapper.SetActive(false);
+            wrapper.SetActive(false);
         }
     }
 }

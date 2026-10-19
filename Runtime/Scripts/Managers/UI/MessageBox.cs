@@ -16,6 +16,8 @@ namespace LCHFramework.Managers.UI
         private GameObject wrapper;
         
         
+        public override bool IsShown => wrapper.activeInHierarchy;
+        
         public Canvas Canvas => _canvas == null ? _canvas = GetComponent<Canvas>() : _canvas;
         private Canvas _canvas;
         
