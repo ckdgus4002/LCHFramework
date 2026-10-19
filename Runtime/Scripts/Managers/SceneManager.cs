@@ -112,8 +112,10 @@ namespace LCHFramework.Managers
                     var operationException = loadSceneProcess < 1 ? $"{updateAddressableCatalogs.OperationException}" : loadSceneProcess < 2 ? AddressablesManager.GetDownloadError(downloadAddressable) : $"{loadScene.OperationException}";
                     var status = (loadSceneProcess < 1 ? updateAddressableCatalogs : loadSceneProcess < 2 ? downloadAddressable : loadScene).Status;
                     var hasOperationException = !string.IsNullOrEmpty(operationException);
-                    if (hasOperationException) UnityEngine.Debug.LogError(operationException);
-                    return hasOperationException ? getErrorMessage(loadSceneProcess, "오류") : status == AsyncOperationStatus.Failed ? getErrorMessage(loadSceneProcess, "실패") : loadingMessage;
+                    if (hasOperationException) UnityEngine.Debug.LogException(new Exception(operationException));
+                    return hasOperationException ? getErrorMessage(loadSceneProcess, "오류")
+                        : status == AsyncOperationStatus.Failed ? getErrorMessage(loadSceneProcess, "실패")
+                        : loadingMessage;
                 },
                 fadeOutDuration,
                 fadeInDuration,

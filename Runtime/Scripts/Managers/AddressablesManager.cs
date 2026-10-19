@@ -111,7 +111,7 @@ namespace LCHFramework.Managers
                 if (!string.IsNullOrEmpty(dlError))
                 {
                     // handle what error
-                    UnityEngine.Debug.LogError(dlError);
+                    UnityEngine.Debug.LogException(new Exception(dlError));
                 }
             };
             return operationHandle;

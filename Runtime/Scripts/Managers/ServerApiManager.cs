@@ -115,7 +115,7 @@ namespace LCHFramework.Managers
                     {
                         var isProtocolError = request.result == UnityWebRequest.Result.ProtocolError;
                         var isRetry = !cancellationToken.IsCancellationRequested && !isProtocolError && i < retryCount - 1;
-                        UnityEngine.Debug.LogError($"Response {i + 1} of {retryCount}: {request.result}, {request.error}, {(request.downloadHandler is null or DownloadHandlerAudioClip ? string.Empty : request.downloadHandler.text)}");
+                        UnityEngine.Debug.LogException(new Exception($"Response {i + 1} of {retryCount}: {request.result}, {request.error}, {(request.downloadHandler is null or DownloadHandlerAudioClip ? string.Empty : request.downloadHandler.text)}"));
                         if (isRetry) await Awaitable.WaitForSecondsAsync(Mathf.Pow(2f, i), cancellationToken).SuppressCancellationThrow();
                         else break;
                     }
