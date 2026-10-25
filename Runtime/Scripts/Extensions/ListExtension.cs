@@ -10,7 +10,7 @@ namespace LCHFramework.Extensions
             if (!result) list.Add(item);
             return !result;
         }
-                
+        
         public static T AddAndReturnItem<T>(this List<T> list, T item)
         {
             list.Add(item);

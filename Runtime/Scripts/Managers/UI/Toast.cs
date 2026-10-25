@@ -45,20 +45,30 @@ namespace LCHFramework.Managers.UI
             Texts.ForEach(text => text.text = message);
             var startTime = Time.time;
             fadeInDuration = Mathf.Max(fadeInDuration, float.Epsilon);
-            while (destroyCancellationToken is { IsCancellationRequested: false })
+            while (true)
             {
                 CanvasGroup.alpha = (Time.time - startTime) / fadeInDuration;
-                if (Time.time < startTime + fadeInDuration) await Awaitable.NextFrameAsync(destroyCancellationToken).SuppressCancellationThrow();
-                else break;
+                if (Time.time < startTime + fadeInDuration)
+                {
+                    await Awaitable.NextFrameAsync(destroyCancellationToken).SuppressCancellationThrow();
+                    if (destroyCancellationToken.IsCancellationRequested) return;
+                }
+                else
+                    break;
             }
             
             var endTime = Time.time;
             fadeOutDuration = Mathf.Max(fadeOutDuration, float.Epsilon);
-            while (destroyCancellationToken is { IsCancellationRequested: false })
+            while (true)
             {
                 CanvasGroup.alpha = 1 - (Time.time - endTime) / fadeOutDuration;
-                if (Time.time - endTime <= fadeOutDuration) await Awaitable.NextFrameAsync(destroyCancellationToken).SuppressCancellationThrow();
-                else break;
+                if (Time.time - endTime <= fadeOutDuration)
+                {
+                    await Awaitable.NextFrameAsync(destroyCancellationToken).SuppressCancellationThrow();
+                    if (destroyCancellationToken.IsCancellationRequested) return;
+                }
+                else 
+                    break;
             }
             
             wrapper.SetActive(false);

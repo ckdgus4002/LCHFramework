@@ -102,7 +102,7 @@ namespace LCHFramework.Managers
                     var sendWebRequest = request.SendWebRequest();
                     await using var registration = cancellationToken.Register(request.Abort);
 
-                    while (cancellationToken is { IsCancellationRequested: false } && !sendWebRequest.isDone)
+                    while (!cancellationToken.IsCancellationRequested && !sendWebRequest.isDone)
                     {
                         upload?.Invoke(request.uploadProgress);
                         download.Item2?.Invoke(request.downloadProgress);
