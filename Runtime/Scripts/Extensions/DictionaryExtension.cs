@@ -4,7 +4,13 @@ namespace LCHFramework.Extensions
 {
     public static class DictionaryExtension
     {
-        public static TValue AddAndReturnItem<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        public static TKey AddAndReturnKey<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        {
+            dictionary.Add(key, value);
+            return key;
+        }
+        
+        public static TValue AddAndReturnValue<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
             dictionary.Add(key, value);
             return value;
