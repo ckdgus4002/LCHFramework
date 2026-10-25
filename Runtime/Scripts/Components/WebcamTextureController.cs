@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using LCHFramework.Extensions;
 using UniRx;
 using UnityEngine;
@@ -44,7 +45,7 @@ namespace LCHFramework.Components
         
         protected virtual void OnEnable()
         {
-            if (playOnEnable) Play().Forget();
+            if (playOnEnable) PlayAsync().Forget();
         }
         
         protected virtual void Start()
@@ -62,12 +63,14 @@ namespace LCHFramework.Components
         
         private void OnScreenSizeChanged()
         {
-            if (_webcamTextureOrNull != null && _webcamTextureOrNull.isPlaying) Play(true).Forget();
+            if (_webcamTextureOrNull != null && _webcamTextureOrNull.isPlaying) PlayAsync(true).Forget();
         }
         
         
         
-        public virtual async Awaitable Play(bool force = false)
+        public virtual Awaitable PlayAsync(bool force = false) => PlayAsync(force, destroyCancellationToken);
+        
+        public virtual async Awaitable PlayAsync(bool force, CancellationToken cancellationToken)
         {
             var webcamTextureOrNull = await GetWebcamTextureOrNull(force);
             
@@ -75,9 +78,11 @@ namespace LCHFramework.Components
             {
                 webcamTextureOrNull.Play();
                 
-                for (var i = 0; i < 10; i++)
-                    if (webcamTextureOrNull.width <= 16 || webcamTextureOrNull.height <= 16) await Awaitable.NextFrameAsync();
-                    else break;
+                for (var i = 0; i < 10 && (webcamTextureOrNull.width <= 16 || webcamTextureOrNull.height <= 16); i++)
+                {
+                    await Awaitable.NextFrameAsync(cancellationToken).SuppressCancellationThrow();
+                    if (cancellationToken.IsCancellationRequested) return;
+                }
             }
             
             onPlay?.Invoke(webcamTextureOrNull);
