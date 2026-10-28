@@ -1,7 +1,9 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using LCHFramework.Extensions;
 using LCHFramework.Utilities;
+using UniRx;
 using UnityEngine;
 
 namespace LCHFramework.Managers.UI
@@ -12,49 +14,68 @@ namespace LCHFramework.Managers.UI
     
     public class Spinner<T>: MonoSingleton<T> where T : Spinner<T>
     {
-        private GameObject wrapper;
-        private CancellationTokenSource showCancellationTokenSource;
+        [SerializeField] private GameObject spinnerImage;
         
         
-        public override bool IsShown => wrapper.activeInHierarchy;
-        
-        private GameObject SpinnerImage => _spinnerImage == null ? _spinnerImage = wrapper.transform.GetChildren().Last().gameObject : _spinnerImage;
-        private GameObject _spinnerImage;
+        private readonly Dictionary<IDisposable, System.IDisposable> showDisposables = new();
         
         
+        public override bool IsShown => Wrapper.activeInHierarchy;
+        
+        private GameObject Wrapper => _wrapper == null ? _wrapper = transform.GetChild(0).gameObject : _wrapper;
+        [NonSerialized] private GameObject _wrapper;
+        
+        
+        
+        private void Reset() => spinnerImage = Wrapper.transform.GetChildren().Last().gameObject;
         
         protected override void Awake()
         {
             base.Awake();
             
-            wrapper = transform.GetChild(0).gameObject;
+            spinnerImage.SetActive(false);
         }
         
         protected override void OnDestroy()
         {
             base.OnDestroy();
             
-            CancellationTokenSourceUtility.ClearTokenSource(ref showCancellationTokenSource);
+            Release();
         }
         
         
         
-        public virtual async Awaitable Show(float showImageDelay = 0)
+        public virtual IDisposable Show(float showImageDelay = 0)
         {
-            CancellationTokenSourceUtility.RestartTokenSource(ref showCancellationTokenSource);
+            Wrapper.SetActive(true);
             
-            wrapper.SetActive(true);
-            SpinnerImage.SetActive(false);
-            await Awaitable.WaitForSecondsAsync(showImageDelay, showCancellationTokenSource.Token).SuppressCancellationThrow();
-            if (showCancellationTokenSource == null || showCancellationTokenSource.IsCancellationRequested) return;
+            var disposable = new IDisposable { spinnerOrNull = this };
+            showDisposables.Add(disposable, Observable.Timer(TimeSpan.FromSeconds(showImageDelay), Scheduler.MainThreadIgnoreTimeScale).Subscribe(_ => spinnerImage.SetActive(true)));
+            return disposable;
+        }
+
+        private void Release() => Hide();
+        
+        public virtual void Hide() { while (showDisposables.Exists()) Hide(showDisposables.First().Key); }
+
+        public virtual void Hide(IDisposable disposable)
+        {
+            if (!showDisposables.Remove(disposable, out var observable)) return;
             
-            SpinnerImage.SetActive(true);
+            IDisposableUtility.DisposeAndSetDefault(ref observable);
+            if (0 < showDisposables.Count) return;
+            
+            Wrapper.SetActive(false);
+            spinnerImage.SetActive(false);
         }
         
-        public virtual void Hide()
+        
+        
+        public class IDisposable : System.IDisposable
         {
-            CancellationTokenSourceUtility.ClearTokenSource(ref showCancellationTokenSource);
-            wrapper.SetActive(false);
+            public Spinner<T> spinnerOrNull;
+            
+            public void Dispose() { if (spinnerOrNull != null) spinnerOrNull.Hide(this); }
         }
     }
 }
