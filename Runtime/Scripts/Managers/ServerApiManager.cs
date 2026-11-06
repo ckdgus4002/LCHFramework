@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using LCHFramework.Data;
 using LCHFramework.Extensions;
@@ -26,7 +27,7 @@ namespace LCHFramework.Managers
             
         }, retryCount, progress, cancellationToken);
         
-        public static  Awaitable<T> UploadFileAsync<T>(Uri uri, byte[] data, IEnumerable<KeyValuePair<string, string>> header = null, Action<float> progress = null, int timeout = 0, int retryCount = RetryCount, CancellationToken cancellationToken = default) where T : ServerApiResult => SendRequestAsync<T>(() =>
+        public static Awaitable<T> UploadFileAsync<T>(Uri uri, byte[] data, IEnumerable<KeyValuePair<string, string>> header = null, Action<float> progress = null, int timeout = 0, int retryCount = RetryCount, CancellationToken cancellationToken = default) where T : ServerApiResult => SendRequestAsync<T>(() =>
         {
             Debug.Log($"Request {nameof(UploadFileAsync)}: {uri}", LogColor);
             var request = UnityWebRequest.Put(uri, data);
@@ -88,6 +89,7 @@ namespace LCHFramework.Managers
         {
             var isSuccess = false;
             var error = string.Empty;
+            var errorResponseText = string.Empty;
             var valueIsRequired = typeof(T) != typeof(ServerApiResult);
             object value = null;
             try
@@ -101,35 +103,41 @@ namespace LCHFramework.Managers
                     
                     var sendWebRequest = request.SendWebRequest();
                     await using var registration = cancellationToken.Register(request.Abort);
-
+                    
                     while (!cancellationToken.IsCancellationRequested && !sendWebRequest.isDone)
                     {
                         upload?.Invoke(request.uploadProgress);
                         download.Item2?.Invoke(request.downloadProgress);
                         await Awaitable.NextFrameAsync(cancellationToken).SuppressCancellationThrow();
                     }
-
+                    
                     isSuccess = request.result == UnityWebRequest.Result.Success;
                     error = request.error;
-                    if (!isSuccess)
+                    var isProtocolError = request.result == UnityWebRequest.Result.ProtocolError;
+                    var isBreakUnsuccessfully = cancellationToken.IsCancellationRequested || isProtocolError || retryCount - 1 <= i;
+                    var requestDownloadHandlerData = request.downloadHandler == null ? Array.Empty<byte>() : request.downloadHandler.data;
+                    var requestDownloadHandlerText = request.downloadHandler == null || (download.Item1 != DownloadHandlerType.Json && download.Item1 != DownloadHandlerType.Buffer) ? string.Empty : request.downloadHandler.text;
+                    if (!isSuccess && !isBreakUnsuccessfully)
                     {
-                        var isProtocolError = request.result == UnityWebRequest.Result.ProtocolError;
-                        var isRetry = !cancellationToken.IsCancellationRequested && !isProtocolError && i < retryCount - 1;
-                        UnityEngine.Debug.LogException(new Exception($"Response {i + 1} of {retryCount}: {request.result}, {request.error}, {(request.downloadHandler is null or DownloadHandlerAudioClip ? string.Empty : request.downloadHandler.text)}"));
-                        if (isRetry) await Awaitable.WaitForSecondsAsync(Mathf.Pow(2f, i), cancellationToken).SuppressCancellationThrow();
-                        else break;
+                        UnityEngine.Debug.Log($"Response {i + 1} of {retryCount}: {request.result}, {request.error}, {requestDownloadHandlerText}");
+                        await Awaitable.WaitForSecondsAsync(Mathf.Pow(2f, i), cancellationToken).SuppressCancellationThrow();
+                    }
+                    else if (!isSuccess && isBreakUnsuccessfully)
+                    {
+                        errorResponseText = Encoding.UTF8.GetString(requestDownloadHandlerData);
+                        break;
                     }
                     else if (!valueIsRequired)
                         Debug.Log("Response Success.", LogColor);
                     else
                     {
                         Debug.Log("Response Success."
-                                  + $"\nText: {(download.Item1 is DownloadHandlerType.Json or DownloadHandlerType.Buffer ? request.downloadHandler.text : string.Empty)}"
-                                  + $"\nData: {request.downloadHandler.data.Length}", LogColor);
+                                  + $"\nText: {requestDownloadHandlerText}"
+                                  + $"\nData: {requestDownloadHandlerData.Length}", LogColor);
                         value = download.Item1 switch
                         {
-                            DownloadHandlerType.Json => JsonConvert.DeserializeObject(request.downloadHandler.text, typeof(T).GetGenericArguments()[0]),
-                            DownloadHandlerType.Buffer => request.downloadHandler.data,
+                            DownloadHandlerType.Json => JsonConvert.DeserializeObject(requestDownloadHandlerText, typeof(T).GetGenericArguments()[0]),
+                            DownloadHandlerType.Buffer => requestDownloadHandlerData,
                             DownloadHandlerType.Texture => DownloadHandlerTexture.GetContent(request),
                             DownloadHandlerType.AudioClipWav => DownloadHandlerAudioClip.GetContent(request),
                             DownloadHandlerType.AudioClipMp3 => DownloadHandlerAudioClip.GetContent(request),
@@ -140,12 +148,11 @@ namespace LCHFramework.Managers
             }
             catch (Exception e)
             {
-                UnityEngine.Debug.LogException(e);
                 isSuccess = false;
                 error = $"{e}";
             }
             
-            return (T)(!valueIsRequired ? Activator.CreateInstance(typeof(T), isSuccess, error) : Activator.CreateInstance(typeof(T), isSuccess, error, value));
+            return (T)(!valueIsRequired ? Activator.CreateInstance(typeof(T), isSuccess, error, errorResponseText) : Activator.CreateInstance(typeof(T), isSuccess, error, errorResponseText, value));
         }
         
         
