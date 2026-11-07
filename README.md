@@ -18,17 +18,3 @@ LCHFramework 는 [GNU General Public License v3.0](LICENSE) (GPL-3.0) 으로 배
 - 이메일: ckdgus4002@gmail.com
 
 별도 허가를 받지 않은 경우에는 GPL-3.0 이 적용됩니다.
-
-### License
-Copyright (C) 2026 Lee Changhyun
-
-LCHFramework is licensed under the [GNU General Public License v3.0](LICENSE) (GPL-3.0).  
-If you distribute a program that includes this package, you must release the complete source code of that program under GPL-3.0.
-
-#### Using LCHFramework under the MIT License
-If you cannot release your source code (for example, a closed-source commercial game or app), you can obtain a separate MIT license.  
-Please contact the author by email with your intended use and project details.
-
-- Email: ckdgus4002@gmail.com
-
-Unless you have obtained a separate license, GPL-3.0 applies.
