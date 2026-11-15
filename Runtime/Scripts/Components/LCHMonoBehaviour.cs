@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using LCHFramework.Data;
 using LCHFramework.Extensions;
 using LCHFramework.Utilities;
@@ -45,10 +46,25 @@ namespace LCHFramework.Components
 #else
             foreach (var t in FindObjectsByType<Component>(findObjectsInactive, FindObjectsSortMode.InstanceID))
 #endif
-                if (t.TryGetComponent<T>(out var result))
+                if (t is T result)
                     return result;
             
             return null;
+        }
+        
+        public static bool TryFindAnyInterfacesByType<T>(out T[] result) where T : class
+            => TryFindAnyInterfacesByType(FindObjectsInactive.Exclude, out result);
+        
+        public static bool TryFindAnyInterfacesByType<T>(FindObjectsInactive findObjectsInactive, out T[] result) where T : class
+            => (result = FindAnyInterfacesByType<T>(findObjectsInactive)).Exists();
+        
+        public static T[] FindAnyInterfacesByType<T>(FindObjectsInactive findObjectsInactive = FindObjectsInactive.Exclude) where T : class
+        {
+#if UNITY_6000_6_OR_NEWER
+            return FindObjectsByType<Component>(findObjectsInactive).OfType<T>().ToArray();
+#else
+            return FindObjectsByType<Component>(findObjectsInactive, FindObjectsSortMode.InstanceID).OfType<T>().ToArray();
+#endif
         }
         
         public static Coroutine RestartCoroutine(MonoBehaviour monoBehaviour, Coroutine stopCoroutine, IEnumerator startCoroutine)
