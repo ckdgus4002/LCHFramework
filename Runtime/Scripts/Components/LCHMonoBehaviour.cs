@@ -12,6 +12,16 @@ namespace LCHFramework.Components
 {
     public class LCHMonoBehaviour : MonoBehaviour, IDestroyGameObject
     {
+        public static float GetWidth(Transform transform) => transform is RectTransform rectTransform ? Math.Abs(rectTransform.rect.size.x * rectTransform.lossyScale.x)
+            : transform.TryGetComponent<Renderer>(out var result1) ? Math.Abs(result1.bounds.size.x * transform.lossyScale.x)
+            : transform.TryGetComponent<Collider>(out var result2) ? Math.Abs(result2.bounds.size.x * transform.lossyScale.x)
+            : -1;
+        
+        public static float GetHeight(Transform transform) => transform is RectTransform rectTransform ? Math.Abs(rectTransform.rect.size.y * rectTransform.lossyScale.y)
+            : transform.TryGetComponent<Renderer>(out var result1) ? Math.Abs(result1.bounds.size.y * transform.lossyScale.y)
+            : transform.TryGetComponent<Collider>(out var result2) ? Math.Abs(result2.bounds.size.y * transform.lossyScale.y)
+            : -1;
+        
         public static bool TryFindObjectsByType<T>(out T[] result) where T : Object
 #if UNITY_6000_6_OR_NEWER
             => TryFindObjectsByType(FindObjectsInactive.Exclude, out result);
@@ -107,15 +117,9 @@ namespace LCHFramework.Components
         
         public float HalfHeight => Height * .5f;
         
-        public virtual float Width => transform is RectTransform ? Math.Abs(RectTransform.rect.size.x * transform.lossyScale.x)
-                        : TryGetComponent<Renderer>(out var result1) ? Math.Abs(result1.bounds.size.x * transform.lossyScale.x)
-                        : TryGetComponent<Collider>(out var result2) ? Math.Abs(result2.bounds.size.x * transform.lossyScale.x)
-                        : -1;
+        public virtual float Width => GetWidth(transform);
         
-        public virtual float Height => transform is RectTransform ? Math.Abs(RectTransform.rect.size.y * transform.lossyScale.y)
-            : TryGetComponent<Renderer>(out var result1) ? Math.Abs(result1.bounds.size.y * transform.lossyScale.y)
-            : TryGetComponent<Collider>(out var result2) ? Math.Abs(result2.bounds.size.y * transform.lossyScale.y)
-            : -1;
+        public virtual float Height => GetHeight(transform);
         
         public Canvas RootCanvasOrNull => !this.TryGetComponentInParent<Canvas>(out var result) ? null : result.rootCanvas;
         

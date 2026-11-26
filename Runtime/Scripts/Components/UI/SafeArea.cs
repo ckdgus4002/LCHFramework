@@ -1,12 +1,43 @@
-﻿using System;
+﻿using UnityEngine;
+#if !UNITY_6000_6_OR_NEWER
+using System;
 using LCHFramework.Attributes;
 using LCHFramework.Data;
 using LCHFramework.Utilities;
-using UnityEngine;
 using UnityEngine.UI;
+#endif
 
 namespace LCHFramework.Components.UI
 {
+#if UNITY_6000_6_OR_NEWER
+    public class SafeArea : UnityEngine.UI.SafeArea
+    {
+        public Vector4 Padding
+        {
+            get
+            {
+                var result = new Vector4();
+                var rectTransform = (RectTransform)transform;
+                var width = LCHMonoBehaviour.GetWidth(transform);
+                result.x = rectTransform.anchorMin.x * width; // left
+                result.y = rectTransform.anchorMax.x * width; // right
+                var height = LCHMonoBehaviour.GetHeight(transform);
+                result.z = rectTransform.anchorMin.x * height; // top
+                result.w = rectTransform.anchorMax.x * height; // bottom
+                return result;
+            }
+        }
+        
+        
+        
+        protected override void Awake()
+        {
+            base.Awake();
+            
+            ReferenceOrientation = !LCHFramework.Instance.isPreferredLandscapeOrientation ? UnityEngine.ScreenOrientation.Portrait : UnityEngine.ScreenOrientation.LandscapeLeft;
+        }
+    }
+#else
     public class SafeArea : DrivenRectTransformBehaviour
     {
         public SizeMode sizeModeX = SizeMode.SafeArea;
@@ -73,4 +104,5 @@ namespace LCHFramework.Components.UI
             Screen,
         }
     }
+#endif
 }
