@@ -23,12 +23,12 @@ namespace LCHFramework.Components
         
         
         private AudioClip recordingAudioClipOrNull;
+        private string recordingDeviceName = string.Empty;
         
         
         public AudioClip RecordedAudioClipOrNull { get; private set; }
         
         
-        public virtual string DeviceName => Microphone.devices.Length < 1 ? string.Empty : Microphone.devices[0];
         
         protected virtual int SampleRate => AudioSettings.outputSampleRate;
         
@@ -56,20 +56,23 @@ namespace LCHFramework.Components
             if (Application.RequestUserPermissionResult.Granted <= requestUserPermissionResult)
             {
                 if (recordingAudioClipOrNull != null) Destroy(recordingAudioClipOrNull);
-                recordingAudioClipOrNull = Microphone.Start(DeviceName, loop, lengthSec, SampleRate);
-                await AwaitableUtility.WaitUntil(() => 0 < Microphone.GetPosition(DeviceName));
+                recordingAudioClipOrNull = Microphone.Start(recordingDeviceName = GetRecordingDeviceName(), loop, lengthSec, SampleRate);
+                if (recordingAudioClipOrNull != null) await AwaitableUtility.WaitUntil(() => 0 < Microphone.GetPosition(recordingDeviceName));
             }
             
             onStartRecording?.Invoke(recordingAudioClipOrNull);
             return recordingAudioClipOrNull;
         }
         
+        protected virtual string GetRecordingDeviceName() => UnityEngine.Application.platform == RuntimePlatform.Android && Microphone.devices.TryFirstOrDefault(t => t.Contains("Bluetooth", StringComparison.OrdinalIgnoreCase), out var bluetooth) ? bluetooth
+            : string.Empty;
+        
         public virtual AudioClip StopRecordingAndCreateAudioClip()
         {
             if (recordingAudioClipOrNull == null) return null;
             
-            var position = Microphone.GetPosition(DeviceName);
-            Microphone.End(DeviceName);
+            var position = Microphone.GetPosition(recordingDeviceName);
+            Microphone.End(recordingDeviceName);
             if (position < 1) return null;
             
             var samples = new float[position * recordingAudioClipOrNull.channels];
@@ -97,7 +100,7 @@ namespace LCHFramework.Components
         {
             if (recordingAudioClipOrNull == null) return;
             
-            Microphone.End(DeviceName);
+            Microphone.End(recordingDeviceName);
         }
     }
 }
