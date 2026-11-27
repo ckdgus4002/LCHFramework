@@ -37,7 +37,7 @@ namespace LCHFramework
             
             var isLargeScreen = Application.IsLargeScreenMobile;
             var qualitySettingLevel = QualityLevelChooser.GetQualityLevel();
-            Debug.Log($"[{nameof(LCHFramework)}] {nameof(isLargeScreen)}: {isLargeScreen}, {nameof(qualitySettingLevel)}: {qualitySettingLevel}.");
+            UnityEngine.Debug.Log($"[{nameof(LCHFramework)}] {nameof(isLargeScreen)}: {isLargeScreen}, {nameof(qualitySettingLevel)}: {qualitySettingLevel}.");
         }
         
         public static Coroutine PlayAnimations<T>(IEnumerable<(float, T)> animations, Action<int, T> action, bool loop = false) => PlayAnimations(Instance, animations, action, loop);
